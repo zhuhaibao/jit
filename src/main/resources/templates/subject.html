@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/subject.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <script th:src="@{/js/base.js}"></script>
+    <title>主题页面</title>
+</head>
+<body>
+<div class="sticky">
+    <header>
+        <nav>
+            <ul class="banner">
+                <li><img th:src="@{/img/logo.svg}" alt="logo" class="logo"></li>
+                <li class="bannerTitle"><a th:href="@{/}" href="subject.html"
+                                           style="color: #03AA6D; font-weight: bold;">主题管理</a>
+                </li>
+                <li class="bannerTitle"><a th:href="@{/aritcles}" href="articles.html">文章管理</a></li>
+                <li class="bannerTitle"><a th:href="@{/navigation}" href="navigation.html">导航管理</a></li>
+                <ul class="innerBanner">
+                    <li>朱海保</li>
+                    <li><a href="login.html" th:href="@{/logout}">退出</a></li>
+                </ul>
+            </ul>
+        </nav>
+    </header>
+</div>
+<div id='content'>
+    <!-- 功能区域-->
+    <div class="functionDiv">
+        <div class="searchDiv" id='searchDiv'>
+            <form th:action="@{/}" th:object="${subject}" method="post" id="searchForm" onsubmit="submitSearch();return false;">
+                <input id="searchInput" name="subjectTitle" th:value="*{subjectTitle}" type="text" class="searchInput" placeholder="输入主题名">
+                <input name="pageSize" type="hidden" th:value="*{pageSize}">
+            </form>
+            <img id='searchButton' class='searchButton' th:src="@{/img/searchicon.png}" src="img/searchicon.png">
+        </div>
+        <div class='editDiv'>
+            <a class="doButton" href="javascript:void(0)" onclick="modal.style.display='block'">添加主题</a>
+        </div>
+    </div>
+    <!--table展示标题数据-->
+    <section>
+        <table id="subjectTable">
+            <tr>
+                <th>主题</th>
+                <th>创建日期</th>
+                <th>文章数量</th>
+                <th>操作</th>
+                <th>备注</th>
+            </tr>
+            <tr th:each="sub , stat:${data.content}" th:data-tr-gen="${sub.id}">
+                <td ondblclick="editSubject(event,1)" th:attr="data-td-id=${sub.id}">
+                    [[${sub.subjectTitle}]]
+                </td>
+                <td>[[${sub.createdAt}]]</td>
+                <td>[[${sub.articleSum}]]</td>
+                <td>
+                    <a href="subject-article.html" th:href="@{/subject/subjectAticle}"><img alt="edit subject"
+                                                                                            th:src="@{/img/edit.svg}"
+                                                                                            title='edit subject'
+                                                                                            class="edit"
+                                                                                            src="img/edit.svg"></a>
+                    /
+                    <a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"
+                                                                th:src="@{/img/delete.svg}" src="img/delete.svg"
+                                                                th:onclick="delSub(event)"></a>
+                </td>
+                <td ondblclick="editSubject(event,2)" th:attr="data-td-id=${sub.id}">[[${sub.remark}]]</td>
+            </tr>
+        </table>
+        <nav>
+            <div class="pageModule">
+                <div class="page">
+                    <button class="pageButton" id="pagePrev" onclick="renderClickPage(this)">上一页</button>
+                    <div class="pageIndex"></div>
+                    <button class="pageButton" id="pageNext" onclick="renderClickPage(this)">下一页</button>
+                </div>
+                <div class="pageParam">
+                    <label for="total">数据量:</label><input type="text" th:value="${data.total}" name="total" id="total"
+                                                                                        oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
+                    <label for="pageSize">页大小:</label><input type="text" th:value="${data.pageSize}" name="pageSize" id="pageSize"
+                                                                onkeyup="setPageSize(event)"
+                                                                oninput="totalPage.value=Math.ceil(total.value/this.value);">
+                    <label for="totalPage">总页数:</label><input type="text" th:value="${data.totalPage}" name="totalPage" id="totalPage" disabled>
+                    <label for="currentPage">当前页:</label><input type="text" th:value="${data.pageNo + 1}" name="currentPage" id="currentPage"
+                                                                   onkeyup="toPage(event)">
+                    <label for="pageBarNum">显示多少页:</label><input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
+                </div>
+            </div>
+        </nav>
+    </section>
+</div>
+<!--模态窗口div-->
+<div class="modal" id="modal" onclick="if(event.target==modal)modal.style.display='none'">
+    <div class="modalContent">
+        <div class="modalTitle">
+            <span class="close" id='close' onclick="modal.style.display='none'">&times</span>
+            <h3>添加主题</h3>
+        </div>
+        <div class="modalBody">
+            <form id="subjectForm" class="formContainer" onsubmit="return false">
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="subjectTitle">主题<span style="color:red;">*</span>:</label>
+                    </div>
+                    <div class="colValue">
+                        <input type="input" id="subjectTitle" name="subjectTitle" placeholder="输入标题"
+                               required>
+                    </div>
+                </div>
+                <div class="formRow" style="margin-top: 40px;">
+                    <div class="colLabel">
+                        <label for="remark">备注: </label>
+                    </div>
+                    <div class="colValue">
+                        <textarea id="remark" name="remark" style="height: 200px;"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modalFooter">
+            <a class="doButton" onclick="addSubject()">确定</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    //搜索
+    function loadData() {
+        let formData = new FormData();
+        formData.set("subjectTitle", document.getElementById("searchInput").value);
+        formData.set("pageSize", document.getElementById("pageSize").value);
+        formData.set("pageNo", parseInt(document.getElementById("currentPage").value) - 1 + "");
+
+        fetch("/subject/find", {
+            method: "POST",
+            body: formData,
+        }).then(async result => {
+            let json = await result.json();
+            if (json.statusText === 'ok') {
+                //渲染table
+                renderTable(json);
+                //用返回的json数据改变页面导航的输入框数据
+                document.getElementById("total").value = json.data.total;
+                document.getElementById("totalPage").value = json.data.totalPage;
+                document.getElementById("pageSize").value = json.data.pageSize;
+                document.getElementById("currentPage").value = json.data.pageNo + 1;
+                bindLoadDataForPage();//绑定一下事件
+
+            } else {
+                alert("查询报错!" + json);
+            }
+        })
+    }
+
+    //用返回的json数据渲染table
+    function renderTable(json) {
+        //清除数据区
+        let table = document.getElementById("subjectTable");
+        Array.from(table.querySelectorAll("tr[data-tr-gen]")).forEach(tr => tr.remove());
+        json.data.content.forEach(trData => {
+            let trHtml = `<tr data-tr-gen = ${trData.id}>
+                                <td ondblclick="editSubject(event,1)" data-td-id="${trData.id}">${trData.subjectTitle}</td>
+                                <td>${trData.createdAt}</td>
+                                <td>${trData.articleSum}</td>
+                                <td><a href="/subject/subjectAticle?id=${trData.id}"><img alt="edit subject" title='edit subject' class="edit" src="/img/edit.svg"></a>/<a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"  src="/img/delete.svg" onclick="delSub(event);"></a></td>
+                                <td ondblclick="editSubject(event,2)" data-td-id="${trData.id}">${trData.remark}</td>
+                                </tr>
+                               `;
+            table.tBodies[0].insertAdjacentHTML("beforeend", trHtml);
+        });
+    }
+    let currentTd = null;
+    /*双击时编辑Subject*/
+    function editSubject(event, type) {
+        event.preventDefault();
+        if (currentTd) return;
+        let oldValue = event.currentTarget.innerHTML.trim();//旧的td数据
+        currentTd = event.currentTarget;
+        currentTd.innerHTML = `<input class='editButton' type="text" name="title" value='${oldValue}'">`;
+        currentTd.firstElementChild.focus();
+
+        let updated = null;
+        //失去焦点时要提示保存
+        currentTd.firstElementChild.onblur = function (e) {
+                if(!updated){
+                    update(e);
+                }
+        };
+        //直接按回车也会保存
+        currentTd.firstElementChild.onkeyup = function (e) {
+            if (e.key === "Enter") {
+                updated = true;
+                update(e);
+            }
+        };
+        function update(e) {
+            if (e.target.value !== oldValue) {
+                let save = confirm("保存更新数据?");
+                if (save) {
+                    let url = "/subject/updateSubjectTitle";
+                    let formData = new FormData();
+                    formData.set("id", event.target.dataset.tdId);
+                    //此处调用后端服务保存
+                    if (type === 1) {
+                        formData.set("subjectTitle", e.target.value);
+                    } else if (type === 2) {
+                        //save 备注
+                        url = "/subject/updateRemark"
+                        formData.set("remark", e.target.value);
+                    }
+                    updateSubject(url, formData);
+                    currentTd.innerHTML = e.target.value;
+                } else {
+                    currentTd.innerHTML = oldValue;
+                }
+            } else {
+                currentTd.innerHTML = oldValue;
+            }
+            currentTd = null;
+        }
+    }
+
+    //修改Subject
+    function updateSubject(url, formData) {
+        fetch(url, {
+            method: "POST",
+            body: formData,
+        }).then(async result => {
+            let json = await result.json();
+            if (json.statusText !== 'ok') {
+                alert("修改错误:" + json);
+            }
+        });
+    }
+    //编辑---新增主题--------------------
+    function addSubject() {
+        let subjectForm = document.forms.subjectForm;
+        fetch("subject", {
+            method: "POST",
+            body: new FormData(subjectForm),
+        }).then(async result => {
+            let json = await result.json();
+            if (json.statusText === 'ok') {
+                modal.style.display = 'none';
+                loadData();
+                //清空隐藏的表单
+                subjectForm.subjectTitle.value="";
+                subjectForm.remark.value="";
+                //需要渲染一下
+                document.getElementById("")
+                document.getElementById("total").value = parseInt(document.getElementById("total").value) + 1;
+                renderPageParams();
+
+            } else {
+                //渲染错误
+                renderFormFieldErrors(document.forms.subjectForm, json.data);
+            }
+        });
+    }
+    ////编辑---删除主题--------------------
+    function delSub(e) {
+        let tr = e.target.closest('tr');
+        let id = tr.dataset.trGen;
+        fetch("subject/" + id, {method: 'DELETE'}).then(async result => {
+            let json = await result.json();
+            if (json.statusText !== 'ok') {
+                alert("删除失败:" + json);
+            } else {
+                alert("删除成功");
+                document.getElementById("total").value = document.getElementById("total").value - 1;
+                renderPageParams();//需要渲染一下
+                tr.remove();
+            }
+        });
+    }
+
+    //分页组件脚本
+    let totalNumber = parseInt(document.getElementById("total").value);
+    let pageSizeNumber = parseInt(document.getElementById("pageSize").value);
+    const pageParams = {
+        //初始化分页参数
+        currentPage: 1, //当前页,默认页面加载时为0
+        pageBarNum: 10, //当前页导航最多显示多少页码,默认
+        startPage: 1, //当前页导航第一页,默认页面加载时为0
+        endPage: 5, //当前页导航最后一页,默认
+        toPage: 1, //要跳转的页,默认
+        total: totalNumber, //数据量
+        pageSize: pageSizeNumber, //单页数据量
+    };
+    initPage();
+
+    function initPage() {
+        renderPage();
+        //页面加载时绑定一下分页函数
+        bindLoadDataForPage();
+    }
+    function submitSearch(){
+        let form = document.getElementById("searchForm");
+        form.pageSize.value = document.getElementById("pageSize").value;
+        form.submit();
+    }
+    //注册监听--start---
+    document.getElementById("searchButton").addEventListener("click",submitSearch);
+    //单击上一页和下一页按钮时绑定分页变化
+    document.getElementById("pagePrev").addEventListener("click", loadData);
+    document.getElementById("pageNext").addEventListener("click", loadData);
+    document.getElementById("pageSize").addEventListener("keyup", (e) => {
+        if (e.key === 'Enter') {
+            submitSearch();
+        }
+    });
+    document.getElementById("currentPage").addEventListener("keyup", (e) => {
+        if (e.key === 'Enter') {
+            let totalPage = parseInt(document.getElementById("totalPage").value);
+            if (e.target.value > totalPage) return;
+            if (confirm(`跳转到${e.target.value}页么`)) {
+                loadData();
+            }
+        }
+    });
+
+    //单击页码时,页面会变化,给新的页码绑定事件
+    function bindLoadDataForPage() {
+        Array.from(document.body.querySelector(".pageIndex").querySelectorAll("a")).forEach(a => {
+            if (a.className !== "pageSelected") {
+                a.addEventListener("click", loadData)
+            }
+        });
+    }
+    //注册监听--end---
+</script>
+</body>
+
+</html>

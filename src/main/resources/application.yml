@@ -1,0 +1,21 @@
+
+spring:
+  application:
+    name: jit
+  datasource:
+    url: jdbc:mariadb://localhost:4306/jit
+    username: root
+    password: 123456
+    driver-class-name:
+      org.mariadb.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  data:
+    jdbc:
+      dialect: maria
+server:
+  port: 8080

@@ -1,0 +1,82 @@
+@import url('base.css');
+/*主内容区css*/
+#content {
+    padding: 40px 20px;
+    background-color: white;
+    width: 80%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.2);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+tr:nth-child(even) {
+    background-color: #efefef;
+}
+
+tr > td:nth-child(2),
+tr > td:nth-child(3),
+tr > td:nth-child(4) {
+    text-align: center;
+}
+
+td {
+    border: 1px dotted green;
+    padding: 5px 10px;
+}
+
+
+td:nth-child(1):hover,
+td:nth-child(5):hover {
+    background-color: white;
+    cursor: copy;
+    font-style: italic;
+    font-weight: bolder;
+}
+
+.edit {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+.editOver {
+    width: 29px;
+    height: 29px;
+    vertical-align: middle;
+}
+
+td .edit:hover {
+    width: 29px;
+    height: 29px;
+    vertical-align: middle;
+}
+
+td .editOver:hover {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+/*搜索按钮与图标的位置*/
+.searchInput {
+    background: none;
+}
+
+.searchButton {
+    left: 10px;
+    top: 10px;
+    background-color: green;
+}
+
+/*新增主题的form表单背景*/
+.modalBody {
+    background-color: #F2F2F2;
+    padding: 10px;
+}
