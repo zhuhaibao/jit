@@ -1,1 +1,192 @@
-@import url('base.css')
+@import url('base.css');
+
+.articleMain {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    min-height: calc(100vh - 100px);
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+.articleNav {
+    padding: 10px 10px 40px 10px;
+    width: 20%;
+    background-color: white;
+    box-shadow: -5px 5px 10px 3px rgba(0, 0, 0, 0.2);
+}
+
+.articleNav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+#titleTree ul {
+    position: relative;
+    margin-left: 5px
+}
+
+#titleTree ul:before {
+    content: "";
+    height: 100%;
+    position: absolute;
+    border-left: 1px dotted darkgrey;
+
+}
+#titleTree >li {
+    margin: 10px 0;
+}
+#titleTree ul li {
+    padding: 10px 1em;
+    position: relative;
+
+}
+
+#titleTree ul li:before {
+    content: "";
+    position: absolute;
+    top: 1em;
+    left: 0px;
+    display: block;
+    border-top: 1px dotted darkgrey;
+    width: 15px;
+}
+#titleTree ul li:last-child::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 15px;
+    height: calc(100% - 1.5em);
+    right: 0;
+    top: 1.5em;
+    border: 1px solid #ffffff;
+    border-right: none;
+    border-top: 1px dotted darkgrey;
+}
+#titleTree > li > ul > li:last-child::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 15px;
+    height: calc(100% - 1.5em);
+    right: 0;
+    top: 1.5em;
+    border-left: 1px dotted darkgrey;
+}
+
+.draggable {
+    display: inline-block;
+    padding: 5px;
+    background-color: #f6f6f6;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.18);
+}
+
+.draggable:hover {
+    background-color: #afafaf;
+    cursor: -webkit-grab;
+    cursor: grab;
+    font-weight: bold;
+    font-style: italic;
+    padding: 5px;
+}
+
+.selected {
+    background-color: #afafaf;
+    font-weight: bold;
+    font-style: italic;
+    padding: 5px;
+}
+
+.droppable {
+    border-bottom: 3px solid #5DB85D;
+}
+
+.articleEdit {
+    padding: 40px 20px;
+    width: 80%;
+    background-color: white;
+    margin-left: 5px;
+    box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.2);
+}
+
+/*创建一个的div样式,这个样式会跟随者鼠标移动;它仅仅模拟li的形状,方便鼠标移动时的提示信息,div内容是选中的li的内容;*/
+.fakeLi {
+    position: absolute;
+    display: none;
+    height: 20px;
+    overflow: auto;
+    padding: 5px 10px;
+    border: 1px solid #999999;
+    background-color: white;
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+
+/*编辑标题节点时的输入框样式*/
+.editButton {
+    width: 100%;
+    padding: 10px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: none;
+    outline: medium;
+    background-color: transparent;
+    font-size: 16px;
+    font-style: italic;
+    border-bottom: 1px solid green;
+}
+
+/*右键下拉编辑菜单-----start*/
+.contextmenuDiv {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 100;
+    left: 5px;
+    top: 45px;
+}
+
+.contextmenuTop {
+    border-top: none;
+    border-right: 180px solid transparent;
+    border-bottom: 20px solid palevioletred;
+    border-left: 20px solid transparent;
+}
+
+.contextmenuBody {
+    width: 200px;
+    max-height: 600px;
+    background-color: #efefef;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
+    overflow: auto;
+}
+
+.contextmenuBody ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+.contextmenuBody ul li {
+    list-style: none;
+    padding: 10px 15px;
+}
+
+.contextmenuBody ul li:hover {
+    background-color: #999999;
+}
+
+/*右键下拉编辑菜单-----end*/
+
+/*主题显示*/
+.subject {
+    font-size: 120%;
+    font-weight: bolder;
+    color: #282A35;
+    margin-bottom: 5px;
+}

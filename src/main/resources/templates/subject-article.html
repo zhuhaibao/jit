@@ -1,185 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./js/lib/prism/prism.css">
-    <script src="./js/lib/prism/prism.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/jodit.css">
-    <script src="./js/lib/jodit/jodit.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/paste-code/paste-code.css">
-    <script src="./js/lib/jodit/plugins/paste-code/paste-code.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/emoji/emoji.css">
-    <script src="./js/lib/jodit/plugins/emoji/emoji.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/autocomplete/autocomplete.css">
-    <script src="./js/lib/jodit/plugins/autocomplete/autocomplete.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/color-picker/color-picker.css">
-    <script src="./js/lib/jodit/plugins/color-picker/color-picker.js"></script>
-    <script src="./js/lib/jodit/plugins/google-search/google-search.js"></script>
-    <script src="js/base.js"></script>
-    <link rel="stylesheet" href="../../static/css/subject-article.css">
+    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
+    <script th:src="@{/js/lib/prism/prism.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
+    <script th:src="@{/js/lib/jodit/jodit.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
+    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/emoji/emoji.css}">
+    <script th:src="@{/js/lib/jodit/plugins/emoji/emoji.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/autocomplete/autocomplete.css}">
+    <script th:src="@{/js/lib/jodit/plugins/autocomplete/autocomplete.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/color-picker/color-picker.css}">
+    <script th:src="@{/js/lib/jodit/plugins/color-picker/color-picker.js}"></script>
+    <script th:src="@{/js/lib/jodit/plugins/google-search/google-search.js}"></script>
+    <script th:src="@{/js/base.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/subject-article.css}">
     <title>主题-文章树列表</title>
-    <style type="text/css">
-        .articleMain {
-            display: flex;
-            flex-direction: row;
-            width: 80%;
-            min-height: calc(100vh - 100px);
-            box-sizing: border-box;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 10px;
-        }
-
-        .articleNav {
-            padding: 40px 10px;
-            width: 20%;
-            background-color: white;
-            box-shadow: -5px 5px 10px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .articleNav ul {
-            padding: 0;
-            margin: 0;
-            list-style: none;
-        }
-
-        #titleTree ul {
-            position: relative;
-            margin-left: 5px
-        }
-
-        #titleTree ul:before {
-            content: "";
-            height: 100%;
-            position: absolute;
-            border-left: 1px dotted darkgrey;
-
-        }
-
-        #titleTree ul li {
-            padding: 10px 1em;
-            position: relative;
-
-        }
-
-        #titleTree ul li:before {
-            content: "";
-            position: absolute;
-            top: 1em;
-            left: 0px;
-            display: block;
-            border-top: 1px dotted darkgrey;
-            width: 15px;
-        }
-
-        .draggable {
-            display: inline-block;
-            padding: 5px;
-            background-color: #f6f6f6;
-            box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.18);
-        }
-
-        .draggable:hover {
-            background-color: #afafaf;
-            cursor: -webkit-grab;
-            cursor: grab;
-            font-weight: bold;
-            font-style: italic;
-            padding: 5px;
-        }
-
-        .selected {
-            background-color: #afafaf;
-            font-weight: bold;
-            font-style: italic;
-            padding: 5px;
-        }
-
-        .droppable {
-            border-bottom: 3px solid #5DB85D;
-        }
-
-        .articleEdit {
-            padding: 40px 20px;
-            width: 80%;
-            background-color: white;
-            margin-left: 5px;
-            box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        /*创建一个的div样式,这个样式会跟随者鼠标移动;它仅仅模拟li的形状,方便鼠标移动时的提示信息,div内容是选中的li的内容;*/
-        .fakeLi {
-            position: absolute;
-            display: none;
-            height: 20px;
-            overflow: auto;
-            padding: 5px 10px;
-            border: 1px solid #999999;
-            background-color: white;
-            cursor: -webkit-grab;
-            cursor: grab;
-        }
-
-        /*编辑标题节点时的输入框样式*/
-        .editButton {
-            width: 100%;
-            padding: 10px 20px;
-            margin: 8px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            border: none;
-            outline: medium;
-            background-color: transparent;
-            font-size: 16px;
-            font-style: italic;
-            border-bottom: 1px solid green;
-        }
-
-        /*右键下拉编辑菜单-----start*/
-        .contextmenuDiv {
-            display: flex;
-            flex-direction: column;
-            position: absolute;
-            z-index: 100;
-            left: 5px;
-            top: 45px;
-        }
-
-        .contextmenuTop {
-            border-top: none;
-            border-right: 180px solid transparent;
-            border-bottom: 20px solid palevioletred;
-            border-left: 20px solid transparent;
-        }
-
-        .contextmenuBody {
-            width: 200px;
-            max-height: 600px;
-            background-color: #efefef;
-            box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
-            overflow: auto;
-        }
-
-        .contextmenuBody ul {
-            padding: 0px;
-            margin: 0px;
-        }
-
-        .contextmenuBody ul li {
-            list-style: none;
-            padding: 10px 15px;
-        }
-
-        .contextmenuBody ul li:hover {
-            background-color: #999999;
-        }
-
-        /*右键下拉编辑菜单-----end*/
-    </style>
 </head>
 
 <body>
@@ -187,14 +27,15 @@
     <header>
         <nav>
             <ul class="banner">
-                <li><img src="img/logo.svg" class="logo"></li>
-                <li class="bannerTitle"><a style="color: #03AA6D; font-weight: bold;" href="subject.html">主题管理</a>
+                <li><img th:src="@{/img/logo.svg}" alt="logo" class="logo"></li>
+                <li class="bannerTitle"><a th:href="@{/}" href="subject.html"
+                                           style="color: #03AA6D; font-weight: bold;">主题管理</a>
                 </li>
-                <li class="bannerTitle"><a href="articles.html">文章管理</a></li>
-                <li class="bannerTitle"><a href="navigation.html">导航管理</a></li>
+                <li class="bannerTitle"><a th:href="@{/aritcles}" href="articles.html">文章管理</a></li>
+                <li class="bannerTitle"><a th:href="@{/navigation}" href="navigation.html">导航管理</a></li>
                 <ul class="innerBanner">
                     <li>朱海保</li>
-                    <li><a href="login.html">退出</a></li>
+                    <li><a href="login.html" th:href="@{/logout}">退出</a></li>
                 </ul>
             </ul>
         </nav>
@@ -202,132 +43,21 @@
 </div>
 <div class="articleMain">
     <div class="articleNav">
-        <ul id="titleTree">
-            <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">java基本知识</span>
-                <ul>
-                    <li data-article-info='111'><span class="draggable"
-                                                      onmousedown="titleLiDrag(event)">数据类型int</span></li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">数据类型string的复杂应用以及特殊作用</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable"
-                                                      onmousedown="titleLiDrag(event)">数据类型while</span></li>
-                    <li data-article-info='111'><span class="draggable"
-                                                      onmousedown="titleLiDrag(event)">数据类型for循环</span></li>
-                </ul>
-            </li>
-            <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">其它</span>
-                <ul>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">111</span></li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">222</span></li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">333</span></li>
-                </ul>
-            </li>
-            <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">java继承</span>
-                <ul>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">子类</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">访问权限</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">构造方法</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">final类</span>
+        <div id="subjectDiv" class="subject" th:text="${subject.subjectTitle}" th:attr="data-subject-id=${subject.id}"></div><hr>
+        <ul id="titleTree" th:unless="${#lists.isEmpty(treeL)}" th:insert="~{this::tree(${treeL})}">
+            <li th:fragment="tree(treeL)" th:each="parent:${treeL}" th:attr="data-article-info=${parent.id}">
+                <span th:text="${parent.title}" class="draggable" onmousedown="titleLiDrag(event)"></span>
+                <ul th:unless="${#lists.isEmpty(parent.children)}" th:insert="~{this::tree(${parent.children})}">
+                    <li th:each="sub:${parent.children}" th:attr="data-article-info=${sub.id}">
+                        <span th:text="${sub.title}" class="draggable" onmousedown="titleLiDrag(event)"></span>
                     </li>
                 </ul>
             </li>
-            <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">java接口</span>
-                <ul>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">接口定义</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable"
-                                                      onmousedown="titleLiDrag(event)">接口与继承</span></li>
-                    <li data-article-info='111'><span class="draggable"
-                                                      onmousedown="titleLiDrag(event)">接口默认方法</span></li>
-                </ul>
-            </li>
-            <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">java Enum</span>
-                <ul>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">Enum定义</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable"
-                                                      onmousedown="titleLiDrag(event)">Enum属性与方法</span></li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">EnumMap</span>
-                    </li>
-                    <li data-article-info='111'><span class="draggable" onmousedown="titleLiDrag(event)">EnumSet</span>
-                    </li>
-                </ul>
-            </li>
-            <li><span class="draggable" onmousedown="titleLiDrag(event)">集合</span></li>
         </ul>
     </div>
     <div class="articleEdit">
         <div id='editArea'>
-                <textarea id="editor">
-                    <h1>Itaque nostrum est-quod nostrum dico, a<img src="http://localhost:8081/backend/img/test/pexels-kei-scampa-4507967.jpeg" alt="" width="293" style="float: right;" height="521">rtis est-ad ea principia, quae accepimus.</h1>
-
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <em>Quonam, inquit, modo?</em> <mark>Illum mallem levares, quo optimum atque humanissimum virum, Cn.</mark> Quae quidem vel cum periculo est quaerenda vobis; Amicitiam autem adhibendam esse censent,
-    quia sit ex eo genere, quae prosunt. <a href="http://loripsum.net/" target="_blank">Duo Reges: constructio interrete.</a> Illud quaero, quid ei, qui in voluptate summum bonum ponat, consentaneum sit dicere. At vero illa, quae Peripatetici, quae Stoici
-    dicunt, semper tibi in ore sunt in iudiciis, in senatu. Dic in quovis conventu te omnia facere, ne doleas. Nummus in Croesi divitiis obscuratur, pars est tamen divitiarum. Isto modo ne improbos quidem, si essent boni viri. Luxuriam non reprehendit,
-    modo sit vacua infinita cupiditate et timore. Sit ista in Graecorum levitate perversitas, qui maledictis insectantur eos, a quibus de veritate dissentiunt. </p>
-
-<blockquote cite="http://loripsum.net">
-    Nec enim absolvi beata vita sapientis neque ad exitum perduci poterit, si prima quaeque bene ab eo consulta atque facta ipsius oblivione obruentur.
-</blockquote>
-
-
-<pre class="language-javascript">//计算鼠标和button的相对位置
-            let elemCoords = elem.getBoundingClientRect();
-            let shiftX = e.clientX - elemCoords.left;
-            let shiftY = e.clientY - elemCoords.top;
-            //把拖拽物变成绝对定位
-            elem.style.position = 'absolute';
-            elem.style.zIndex = 1000;
-            elem.style.margin = 0;
-
-            moveTo(e.pageX, e.pageY); //先移动一下,防止位置突然跳跃
-            //移动函数
-            function moveTo(pageX, pageY) {
-                elem.style.left = pageX - shiftX + 'px';
-                elem.style.top = pageY - shiftY + 'px';
-                movedPx += Math.abs(pageY - startPageY); //累计移动
-            }
-            //移动中的位置判断以及处理函数,e是注册监听器的第一个参数
-            function onMouseMove(e) {
-                moveTo(e.pageX, e.pageY);
-                if (movedPx &lt; 10) return; //上下移动小于10像素视为无效移动.
-
-                //有效移动
-                moved = true;
-                //先隐藏elem,不然下面看不到;同时判断下面的元素是否可放置
-                elem.hidden = true;
-                let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-                //获取下面的元素后,再显示
-                elem.hidden = false;
-                //如果获取不到元素,说明不在document内,忽略</pre>
-
-
-<ul>
-    <li>Possumusne ergo in vita summum bonum dicere, cum id ne in cena quidem posse videamur?</li>
-    <li>Quodsi vultum tibi, si incessum fingeres, quo gravior viderere, non esses tui similis;</li>
-</ul>
-
-
-<ol>
-    <li>Qui autem diffidet perpetuitati bonorum suorum, timeat necesse est, ne aliquando amissis illis sit miser.</li>
-    <li>Nulla profecto est, quin suam vim retineat a primo ad extremum.</li>
-</ol>
-
-
-<dl>
-    <dt><dfn>Falli igitur possumus.</dfn></dt>
-    <dd>Quid enim ab antiquis ex eo genere, quod ad disserendum valet, praetermissum est?</dd>
-    <dt><dfn>Scrupulum, inquam, abeunti;</dfn></dt>
-    <dd>Scio enim esse quosdam, qui quavis lingua philosophari possint;</dd>
-    <dt><dfn>Poterat autem inpune;</dfn></dt>
-    <dd>Tum ille: Tu autem cum ipse tantum librorum habeas, quos hic tandem requiris?</dd>
-    <dt><dfn>Beatum, inquit.</dfn></dt>
-    <dd>Respondeat totidem verbis.</dd>
-</dl>
-                </textarea>
+            <textarea id="editor" th:text="${article.content}"></textarea>
         </div>
         <div style="text-align: center; margin-top: 10px;">
             <a class="doButton" style="display: inline-block;" onclick="alert('保存文章')">保存</a>
@@ -341,8 +71,8 @@
             <ul class="zcool-xiaowei-regular">
                 <li id="delArticle" onclick="delArticle()">删除</li>
                 <li id="updateArticleTitle" onclick="updateArticleTitle()">编辑标题</li>
-                <li id="addArticle" onclick="addArticle()">添加子节点</li>
-                <li id="addAncesterArticle" onclick="addAncesterArticle(1)">添加顶级节点</li>
+                <li id="addArticle" onclick="addSubArticle()">添加子节点</li>
+                <li onclick="addParentArticle(1)">添加顶级节点</li>
             </ul>
         </div>
     </div>
@@ -351,7 +81,7 @@
         <div class='contextmenuTop'></div>
         <div class="contextmenuBody">
             <ul class="zcool-xiaowei-regular">
-                <li id="addAncesterArticle" onclick="addAncesterArticle(2)">添加顶级节点</li>
+                <li onclick="addParentArticle(2)">添加顶级节点</li>
             </ul>
         </div>
     </div>
@@ -400,14 +130,38 @@
     //删除文章
     function delArticle() {
         contextmenuDiv.style.display = 'none';
+        let li = contextmenuDiv.selectedLi;
         if (contextmenuDiv.selectedLi) {
             let del = confirm(`删除节点 <${contextmenuDiv.selectedLi.firstElementChild.textContent}>?`);
-            if (del) contextmenuDiv.selectedLi.remove();
+            if (del){
+                fetch(`/article/${li.dataset.articleInfo}`,{
+                    method:'DELETE'
+                }).then(async response=>{
+                    let result = await response.json();
+                    if(result.statusText === 'ok'){
+                        li.remove();
+                    }else{
+                        alert("删除失败:"+result.msg);
+                    }
+                })
+
+            }
         }
     }
-
+    async function saveArticle(url,title,sid,pid){
+        //服务器保存
+        let formData = new FormData();
+        formData.set("title",title);
+        formData.set("sid",sid);
+        formData.set("pid",pid);
+        let response = await fetch(url,{
+            method: 'POST',
+            body:formData,
+        });
+        return await  response.json();
+    }
     //添加新文章
-    function addArticle() {
+    async function addSubArticle() {
         contextmenuDiv.style.display = 'none'; //关闭右键菜单
         let elem = contextmenuDiv.selectedLi;
         let subElemUl = elem.querySelector('ul');
@@ -419,17 +173,40 @@
         let input = elem.querySelector('input');
         let li = input.parentElement;
         input.focus(); //立刻获取焦点
-        input.onblur = function (e) { //失去焦点时,立刻处理
+        let updated = null;
+        //失去焦点时要提示保存
+        input.onblur = function (e) {
+            if(!updated){
+                saveAction();
+            }
+        };
+        //直接按回车也会保存
+        input.onkeyup = function (e) {
+            if (e.key === "Enter") {
+                updated = true;
+                saveAction();
+            }
+        };
+        async function saveAction() { //失去焦点时,立刻处理
             let newValue = input.value ? input.value : '新建节点';
             li.innerHTML = `<span class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
-            addListerForLiSpan(li.firstElementChild);
+
+            let title = newValue.trim();
+            let sid = document.getElementById("subjectDiv").dataset.subjectId;
+            let pid = elem.dataset.articleInfo;
+            let result = await saveArticle("/article/saveSubArticle",title,sid,pid);
+            if(result.statusText==='ok'){
+                addListenerForLiSpan(li.firstElementChild);
+                li.dataset.articleInfo = result.data.id;
+            }else{
+                alert("插入失败:"+result.msg);
+                li.remove();
+            }
         }
-
     }
-
     //添加最外层节点
-    function addAncesterArticle(type) {
-        if (type == 1) contextmenuDiv.style.display = 'none';
+    async function addParentArticle(type) {
+        if (type === 1) contextmenuDiv.style.display = 'none';
         else contextmenuDiv2.style.display = 'none';
 
         let li = document.createElement('li');
@@ -439,16 +216,25 @@
 
         let input = li.firstElementChild;
         input.focus();
-        input.onblur = function (e) {
+        input.onblur = async function (e) {
             let newValue = this.value ? this.value : '新建节点';
             li.innerHTML = `<span class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
-            addListerForLiSpan(li.firstElementChild);
+
+            let title = newValue.trim();
+            let sid = document.getElementById("subjectDiv").dataset.subjectId;
+            let result = await saveArticle("/article/saveTopArticle",title,sid,'');
+            if(result.statusText==='ok'){
+                addListenerForLiSpan(li.firstElementChild);
+            }else{
+                alert("插入失败:"+result.msg);
+                li.remove();
+            }
         }
     }
 
     /*为li下的所有span绑定单击事件*/
     Array.from(document.body.querySelectorAll('.draggable')).forEach(function (elem) {
-        addListerForLiSpan(elem);
+        addListenerForLiSpan(elem);
     });
     //注册整个treeUl委托处理所有右键事件
     document.querySelector('.articleNav').addEventListener('contextmenu', e => {
@@ -457,7 +243,6 @@
             contextmenuDiv2.style.left = e.pageX + 'px';
             contextmenuDiv2.style.top = e.pageY + 'px';
             contextmenuDiv2.style.display = "flex";
-
             contextmenuDiv.style.display = 'none';
         }
     });
@@ -474,7 +259,7 @@
     });
 
     /*手工为li的span元素添加所有监听器*/
-    function addListerForLiSpan(liSpan) {
+    function addListenerForLiSpan(liSpan) {
         liSpan.addEventListener('click', selectedLi);
         liSpan.addEventListener('contextmenu', function (e) {
             e.preventDefault(); //阻止默认事件

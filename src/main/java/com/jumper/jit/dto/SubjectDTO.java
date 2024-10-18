@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.List;
+
 @Data
 @Builder
 public class SubjectDTO {
@@ -27,7 +29,7 @@ public class SubjectDTO {
     public enum Order{
         DESC,ASC
     }
-
+    private List<SubjectArticleDTO> articles;
     public interface UpdateTitle{}
     public interface UpdateRemark{}
 

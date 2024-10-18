@@ -8,321 +8,319 @@
     <script src="js/base.js"></script>
     <title>文章列表</title>
     <style type="text/css">
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-    tr:nth-child(even) {
-        background-color: #efefef;
-    }
+        tr:nth-child(even) {
+            background-color: #efefef;
+        }
 
-    tr>td:nth-child(2),
-    tr>td:nth-child(3),
-    tr>td:nth-child(4) {
-        text-align: center;
-    }
+        tr>td:nth-child(2),
+        tr>td:nth-child(3),
+        tr>td:nth-child(4) {
+            text-align: center;
+        }
 
-    td {
-        border: 1px dotted green;
-        padding: 5px 10px;
-    }
+        td {
+            border: 1px dotted green;
+            padding: 5px 10px;
+        }
 
-    td:nth-child(1):hover,
-    td:nth-child(3):hover {
-        background-color: white;
-        cursor: copy;
-        font-style: italic;
-        font-weight: bolder;
-    }
+        td:nth-child(1):hover,
+        td:nth-child(3):hover {
+            background-color: white;
+            cursor: copy;
+            font-style: italic;
+            font-weight: bolder;
+        }
 
-    .edit {
-        width: 25px;
-        height: 25px;
-        vertical-align: middle;
-    }
+        .edit {
+            width: 25px;
+            height: 25px;
+            vertical-align: middle;
+        }
 
-    .editOver {
-        width: 29px;
-        height: 29px;
-        vertical-align: middle;
-    }
+        .editOver {
+            width: 29px;
+            height: 29px;
+            vertical-align: middle;
+        }
 
-    td .edit:hover {
-        width: 29px;
-        height: 29px;
-        vertical-align: middle;
-    }
+        td .edit:hover {
+            width: 29px;
+            height: 29px;
+            vertical-align: middle;
+        }
 
-    td .editOver:hover {
-        width: 25px;
-        height: 25px;
-        vertical-align: middle;
-    }
+        td .editOver:hover {
+            width: 25px;
+            height: 25px;
+            vertical-align: middle;
+        }
 
-    /*弹出主题修改窗口-内容样式*/
-    .modalBody ul {
-        list-style-type: decimal;
-    }
+        /*弹出主题修改窗口-内容样式*/
+        .modalBody ul {
+            list-style-type: decimal;
+        }
 
-    .modalBody ul li {
-        list-style-type: decimal;
-        padding: 5px 10px;
-    }
+        .modalBody ul li {
+            list-style-type: decimal;
+            padding: 5px 10px;
+        }
 
-    .modalBody ul li:hover {
-        background-color: #efefef;
-        font-style: italic;
-        cursor: pointer;
-    }
+        /*有span孩子的li元素*/
+        .modalBody li>span:hover {
+            background-color: #BEBFC3;
+            font-style: italic;
+            cursor: pointer;
+        }
+        /*没有span的li元素*/
+        .modalBody li:not(:has(>span)):hover {
+            background-color: #BEBFC3;
+            font-style: italic;
+            cursor: pointer;
+        }
 
-    /*搜索按钮与图标的位置*/
-    .searchInput {
-        background: none;
-    }
+        /*搜索按钮与图标的位置*/
+        .searchInput {
+            background: none;
+        }
 
-    .searchButton {
-        left: 10px;
-        top: 10px;
-    }
+        .searchButton {
+            left: 10px;
+            top: 10px;
+        }
+        /*弹出的文章节点列表的样式*/
+        .hiddenUl{
+            display: none;
+        }
+        .folder{
+            font-size: 18px;
+            margin-left: 5px;
+        }
+
     </style>
 </head>
 
 <body>
-    <div class="sticky">
-        <header>
-            <nav>
-                <ul class="banner">
-                    <li><img src="img/logo.svg" class="logo"></li>
-                    <li class="bannerTitle"><a href="subject.html">主题管理</a></li>
-                    <li class="bannerTitle"><a style="color: #03AA6D; font-weight: bold;" href="articles.html">文章管理</a>
-                    </li>
-                    <li class="bannerTitle"><a href="navigation.html">导航管理</a></li>
-                    <ul class="innerBanner">
-                        <li>朱海保</li>
-                        <li><a href="login.html">退出</a></li>
-                    </ul>
+<div class="sticky">
+    <header>
+        <nav>
+            <ul class="banner">
+                <li><img src="img/logo.svg" class="logo"></li>
+                <li class="bannerTitle"><a href="subject.html">主题管理</a></li>
+                <li class="bannerTitle"><a style="color: #03AA6D; font-weight: bold;" href="articles.html">文章管理</a>
+                </li>
+                <li class="bannerTitle"><a href="navigation.html">导航管理</a></li>
+                <ul class="innerBanner">
+                    <li>朱海保</li>
+                    <li><a href="login.html">退出</a></li>
                 </ul>
-            </nav>
-        </header>
-    </div>
-    <div id='content'>
-        <!-- 搜索条件-->
-        <search>
-            <form>
-                <div class="functionDiv">
-                    <div class="searchDiv" id='searchDiv'>
-                        <input id="searchInput" type="text" class="searchInput" placeholder="输入文章名">
-                        <img id='searchButton' class='searchButton' src="img/searchicon.png" onclick="alert('搜索文章')">
-                    </div>
-                    <div class='editDiv'>
-                        <a class="doButton" href="article.html">添加文章</a>
-                    </div>
+            </ul>
+        </nav>
+    </header>
+</div>
+<div id='content'>
+    <!-- 搜索条件-->
+    <search>
+        <form>
+            <div class="functionDiv">
+                <div class="searchDiv" id='searchDiv'>
+                    <input id="searchInput" type="text" class="searchInput" placeholder="输入文章名">
+                    <img id='searchButton' class='searchButton' src="img/searchicon.png" onclick="alert('搜索文章')">
                 </div>
-            </form>
-        </search>
-        <!--table展示标题数据-->
-        <section>
-            <table id="table">
-                <tr>
-                    <th>标题</th>
-                    <th>创建日期</th>
-                    <th>所属主题</th>
-                    <th>操作</th>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td>
-                        <a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/
-                        <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript数组</td>
-                    <td>2024/09/11</td>
-                    <td>主题1</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                    <td>2024/09/11</td>
-                    <td>主题2</td>
-                    <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                    </td>
-                </tr>
-            </table>
-            <nav>
-                <div class="pageModule">
-                    <div class="page">
-                        <button class="pageButton" id="pagePrev" onclick="clickPageRender(this)">上一页</button>
-                        <div class="pageIndex"></div>
-                        <button class="pageButton" id="pageNext" onclick="clickPageRender(this)">下一页</button>
-                    </div>
-                    <div class="pageParam">
-                        数据量:<input type="text" value="100" name="total" id="total" oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
-                        页大小:<input type="text" value="8" name="pageSize" id="pageSize" onkeyup="setPageSize(event)" oninput="totalPage.value=Math.ceil(total.value/this.value)">
-                        总页数:<input type="text" name="totalPage" id="totalPage" disabled>
-                        当前页:<input type="text" value="1" name="currentPage" id="currentPage" onkeyup="toPage(event)">
-                        导航页码数:<input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
-                        <input type="button" class="pageButton" value="刷新" onclick="initPageByPresentParams();">
-                    </div>
+                <div class='editDiv'>
+                    <a class="doButton" href="article.html">添加文章</a>
                 </div>
-            </nav>
-        </section>
-    </div>
-    <!--模态窗口div-->
-    <div class="modal" id="modal" onclick="if(event.target==modal)modal.style.display='none'">
-        <div class="modalContent">
-            <div class="modalTitle">
-                <span class="close" id='close' onclick="modal.style.display='none'">&times</span>
-                <h3>选择所属文章节点</h3>
             </div>
-            <div class="modalBody">
-                <ul>
-                    <li>java基本知识</li>
-                    <ul>
+        </form>
+    </search>
+    <!--table展示标题数据-->
+    <section>
+        <table id="table">
+            <tr>
+                <th>标题</th>
+                <th>创建日期</th>
+                <th>所属主题</th>
+                <th>操作</th>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td>
+                    <a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/
+                    <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript数组</td>
+                <td>2024/09/11</td>
+                <td>主题1</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+            <tr>
+                <td ondblclick="editSubject(event,1)">javascript map与set</td>
+                <td>2024/09/11</td>
+                <td>主题2</td>
+                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                </td>
+            </tr>
+        </table>
+        <nav>
+            <div class="pageModule">
+                <div class="page">
+                    <button class="pageButton" id="pagePrev" onclick="clickPage(this)">上一页</button>
+                    <div class="pageIndex"></div>
+                    <button class="pageButton" id="pageNext" onclick="clickPage(this)">下一页</button>
+                </div>
+                <div class="pageParam">
+                    数据量:<input type="text" value="100" name="total" id="total" oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
+                    页大小:<input type="text" value="8" name="pageSize" id="pageSize" onkeyup="setPageSize(event)" oninput="totalPage.value=Math.ceil(total.value/this.value)">
+                    总页数:<input type="text" name="totalPage" id="totalPage" disabled>
+                    当前页:<input type="text" value="1" name="currentPage" id="currentPage" onkeyup="toPage(event)">
+                    导航页码数:<input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
+                    <input type="button" class="pageButton" value="刷新" onclick="initPageByPresentParams();">
+                </div>
+            </div>
+        </nav>
+    </section>
+</div>
+<!--模态窗口div-->
+<div class="modal" id="modal" onclick="if(event.target==modal)modal.style.display='none'">
+    <div class="modalContent">
+        <div class="modalTitle">
+            <span class="close" id='close' onclick="modal.style.display='none'">&times</span>
+            <h3>选择所属文章节点</h3>
+        </div>
+        <div class="modalBody">
+            <ul>
+                <li><span>java基本知识<i class="fa fa-folder folder"></i></span>
+                    <ul class="hiddenUl">
                         <li>数据类型int</li>
                         <li>数据类型string</li>
                         <li>数据类型while</li>
-                        <li>数据类型for循环</li>
+                        <li><span>数据类型for循环<i class="fa fa-folder folder"></i></span>
+                            <ul class="hiddenUl">
+                                <li>线程Thread</li>
+                                <li>Runnable</li>
+                                <li>线程池</li>
+                                <li>资源竞争</li>
+                            </ul>
+                        </li>
                     </ul>
-                    <li>java继承</li>
-                    <ul>
+                </li>
+                <li><span>java继承<i class="fa fa-folder folder"></i></span>
+                    <ul class="hiddenUl">
                         <li>子类</li>
                         <li>访问权限</li>
                         <li>构造方法</li>
                         <li>final类</li>
                     </ul>
-                    <li>java接口</li>
-                    <ul>
-                        <li>接口定义</li>
-                        <li>接口与继承</li>
-                        <li>接口默认方法</li>
-                    </ul>
-                    <li>java Enum</li>
-                    <ul>
-                        <li>Enum定义</li>
-                        <li>Enum属性与方法</li>
-                        <li>EnumMap</li>
-                        <li>EnumSet</li>
-                    </ul>
-                    <li>java线程</li>
-                    <ul>
-                        <li>线程Thread</li>
-                        <li>Runnable</li>
-                        <li>线程池</li>
-                        <li>资源竞争</li>
-                    </ul>
-                    <li>数组</li>
-                    <li>动态代理</li>
-                    <ul>
-                        <li>InocationHanlder</li>
-                        <li>Proxy.newInstance</li>
-                        <li>应用</li>
-                    </ul>
-                    <li>集合</li>
-                </ul>
-            </div>
-            <div class="modalFooter">
-                <a class="doButton" onclick="updatePosition()">确定</a>
-            </div>
+                </li>
+
+            </ul>
+        </div>
+        <div class="modalFooter">
+            <a class="doButton" onclick="updatePosition()">确定</a>
         </div>
     </div>
-    <script type="text/javascript">
+</div>
+<script type="text/javascript">
     //当前编辑的td
     let currentTd = null;
 
@@ -364,20 +362,37 @@
     }
     //为modal弹出框绑定函数
     let selectLi = null;
-    Array.from(document.body.querySelectorAll('.modalBody li')).forEach(function(item) {
-        item.onclick = function() {
-            if (selectLi != item) {
-                if (selectLi) selectLi.style.background = 'none';
-                selectLi = item;
-                item.style.background = '#A6A7AB';
+    document.body.querySelector(".modalBody").addEventListener('click', function(e) {
+        let li = e.target.closest("li");
+        if (!li) return;
+        if (li.firstElementChild) {
+            li.firstElementChild.style.background = "#A6A7AB";
+            //切换上下箭头
+            let elemI = li.firstElementChild.querySelector("i");
+            if(elemI.classList.contains('fa-folder')){
+                elemI.classList.remove("fa-folder");
+                elemI.classList.add("fa-folder-open");
+            }else{
+                elemI.classList.remove("fa-folder-open");
+                elemI.classList.add("fa-folder");
             }
-        };
+            //隐藏子元素ul
+            let subUl = li.querySelector("ul");
+            subUl.classList.toggle("hiddenUl");
+        } else {
+            li.style.background = "#A6A7AB";
+        }
+        if (selectLi && li !== selectLi) {
+            if (selectLi.firstElementChild) selectLi.firstElementChild.removeAttribute("style");
+            else selectLi.removeAttribute("style");
+        }
+        selectLi = li;
     });
 
     //保存位置
     function updatePosition() {
         if (selectLi) {
-            alert(`修改了当前的位置:` + selectLi.innerText);
+            alert(`文章插入节点:<<${selectLi.innerText}>>之后`);
             selectLi.style.background = 'none';
             selectLi = null;
 
@@ -402,7 +417,7 @@
     const pageParams = {
         //初始化分页参数
         currentPage: 1, //当前页,默认页面加载时为0
-        pageBarNum:10, //当前页导航最多显示多少页码,默认
+        pageBarNum: 10, //当前页导航最多显示多少页码,默认
         startPage: 1, //当前页导航第一页,默认页面加载时为0
         endPage: 5, //当前页导航最后一页,默认
         toPage: 1, //要跳转的页,默认
@@ -410,10 +425,11 @@
         pageSize: pageSizeNumber, //单页数据量
     };
     initPage();
+
     function initPage() {
         renderPage();
     }
-    </script>
+</script>
 </body>
 
 </html>

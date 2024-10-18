@@ -2,6 +2,7 @@ package com.jumper.jit.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @Data
 @AllArgsConstructor
+@Builder
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

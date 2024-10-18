@@ -3,11 +3,11 @@ package com.jumper.jit.controller;
 import com.jumper.jit.dto.PageDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.Subject;
+import com.jumper.jit.service.ArticleService;
 import com.jumper.jit.service.SubjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +15,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/subject")
 public class SubjectController {
     private SubjectService service;
+    private ArticleService articleService;
     @Autowired
     public void setRepository(SubjectService service) {
         this.service = service;
     }
+    @Autowired
+    public void setArticleService(ArticleService articleService) {
+        this.articleService = articleService;
+    }
+
     @PostMapping
     @ResponseBody
     public Subject saveSubject(@Valid Subject subject){
@@ -45,11 +51,5 @@ public class SubjectController {
     @ResponseBody
     public void deleteSubject(@PathVariable("id") Integer id){
         service.delete(id);
-    }
-
-    @GetMapping("subjectArticle")
-    public String subjectArticle(Model model){
-
-        return "subject-article";
     }
 }

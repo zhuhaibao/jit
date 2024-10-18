@@ -30,6 +30,11 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
+    public Subject findById(Integer id) {
+        return dao.findById(id).orElseThrow(()->new DbException("id="+id));
+    }
+
+    @Override
     public Subject save(Subject subject) {
         return dao.save(subject);
     }
@@ -77,5 +82,15 @@ public class SubjectServiceImpl implements SubjectService {
         int pageSize = dto.getPageSize() == null?10:dto.getPageSize();
         PageRequest pageRequest = PageRequest.of(pageNo,pageSize);
         return dao.findAll(spec,pageRequest);
+    }
+
+    @Override
+    public Integer updateSubjectArticleSum(Integer id, Integer num) {
+        return dao.setSubjectArticleSum(id,num);
+    }
+
+    @Autowired
+    public void setSubjectRepository(SubjectRepository subjectRepository) {
+        this.dao = subjectRepository;
     }
 }

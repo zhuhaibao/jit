@@ -10,4 +10,9 @@ public interface SubjectRepository extends JpaRepository<Subject,Integer>, JpaSp
     @Modifying
     @Query(value = "update Subject set subjectTitle=:subjectTitle where id=:id")
     Integer updateSubjectTitleById(String subjectTitle,Integer id);
+
+    @Modifying
+    @Query("update Subject set articleSum=articleSum+:num where id=:id")
+    Integer setSubjectArticleSum(Integer id,Integer num);
+
 }

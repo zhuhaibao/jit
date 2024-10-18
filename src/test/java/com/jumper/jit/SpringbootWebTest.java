@@ -1,8 +1,11 @@
 package com.jumper.jit;
 
+import com.jumper.jit.dto.ArticleDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.Subject;
+import com.jumper.jit.repository.ArticleRepository;
 import com.jumper.jit.repository.SubjectRepository;
+import com.jumper.jit.service.ArticleService;
 import com.jumper.jit.service.SubjectService;
 import jakarta.servlet.http.Cookie;
 import org.hamcrest.Matchers;
@@ -31,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 public class SpringbootWebTest {
     @Autowired
@@ -40,6 +43,11 @@ public class SpringbootWebTest {
     private SubjectRepository repository;
     @Autowired
     private SubjectService service;
+    @Autowired
+    private ArticleRepository articleRepository;
+
+    @Autowired
+    private ArticleService articleService;
 
     @Test
     void test() throws Exception{
@@ -97,6 +105,11 @@ public class SpringbootWebTest {
         System.out.println(JSONObject.wrap(page));
 
         assertTrue(page.getTotalElements()>0);
+    }
+    @Test
+    void articleDaoTest(){
+        Page<ArticleDTO> list = articleService.findArticles(new ArticleDTO());
+        list.forEach(e-> System.out.println(e.getTitle()));
     }
     @BeforeEach
     public void prepare(){
