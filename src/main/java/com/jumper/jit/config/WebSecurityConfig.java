@@ -20,7 +20,7 @@ public class WebSecurityConfig {
         http
                 .requestCache(cache->cache.requestCache(requestCache))
                 .authorizeHttpRequests(
-                        request -> request.requestMatchers("subject/**","/test/**","/css/**", "/img/**", "/js/**")
+                        request -> request.requestMatchers("article/**","subject/**","/test/**","/css/**", "/img/**", "/js/**")
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(

@@ -8,15 +8,6 @@
     <script th:src="@{/js/lib/prism/prism.js}"></script>
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
-    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
-    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
-    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/emoji/emoji.css}">
-    <script th:src="@{/js/lib/jodit/plugins/emoji/emoji.js}"></script>
-    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/autocomplete/autocomplete.css}">
-    <script th:src="@{/js/lib/jodit/plugins/autocomplete/autocomplete.js}"></script>
-    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/color-picker/color-picker.css}">
-    <script th:src="@{/js/lib/jodit/plugins/color-picker/color-picker.js}"></script>
-    <script th:src="@{/js/lib/jodit/plugins/google-search/google-search.js}"></script>
     <script th:src="@{/js/base.js}"></script>
     <link rel="stylesheet" th:href="@{/css/subject-article.css}">
     <title>主题-文章树列表</title>
@@ -44,12 +35,12 @@
 <div class="articleMain">
     <div class="articleNav">
         <div id="subjectDiv" class="subject" th:text="${subject.subjectTitle}" th:attr="data-subject-id=${subject.id}"></div><hr>
-        <ul id="titleTree" th:unless="${#lists.isEmpty(treeL)}" th:insert="~{this::tree(${treeL})}">
-            <li th:fragment="tree(treeL)" th:each="parent:${treeL}" th:attr="data-article-info=${parent.id}">
-                <span th:text="${parent.title}" class="draggable" onmousedown="titleLiDrag(event)"></span>
+        <ul id="titleTree" th:insert="~{this::tree(${treeL})}">
+            <li th:unless="${#lists.isEmpty(treeL)}" th:fragment="tree(treeL)" th:each="parent:${treeL}" th:attr="data-article-info=${parent.id}">
+                <span th:text="${parent.title}" class="draggable" th:class="${parent.id eq article.id? 'draggable selected':'draggable' }" onmousedown="titleLiDrag(event)"></span>
                 <ul th:unless="${#lists.isEmpty(parent.children)}" th:insert="~{this::tree(${parent.children})}">
                     <li th:each="sub:${parent.children}" th:attr="data-article-info=${sub.id}">
-                        <span th:text="${sub.title}" class="draggable" onmousedown="titleLiDrag(event)"></span>
+                        <span th:text="${sub.title}" class="draggable" th:class="${sub.id eq article.id? 'draggable selected':'draggable' }" onmousedown="titleLiDrag(event)"></span>
                     </li>
                 </ul>
             </li>
@@ -57,11 +48,11 @@
     </div>
     <div class="articleEdit">
         <div id='editArea'>
-            <textarea id="editor" th:text="${article.content}"></textarea>
+            <textarea id="editor"><th:block th:if="${article!=null}" th:text="${article.content}"></th:block></textarea>
         </div>
         <div style="text-align: center; margin-top: 10px;">
-            <a class="doButton" style="display: inline-block;" onclick="alert('保存文章')">保存</a>
-            <a class="doButton" style="display: inline-block;margin-left: 100px;" href='article-view.html'>预览</a>
+            <a class="doButton" style="display: inline-block;" onclick="updateContent()">保存</a>
+            <a class="doButton" style="display: inline-block;margin-left: 100px;" onclick="previewArticle()">预览</a>
         </div>
     </div>
     <!--隐藏的下拉菜单-->
@@ -90,15 +81,17 @@
 <script type="text/javascript">
     /*加载editor*/
     let editorObj = loadJoditEditor("#editor");
-
+    /*当前文章是否保存*/
     let saved = false;
+    /*初次editor的值*/
+    let editorOldValue = document.getElementById("editor").value;
 
     //编辑文章标题
     function updateArticleTitle() {
         contextmenuDiv.style.display = 'none';
         let elemLi = contextmenuDiv.selectedLi;
         let oldSpan = elemLi.firstElementChild; //保存旧的span
-        let oldValue = oldSpan.textContent;
+        let oldValue = oldSpan.textContent.trim();
 
         let input = document.createElement('input');
         input.className = 'editButton';
@@ -108,23 +101,51 @@
 
         elemLi.firstElementChild.replaceWith(input);
         elemLi.firstElementChild.focus();
+        let updated = false;
         //失去焦点时要提示保存
         elemLi.firstElementChild.onblur = function (e) {
-            save(e);
+            if(!updated)
+                save(e);
         }
-
-        function save(e) {
+        elemLi.firstElementChild.onkeyup = function (e) {
+            if(e.key === 'Enter'){
+                save(e);
+                updated=true;
+            }
+        }
+        async function save(e) {
             let newValue = e.currentTarget.value;
-            if (newValue != oldValue) {
+            if (newValue !== oldValue) {
                 let save = confirm("save updated title?")
                 if (save) {
                     //此处调用后端服务保存
-                    oldSpan.innerHTML = newValue;
+                    if (!newValue || newValue.trim().length < 2 || newValue.trim().length > 100) {
+                        alert("title字符在2~100之间");
+                        return;
+                    }
+                    let articleId = elemLi.dataset.articleInfo;
+                    let result = await updateTitle(articleId, newValue);
+                    if (result.statusText === 'ok') {
+                        oldSpan.innerHTML = newValue;
+                    } else {
+                        alert("修改失败:" + result.msg);
+                        oldSpan.innerHTML = oldValue;
+                    }
                 }
             }
             elemLi.firstElementChild.remove(); //清除input
             elemLi.prepend(oldSpan); //改为span
         }
+    }
+    async function updateTitle(id,title){
+        let formData = new FormData();
+        formData.set("id",id);
+        formData.set("title",title);
+        let response = await fetch("/article/updateTitle",{
+            method:"POST",
+            body:formData,
+        });
+        return await response.json();
     }
 
     //删除文章
@@ -194,7 +215,7 @@
             let title = newValue.trim();
             let sid = document.getElementById("subjectDiv").dataset.subjectId;
             let pid = elem.dataset.articleInfo;
-            let result = await saveArticle("/article/saveSubArticle",title,sid,pid);
+            let result = await saveArticle("/article/addSubArticle",title,sid,pid);
             if(result.statusText==='ok'){
                 addListenerForLiSpan(li.firstElementChild);
                 li.dataset.articleInfo = result.data.id;
@@ -216,15 +237,32 @@
 
         let input = li.firstElementChild;
         input.focus();
-        input.onblur = async function (e) {
-            let newValue = this.value ? this.value : '新建节点';
+
+        let updated = null;
+        //失去焦点时要提示保存
+        input.onblur = function (e) {
+            if(!updated){
+                saveTop(e);
+            }
+        };
+        //直接按回车也会保存
+        input.onkeyup = function (e) {
+            if (e.key === "Enter") {
+                updated = true;
+                saveTop(e);
+            }
+        };
+
+        async function saveTop(e) {
+            let newValue = e.target.value ? e.target.value : '新建节点';
             li.innerHTML = `<span class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
 
             let title = newValue.trim();
             let sid = document.getElementById("subjectDiv").dataset.subjectId;
-            let result = await saveArticle("/article/saveTopArticle",title,sid,'');
+            let result = await saveArticle("/article/addTopArticle",title,sid,'');
             if(result.statusText==='ok'){
                 addListenerForLiSpan(li.firstElementChild);
+                li.dataset.articleInfo = result.data.id;
             }else{
                 alert("插入失败:"+result.msg);
                 li.remove();
@@ -246,6 +284,20 @@
             contextmenuDiv.style.display = 'none';
         }
     });
+    function previewArticle(){
+        alert("待完善");
+    }
+    //保存文章内容
+    async function updateContent(){
+        let id = document.body.querySelector(".selected").parentElement.dataset.articleInfo;
+        let result =await saveContent(id);
+        if(result.statusText === 'ok'){
+            alert('保存成功');
+            editorOldValue = editorObj.value;
+        }else{
+            alert(`保存失败:${result.msg}`);
+        }
+    }
 
     //注册单击窗口事件
     document.body.addEventListener('click', function (e) {
@@ -273,23 +325,44 @@
     }
 
     /*span单击事件----------start-----------*/
-    let currentLiSpan; //当前选中的li的span元素
+
     function selectedLi(e) {
         let span = e.target;
         selected(span);
     }
-
-    function selected(span) {
-        if (currentLiSpan != span) {
+    async function saveContent(id){
+        let formData = new FormData();
+        formData.set("id",id);
+        formData.set("content",editorObj.value);
+        let response = await fetch("/article/saveContent",{method:"POST",body:formData});
+        return await response.json();
+    }
+    async function selected(span) {
+        let currentLiSpan = document.body.querySelector(".selected"); //当前选中的li的span元素
+        if (currentLiSpan !== span) {
+            if(editorOldValue!==editorObj.value && confirm("保存本次修改么?")){
+                //保存
+                let oldId = currentLiSpan.parentElement.dataset.articleInfo;
+                let result = await saveContent(oldId);
+                if(result.statusText!=='ok'){
+                    alert(`保存失败!${result.msg}`);
+                }
+            }
             if (currentLiSpan) currentLiSpan.classList.remove('selected');
             span.classList.add('selected');
-            currentLiSpan = span;
+            //从服务器加载数据
+            let newId = span.parentElement.dataset.articleInfo;
+            let response = await fetch(`/article/getArticle/${newId}`,{method:'POST'})
+            let result = await response.json();
+            if(result.statusText==='ok'){
+                editorObj.value=result.data.content===null?'':result.data.content;
+                editorOldValue = editorObj.value;
+            }else{
+                alert(`加载文章内容失败:${result.msg}`);
+            }
         }
     }
-
     /*span单击事件----------end-----------*/
-
-
     /*
         拖拽文章标题:算法逻辑如下
         1 当鼠标按下时触动拖动事件,同时注册鼠标移动事件和鼠标释放事件
@@ -348,6 +421,17 @@
             if (!elemBelow) return;
             //获取可以放置的元素
             let droppableBelow = elemBelow.closest('li[data-article-info]');
+            //判断是不是原来的位置1
+            if(droppableBelow){
+                let closestUl = droppableBelow.querySelector("ul");
+                if(closestUl){
+                    if(elem===closestUl.firstElementChild) return;
+                }
+            }
+            //判断是不是原来的位置2
+            let previous = elem.previousElementSibling;
+            if(previous && droppableBelow &&(previous === droppableBelow)) return;
+
             //如何放置?
             /*
                 1 如果droppableBelow!=null,并且之前没有进入该对象(记为currentDroppable)则设置进入该对象的操作
@@ -366,22 +450,30 @@
         }
 
         //鼠标释放
-        function onMouseUp(e) {
+        async function onMouseUp(e) {
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
 
             //在目标元素后插入li,没有移动或者按下和松开鼠标小于200ms则视为无效移动
             if (currentDroppable && moved && startDragTime > 200) {
                 if (confirm(`确定要在标签<${currentDroppable.querySelector('span').textContent}>后插入标签<${elem.querySelector('span').textContent}>么?`)) {
-                    let parent = elem.parentElement;
-                    let ul = currentDroppable.querySelector('ul');
-                    if (ul) {
-                        ul.prepend(elem)
-                    } else {
-                        currentDroppable.after(elem);
+                    //调用服务器
+                    let currentId = elem.dataset.articleInfo;
+                    let targetId = currentDroppable.dataset.articleInfo;
+                    let result = await moveToInServer(currentId,targetId);
+                    if(result.statusText==='ok'){
+                        let parent = elem.parentElement;
+                        let ul = currentDroppable.querySelector('ul');
+                        if (ul) {
+                            ul.prepend(elem)
+                        } else {
+                            currentDroppable.after(elem);
+                        }
+                        //如果最后移动的li外层的ul没有子元素,则干掉
+                        if (!parent.querySelector('li')) parent.remove();
+                    }else{
+                        alert(`移动失败:${result.msg}`);
                     }
-                    //如果最后移动的li外层的ul没有子元素,则干掉
-                    if (!parent.querySelector('li')) parent.remove();
                 }
                 currentDroppable.querySelector('span').classList.remove('droppable');
             }
@@ -406,6 +498,12 @@
     //离开可放置元素时处理
     function leaveDroppable(elem) {
         currentDroppable.querySelector('span').classList.remove('droppable');
+    }
+    async function moveToInServer(currentId,targetId){
+        let response = await fetch(`/article/moveTo/${currentId}/${targetId}`,{
+            method: 'POST'
+        });
+        return await response.json();
     }
 </script>
 </body>

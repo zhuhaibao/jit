@@ -1,6 +1,7 @@
 package com.jumper.jit.controller;
 
 import com.jumper.jit.dto.PageDTO;
+import com.jumper.jit.dto.SimpleArticleWithoutContentDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.Subject;
 import com.jumper.jit.service.ArticleService;
@@ -8,8 +9,11 @@ import com.jumper.jit.service.SubjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/subject")
@@ -51,5 +55,15 @@ public class SubjectController {
     @ResponseBody
     public void deleteSubject(@PathVariable("id") Integer id){
         service.delete(id);
+    }
+
+    @GetMapping("{sid}")
+    public String subjectArticleBySid(@PathVariable("sid") Integer sid, Model model){
+        model.addAttribute("subject",service.findById(sid));
+        List<SimpleArticleWithoutContentDTO> list = articleService.findArticleTree(sid);
+        model.addAttribute("treeL",list);
+        if(!list.isEmpty())
+            model.addAttribute("article",articleService.getSimpleWithContentById(list.getFirst().getId()));
+        return "subject-article";
     }
 }

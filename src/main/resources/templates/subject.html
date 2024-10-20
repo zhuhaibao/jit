@@ -59,7 +59,7 @@
                 <td>[[${sub.createdAt}]]</td>
                 <td>[[${sub.articleSum}]]</td>
                 <td>
-                    <a th:href="|/article/${sub.id}|"><img alt="edit subject"
+                    <a th:href="|/subject/${sub.id}|"><img alt="edit subject"
                                                                                             th:src="@{/img/edit.svg}"
                                                                                             title='edit subject'
                                                                                             class="edit"
@@ -166,7 +166,7 @@
                                 <td ondblclick="editSubject(event,1)" data-td-id="${trData.id}">${trData.subjectTitle}</td>
                                 <td>${trData.createdAt}</td>
                                 <td>${trData.articleSum}</td>
-                                <td><a href="/article/${trData.id}"><img alt="edit subject" title='edit subject' class="edit" src="/img/edit.svg"></a>/<a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"  src="/img/delete.svg" onclick="delSub(event);"></a></td>
+                                <td><a href="/subject/${trData.id}"><img alt="edit subject" title='edit subject' class="edit" src="/img/edit.svg"></a>/<a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"  src="/img/delete.svg" onclick="delSub(event);"></a></td>
                                 <td ondblclick="editSubject(event,2)" data-td-id="${trData.id}">${trData.remark}</td>
                                 </tr>
                                `;

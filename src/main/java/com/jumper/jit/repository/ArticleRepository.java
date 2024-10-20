@@ -28,11 +28,18 @@ public interface ArticleRepository extends JpaRepository<Article,Integer>{
 
     @Modifying
     @Query("update Article set orderNum = orderNum+:num where pid=:pid and orderNum between :startNum and :endNum")
-    void addAllOrderNumByOneBetween(Integer pid,Integer startNum,Integer endNum,Integer num);
+    void setAllOrderNumByBetween(Integer pid, Integer startNum, Integer endNum, Integer num);
 
     @Modifying
-    @Query("update Article set orderNum = orderNum+1 where pid=:pid and orderNum > :orderNum")
-    void addAllOrderNumByOneAfter(Integer pid,Integer orderNum);
+    @Query("update Article set orderNum = orderNum+:num where pid=:pid and orderNum > :orderNum")
+    void setAllOrderNumByAfter(Integer pid, Integer orderNum, Integer num);
+
+    @Modifying
+    @Query("update Article set orderNum = orderNum+:num where pid=:pid and orderNum>:orderNum")
+    void setAllOrderNumAfterCurrentNodeByPid(Integer pid,Integer orderNum,Integer num);
+    @Modifying
+    @Query("update Article set orderNum = orderNum+:num where pid=:pid and orderNum<:orderNum")
+    void setAllOrderNumBeforeCurrentNodeByPid(Integer pid,Integer orderNum,Integer num);
 
     @Modifying
     @Query("update Article set orderNum = orderNum+:num where sid=:sid and pid is null")
@@ -47,23 +54,20 @@ public interface ArticleRepository extends JpaRepository<Article,Integer>{
     void setAllOrderNumBeforeCurrentNodeBySid(Integer sid,Integer orderNum,Integer num);
 
     @Modifying
-    @Query("update Article set orderNum = orderNum+:num where pid=:pid")
-    void setAllOrderNumByPid(Integer num);
-
-    @Modifying
-    @Query("update Article set orderNum = orderNum+:num where pid=:pid and orderNum>:orderNum")
-    void setAllOrderNumAfterCurrentNodeByPid(Integer pid,Integer orderNum,Integer num);
-    @Modifying
-    @Query("update Article set orderNum = orderNum+:num where pid=:pid and orderNum<:orderNum")
-    void setAllOrderNumBeforeCurrentNodeByPid(Integer pid,Integer orderNum,Integer num);
+    @Query("update Article set orderNum = orderNum+:num where sid=:sid and orderNum between :startNum and :endNum and pid is null")
+    void setAllOrderNumBetweenBySid(Integer sid,Integer num,Integer startNum,Integer endNum);
 
     @Modifying
     @Query("update Article set content = :content where id=:id")
     void updateArticleContent(Integer id,String content);
 
     @Modifying
+    @Query("update Article set title = :title where id=:id")
+    void updateArticleTitle(Integer id,String title);
+
+    @Modifying
     @Query("delete from Article where id=:id")
-    Integer delById(Integer id);
+    void delById(Integer id);
 
     @Query("select count(id) from Article where pid=:id")
     Integer findChildrenCountByPid(Integer id);

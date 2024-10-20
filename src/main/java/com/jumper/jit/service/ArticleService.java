@@ -42,33 +42,27 @@ public interface ArticleService {
      * 保存文章(添加顶级节点/子节点/单体文章)
      * @return 文章
      */
-    Article save(Article article);
+    Article add(Article article);
 
+    Article updateContent(Article article);
     /**
      * 删除文章
      */
     void delete(Integer id);
 
     /**
-     * 保存文章内容
-     * @return 文章
+     * 修改文章标题
      */
-    Article saveContent(Article article);
+    void updateTitle(Integer id, String title);
 
     /**
-     * 修改文章序号,同时会修改相同pid下的同级文章的序号
-     * @param id 文章id
-     * @param targetId 目标节点
+     * 同一个专题内:移动节点到目标节点后
+     * @param currenId 当前节点Id
+     * @param targetId 目标节点Id
      */
-    void moveTo(Integer id, Integer targetId);
+    void moveTo(Integer currenId,Integer targetId);
 
-    /**
-     * 修改文章父节点,同时会修改相同pid下的同级文章的序号
-     * @param id 文章id
-     * @param pid 上级文章id
-     * @param targetId 目标节点id
-     */
-    void updatePid(Integer id, Integer pid,Integer targetId);
+
     /**
      * 修改文章父节点为专题,同时会修改相同pid下的同级文章的序号;在专题最后添加一条顶级节点
      * @param id 文章id
