@@ -114,6 +114,17 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public Article updateSingle(Article article) {
+        Integer id = article.getId();
+        Article dbArticle = repository.findById(article.getId()).orElseThrow(()->new DbException("id="+id));
+        dbArticle.setTitle(article.getTitle());
+        dbArticle.setContent(article.getContent());
+        dbArticle.setStatus(Article.Status.SAVE_CONTENT.getCode());
+        repository.save(dbArticle);
+        return dbArticle;
+    }
+
+    @Override
     public void delete(Integer id) {
         SimpleArticleWithoutContentDTO dto = repository.getArticleWithoutContentById(id);
         if (dto == null) throw new DbException("article id = " + id);

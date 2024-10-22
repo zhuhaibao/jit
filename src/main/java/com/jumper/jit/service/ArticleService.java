@@ -34,6 +34,7 @@ public interface ArticleService {
      * @return 文章
      */
     Article add(Article article);
+    Article updateSingle(Article article);
 
 
     Article updateContent(Article article);

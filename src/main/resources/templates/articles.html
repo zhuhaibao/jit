@@ -264,8 +264,8 @@
                             <td>${trData.createdAt}</td>
                             <td ondblclick="clickSubject(event)">${subjectTitle}</td>
                             <td>
-                                <a><img alt="edit subject" title='edit subject' class="edit" src="/img/edit.svg"></a>/
-                                <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="/img/delete.svg" onclick="delSub(event);"></a>
+                                <a><img alt="edit subject" title='edit subject' onclick="edit(${trData.id},${trData.sid})" class="edit" src="/img/edit.svg"></a>/
+                                <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="/img/delete.svg" onclick="delArticle(event);"></a>
                             </td>
                         </tr>`;
             table.tBodies[0].insertAdjacentHTML("beforeend", trHtml);

@@ -65,7 +65,6 @@ function loadData() {
         body: formData,
     }).then(async result => {
         let json = await result.json();
-        console.log(json)
         if (json.statusText === 'ok') {
             //渲染table
             renderTable(json);

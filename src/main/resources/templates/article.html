@@ -29,6 +29,7 @@
                     <label for="title">标题:</label>
                 </div>
                 <div class="colValue">
+                    <input type="hidden" name="id" th:value="*{id}">
                     <input type="text" name="title" id="title" th:value="*{title}" minlength="2" maxlength="100">
                 </div>
             </div>
@@ -52,7 +53,7 @@
                 </div>
             </div>
             <div id='editArea' class="formRow">
-                <textarea id="editor" th:text="*{content}" placeholder="开始创作吧"></textarea>
+                <textarea id="editor" name="content" th:text="*{content}" placeholder="开始创作吧"></textarea>
             </div>
             <div style="text-align: center; margin-top: 10px;">
                 <a class="doButton" style="display: inline-block;" onclick="addArticle()">保存</a>

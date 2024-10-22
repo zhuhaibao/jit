@@ -63,6 +63,9 @@ public class ArticleController {
     @ResponseBody
     @PostMapping("add")
     public Article postAdd(@Validated(Article.AddSingleArticle.class) Article article){
+        if(article.getId()!=null){
+            return service.updateSingle(article);
+        }
         return service.add(article);
     }
     @GetMapping("update/{id}")
