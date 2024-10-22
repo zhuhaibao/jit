@@ -9,7 +9,7 @@ Jodit.defaultOptions.language = 'zh_cn';
 
 Jodit.defaultOptions.width = 'auto';
 Jodit.defaultOptions.height = 'auto';
-Jodit.defaultOptions.minHeight = 600;
+Jodit.defaultOptions.minHeight = 500;
 Jodit.defaultOptions.theme = 'default';
 Jodit.defaultOptions.colorPickerDefaultTab = 'background';
 Jodit.defaultOptions.defaultMode = Jodit.MODE_WYSIWYG;

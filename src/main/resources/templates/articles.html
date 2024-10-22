@@ -1,141 +1,34 @@
 <!DOCTYPE html>
-<html>
-
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/articles.css">
-    <script src="js/base.js"></script>
+    <link rel="stylesheet" th:href="@{/css/articles.css}">
+    <script th:src="@{/js/base.js}"></script>
     <title>文章列表</title>
-    <style type="text/css">
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        tr:nth-child(even) {
-            background-color: #efefef;
-        }
-
-        tr>td:nth-child(2),
-        tr>td:nth-child(3),
-        tr>td:nth-child(4) {
-            text-align: center;
-        }
-
-        td {
-            border: 1px dotted green;
-            padding: 5px 10px;
-        }
-
-        td:nth-child(1):hover,
-        td:nth-child(3):hover {
-            background-color: white;
-            cursor: copy;
-            font-style: italic;
-            font-weight: bolder;
-        }
-
-        .edit {
-            width: 25px;
-            height: 25px;
-            vertical-align: middle;
-        }
-
-        .editOver {
-            width: 29px;
-            height: 29px;
-            vertical-align: middle;
-        }
-
-        td .edit:hover {
-            width: 29px;
-            height: 29px;
-            vertical-align: middle;
-        }
-
-        td .editOver:hover {
-            width: 25px;
-            height: 25px;
-            vertical-align: middle;
-        }
-
-        /*弹出主题修改窗口-内容样式*/
-        .modalBody ul {
-            list-style-type: decimal;
-        }
-
-        .modalBody ul li {
-            list-style-type: decimal;
-            padding: 5px 10px;
-        }
-
-        /*有span孩子的li元素*/
-        .modalBody li>span:hover {
-            background-color: #BEBFC3;
-            font-style: italic;
-            cursor: pointer;
-        }
-        /*没有span的li元素*/
-        .modalBody li:not(:has(>span)):hover {
-            background-color: #BEBFC3;
-            font-style: italic;
-            cursor: pointer;
-        }
-
-        /*搜索按钮与图标的位置*/
-        .searchInput {
-            background: none;
-        }
-
-        .searchButton {
-            left: 10px;
-            top: 10px;
-        }
-        /*弹出的文章节点列表的样式*/
-        .hiddenUl{
-            display: none;
-        }
-        .folder{
-            font-size: 18px;
-            margin-left: 5px;
-        }
-
-    </style>
 </head>
 
 <body>
 <div class="sticky">
     <header>
-        <nav>
-            <ul class="banner">
-                <li><img src="img/logo.svg" class="logo"></li>
-                <li class="bannerTitle"><a href="subject.html">主题管理</a></li>
-                <li class="bannerTitle"><a style="color: #03AA6D; font-weight: bold;" href="articles.html">文章管理</a>
-                </li>
-                <li class="bannerTitle"><a href="navigation.html">导航管理</a></li>
-                <ul class="innerBanner">
-                    <li>朱海保</li>
-                    <li><a href="login.html">退出</a></li>
-                </ul>
-            </ul>
-        </nav>
+        <nav th:insert="~{common::navlist}"></nav>
     </header>
 </div>
 <div id='content'>
     <!-- 搜索条件-->
     <search>
-        <form>
             <div class="functionDiv">
                 <div class="searchDiv" id='searchDiv'>
-                    <input id="searchInput" type="text" class="searchInput" placeholder="输入文章名">
-                    <img id='searchButton' class='searchButton' src="img/searchicon.png" onclick="alert('搜索文章')">
+                    <form th:action="@{/article/find}"  th:object="${article}" id="searchForm" onsubmit="submitSearch();return false;">
+                        <input id="searchInput" type="text" name="keyword" th:value="*{keyword}" class="searchInput" placeholder="输入文章名">
+                        <input name="pageSize" type="hidden" th:value="*{pageSize}">
+                    </form>
+                    <img id='searchButton' class='searchButton' th:src="@{/img/searchicon.png}">
                 </div>
                 <div class='editDiv'>
-                    <a class="doButton" href="article.html">添加文章</a>
+                    <a class="doButton" th:href="@{/article/add}">添加文章</a>
                 </div>
             </div>
-        </form>
     </search>
     <!--table展示标题数据-->
     <section>
@@ -146,173 +39,31 @@
                 <th>所属主题</th>
                 <th>操作</th>
             </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
+            <tr th:each="sub , stat:${data.content}" th:data-tr-gen="${sub.id}" th:data-parent-id="${sub.pid}">
+                <td ondblclick="updateTitle(event)" th:attr="data-td-id=${sub.id}" th:text="${sub.title}"></td>
+                <td th:text="${sub.createdAt}"></td>
+                <td ondblclick="clickSubject(event)" th:text="${sub.subject!=null}? ${sub.subject.subjectTitle}:'无主题'"></td>
                 <td>
-                    <a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/
-                    <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript数组</td>
-                <td>2024/09/11</td>
-                <td>主题1</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
-                </td>
-            </tr>
-            <tr>
-                <td ondblclick="editSubject(event,1)">javascript map与set</td>
-                <td>2024/09/11</td>
-                <td>主题2</td>
-                <td><a href="subject-article.html"><img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg"></a>/<a href="#"><img alt="edit subject" title='edit subject' class="edit" src="img/delete.svg" onclick="delSub(event);"></a>
+                    <img alt="edit subject" th:onclick="'edit('+${sub.id}+','+${sub.sid}+')'" title='edit subject' class="edit" th:src="@{/img/edit.svg}">/
+                    <img alt="edit subject" title='edit subject' class="edit" th:src="@{/img/delete.svg}" onclick="delArticle(event);">
                 </td>
             </tr>
         </table>
-        <nav>
-            <div class="pageModule">
-                <div class="page">
-                    <button class="pageButton" id="pagePrev" onclick="clickPage(this)">上一页</button>
-                    <div class="pageIndex"></div>
-                    <button class="pageButton" id="pageNext" onclick="clickPage(this)">下一页</button>
-                </div>
-                <div class="pageParam">
-                    数据量:<input type="text" value="100" name="total" id="total" oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
-                    页大小:<input type="text" value="8" name="pageSize" id="pageSize" onkeyup="setPageSize(event)" oninput="totalPage.value=Math.ceil(total.value/this.value)">
-                    总页数:<input type="text" name="totalPage" id="totalPage" disabled>
-                    当前页:<input type="text" value="1" name="currentPage" id="currentPage" onkeyup="toPage(event)">
-                    导航页码数:<input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
-                    <input type="button" class="pageButton" value="刷新" onclick="initPageByPresentParams();">
-                </div>
-            </div>
-        </nav>
+        <nav th:insert="~{common::page}"></nav>
     </section>
 </div>
 <!--模态窗口div-->
-<div class="modal" id="modal" onclick="if(event.target==modal)modal.style.display='none'">
+<div class="modal" id="modal" onclick="if(event.target===modal)modal.style.display='none'">
     <div class="modalContent">
         <div class="modalTitle">
             <span class="close" id='close' onclick="modal.style.display='none'">&times</span>
-            <h3>选择所属文章节点</h3>
+            <h3>选择父节点(主题->主题文章列表)</h3>
         </div>
         <div class="modalBody">
             <ul>
-                <li><span>java基本知识<i class="fa fa-folder folder"></i></span>
-                    <ul class="hiddenUl">
-                        <li>数据类型int</li>
-                        <li>数据类型string</li>
-                        <li>数据类型while</li>
-                        <li><span>数据类型for循环<i class="fa fa-folder folder"></i></span>
-                            <ul class="hiddenUl">
-                                <li>线程Thread</li>
-                                <li>Runnable</li>
-                                <li>线程池</li>
-                                <li>资源竞争</li>
-                            </ul>
-                        </li>
-                    </ul>
+                <li th:each="subject:${subjectTree}" th:attr="data-sub-id=${subject.id}" data-load-status="unloaded">
+                    <span>[[${subject.subjectTitle}]]<i class="fa fa-folder folder"></i></span>
                 </li>
-                <li><span>java继承<i class="fa fa-folder folder"></i></span>
-                    <ul class="hiddenUl">
-                        <li>子类</li>
-                        <li>访问权限</li>
-                        <li>构造方法</li>
-                        <li>final类</li>
-                    </ul>
-                </li>
-
             </ul>
         </div>
         <div class="modalFooter">
@@ -321,29 +72,48 @@
     </div>
 </div>
 <script type="text/javascript">
+    //分页加载url
+    let loadUrl = "/article/find";
     //当前编辑的td
     let currentTd = null;
-
-    /*双击时<img alt="edit subject" title='edit subject' class="edit" src="img/edit.svg">标题*/
-    function editSubject(event, type) {
+    function updateTitle(event) {
         event.preventDefault();
         if (currentTd) return;
         let oldValue = event.currentTarget.innerHTML.trim();
         currentTd = event.currentTarget;
         currentTd.innerHTML = `<input class='editButton' type="text" name="title" value='${oldValue}'">`;
         currentTd.firstElementChild.focus();
+        let updated = false;
         //失去焦点时要提示保存
-        currentTd.firstElementChild.onblur = function(e) {
-            if (e.currentTarget.value != oldValue) {
+        currentTd.firstElementChild.onblur = function (e) {
+            if(!updated)
+                update(e);
+        }
+        currentTd.firstElementChild.onkeyup = function (e) {
+            if(e.key === 'Enter'){
+                update(e);
+                updated=true;
+            }
+        }
+        async function update(e) {
+            let newValue = e.currentTarget.value;
+            if (e.currentTarget.value !== oldValue) {
                 let save = confirm("save updated?")
                 if (save) {
                     //此处调用后端服务保存
-                    if (type === 1) {
-                        //save title
-                    } else if (type === 2) {
-                        //save 备注
+                    if (!newValue || newValue.trim().length < 2 || newValue.trim().length > 100) {
+                        alert("title字符在2~100之间");
+                        return;
                     }
-                    currentTd.innerHTML = e.currentTarget.value;
+                    let articleId = currentTd.dataset.tdId;
+                    let result = await updateTitleToServer(articleId, newValue);
+                    if (result.statusText === 'ok') {
+                        currentTd.innerHTML = newValue;
+                    } else {
+                        alert("修改失败:" + result.msg);
+                        currentTd.innerHTML = oldValue;
+                    }
+
                 } else {
                     currentTd.innerHTML = oldValue;
                 }
@@ -353,32 +123,44 @@
             currentTd = null;
         }
     }
-
-    //为td绑定修改主题函数,显示modal
-    for (let i = 1; i < table.rows.length; i++) {
-        table.rows[i].cells[2].ondblclick = function() {
-            modal.style.display = 'block';
-        };
+    async function updateTitleToServer(id,title){
+        let formData = new FormData();
+        formData.set("id",id);
+        formData.set("title",title);
+        let response = await fetch("/article/updateTitle",{
+            method:"POST",
+            body:formData,
+        });
+        return await response.json();
+    }
+    //双击主题,显示modal
+    function clickSubject(e){
+        modal.style.display = 'block';
+        modal.articleId = e.target.parentElement.dataset.trGen;
+        modal.parentId = e.target.parentElement.dataset.parentId;
     }
     //为modal弹出框绑定函数
     let selectLi = null;
-    document.body.querySelector(".modalBody").addEventListener('click', function(e) {
+    document.body.querySelector(".modalBody").addEventListener('click', async function(e) {
         let li = e.target.closest("li");
         if (!li) return;
         if (li.firstElementChild) {
             li.firstElementChild.style.background = "#A6A7AB";
-            //切换上下箭头
+            //切换文件夹开关
             let elemI = li.firstElementChild.querySelector("i");
             if(elemI.classList.contains('fa-folder')){
                 elemI.classList.remove("fa-folder");
                 elemI.classList.add("fa-folder-open");
+                //加载数据
+                await loadArticles(li);
             }else{
                 elemI.classList.remove("fa-folder-open");
                 elemI.classList.add("fa-folder");
             }
             //隐藏子元素ul
             let subUl = li.querySelector("ul");
-            subUl.classList.toggle("hiddenUl");
+            if(subUl)
+                subUl.classList.toggle("hiddenUl");
         } else {
             li.style.background = "#A6A7AB";
         }
@@ -388,48 +170,113 @@
         }
         selectLi = li;
     });
+    //在model窗口中,单击主题加载文章列表
+    async function loadArticles(li){
+        if(!li.dataset.subId)return;//不是主题li
+        if(li.dataset.loadStatus==='loaded') return;//已经加载了
+        li.dataset.loadStatus= 'loaded';//已经加载
+        let sid = li.dataset.subId;
+        let response = await fetch(`/subject/findSimpleArticlesById?id=${sid}`,{method:'POST'})
+        let result =  await response.json();
+        if(!result.data || result.data.length===0) return;
+        let liHtml = ``;
+        recursionTree(result.data);
+        if(liHtml){
+            li.insertAdjacentHTML('beforeend',liHtml);
+        }
+        function recursionTree(list){
+            if(!list||list.length===0) return liHtml;
+            liHtml+=`<ul class="hiddenUl">`;
+            list.forEach(a=>{
+                liHtml+=`<li data-article-id="${a.id}"><span>${a.title}<i class="fa fa-folder folder"></i></span>`;
+                recursionTree(a.children);
+            });
+            liHtml+=`</ul>`;
+        }
+    }
 
     //保存位置
-    function updatePosition() {
+    async function updatePosition() {
         if (selectLi) {
-            alert(`文章插入节点:<<${selectLi.innerText}>>之后`);
-            selectLi.style.background = 'none';
-            selectLi = null;
-
+            if(!confirm(`are you sure select the <${selectLi.firstElementChild.textContent}> as parent?`)) return;
             //保存 调用服务器
-
-            //隐藏
-            modal.style.display = "none";
+            let id = modal.articleId;
+            let pid = modal.parentId;
+            let targetId = null;
+            let url = `/article`;
+            if(selectLi.dataset.subId){
+                targetId = selectLi.dataset.subId;
+                url+=`/insertAsChildToSubject/${id}/${targetId}`;
+            }
+            if(selectLi.dataset.articleId){
+                targetId = selectLi.dataset.articleId;
+                if(targetId === id){
+                    alert("不能插入自身");
+                    return;
+                }
+                if(targetId === pid){
+                    alert("已经存在此父节点中,请选择其它节点");
+                    return;
+                }
+                url+=`/insertAsChildToNode/${id}/${targetId}`;
+            }
+            let response = await fetch(url,{method:'POST'});
+            let result = await response.json();
+            if(result.statusText==='ok'){
+                alert('插入成功');
+                //清除当前状态
+                selectLi.style.background = 'none';
+                selectLi = null;
+                //隐藏
+                modal.style.display = "none";
+            }else{
+                alert("插入失败:"+result.msg);
+            }
         } else {
-            alert("请选择文章插入的位置");
+            alert("请选择插入位置");
         }
-
     }
 
     //删除文章
-    function delSub(e) {
+    function delArticle(e) {
         let tr = e.target.closest('tr');
-        if (confirm('del subect?')) tr.remove();
+        if (!confirm('del article?')) return;
+        let id = tr.dataset.trGen;
+        fetch(`/article/${id}`, {method: 'DELETE'}).then(async result => {
+            let json = await result.json();
+            if (json.statusText !== 'ok') {
+                alert("删除失败:" + json);
+            } else {
+                alert("删除成功");
+                submitSearch();
+            }
+        });
     }
-    //分页组件脚本
-    let totalNumber = parseInt(document.getElementById("total").value);
-    let pageSizeNumber = parseInt(document.getElementById("pageSize").value);
-    const pageParams = {
-        //初始化分页参数
-        currentPage: 1, //当前页,默认页面加载时为0
-        pageBarNum: 10, //当前页导航最多显示多少页码,默认
-        startPage: 1, //当前页导航第一页,默认页面加载时为0
-        endPage: 5, //当前页导航最后一页,默认
-        toPage: 1, //要跳转的页,默认
-        total: totalNumber, //数据量
-        pageSize: pageSizeNumber, //单页数据量
-    };
-    initPage();
+    //用返回的json数据渲染table
+    function renderTable(json) {
+        //清除数据区
+        let table = document.getElementById("table");
+        Array.from(table.querySelectorAll("tr[data-tr-gen]")).forEach(tr => tr.remove());
+        json.data.content.forEach(trData => {
+            let subjectTitle = trData.subject?trData.subject.subjectTitle:"无主题";
+            let trHtml = `<tr data-tr-gen=${trData.id} data-parent-id=${trData.pid}>
+                            <td ondblclick="updateTitle(event)" data-td-id=${trData.id}>${trData.title}</td>
+                            <td>${trData.createdAt}</td>
+                            <td ondblclick="clickSubject(event)">${subjectTitle}</td>
+                            <td>
+                                <a><img alt="edit subject" title='edit subject' class="edit" src="/img/edit.svg"></a>/
+                                <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="/img/delete.svg" onclick="delSub(event);"></a>
+                            </td>
+                        </tr>`;
+            table.tBodies[0].insertAdjacentHTML("beforeend", trHtml);
+        });
+    }
 
-    function initPage() {
-        renderPage();
+    function edit(id,sid){
+        sid?location.assign(`/subject/${sid}?id=${id}`):location.assign("/article/update/"+id);
     }
 </script>
+<script type="text/javascript" th:src="@{/js/page.js}"></script>
 </body>
 
 </html>

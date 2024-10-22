@@ -1,1 +1,94 @@
 @import url('base.css');
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+tr:nth-child(even) {
+    background-color: #efefef;
+}
+
+tr>td:nth-child(2),
+tr>td:nth-child(3),
+tr>td:nth-child(4) {
+    text-align: center;
+}
+
+td {
+    border: 1px dotted green;
+    padding: 5px 10px;
+}
+
+td:nth-child(1):hover,
+td:nth-child(3):hover {
+    background-color: white;
+    cursor: copy;
+    font-style: italic;
+    font-weight: bolder;
+}
+
+.edit {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+.editOver {
+    width: 29px;
+    height: 29px;
+    vertical-align: middle;
+}
+
+td .edit:hover {
+    width: 29px;
+    height: 29px;
+    vertical-align: middle;
+}
+
+td .editOver:hover {
+    width: 25px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+/*弹出主题修改窗口-内容样式*/
+.modalBody ul {
+    list-style-type: decimal;
+}
+
+.modalBody ul li {
+    list-style-type: decimal;
+    padding: 5px 10px;
+}
+
+/*有span孩子的li元素*/
+.modalBody li>span:hover {
+    background-color: #BEBFC3;
+    font-style: italic;
+    cursor: pointer;
+}
+/*没有span的li元素*/
+.modalBody li:not(:has(>span)):hover {
+    background-color: #BEBFC3;
+    font-style: italic;
+    cursor: pointer;
+}
+
+/*搜索按钮与图标的位置*/
+.searchInput {
+    background: none;
+}
+
+.searchButton {
+    left: 10px;
+    top: 10px;
+}
+/*弹出的文章节点列表的样式*/
+.hiddenUl{
+    display: none;
+}
+.folder{
+    font-size: 18px;
+    margin-left: 5px;
+}

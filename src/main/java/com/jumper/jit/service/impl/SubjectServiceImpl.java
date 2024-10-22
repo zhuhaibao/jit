@@ -1,6 +1,7 @@
 package com.jumper.jit.service.impl;
 
 import com.jumper.jit.aspect.DbException;
+import com.jumper.jit.dto.SimpleSubjectDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.Subject;
 import com.jumper.jit.repository.SubjectRepository;
@@ -59,8 +60,8 @@ public class SubjectServiceImpl implements SubjectService {
         //构造查询条件
         Specification<Subject> spec = ((root, q, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if(dto.getSubjectTitle()!=null){
-                predicates.add(cb.like(root.get("subjectTitle"),"%"+dto.getSubjectTitle()+"%"));
+            if(dto.getKeyword()!=null && !dto.getKeyword().isEmpty()){
+                predicates.add(cb.like(root.get("subjectTitle"),"%"+dto.getKeyword()+"%"));
             }
 
             List<Order> orders = new ArrayList<>();
@@ -92,5 +93,10 @@ public class SubjectServiceImpl implements SubjectService {
     @Autowired
     public void setSubjectRepository(SubjectRepository subjectRepository) {
         this.dao = subjectRepository;
+    }
+
+    @Override
+    public List<SimpleSubjectDTO> findAllSimpleSubject() {
+        return dao.queryAllByIdNotNullOrderByCreatedAtDescUpdatedAtDesc();
     }
 }

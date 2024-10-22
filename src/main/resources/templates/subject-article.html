@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
     <script th:src="@{/js/lib/prism/prism.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
+    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
     <script th:src="@{/js/base.js}"></script>
@@ -16,33 +18,16 @@
 <body>
 <div class="sticky">
     <header>
-        <nav>
-            <ul class="banner">
-                <li><img th:src="@{/img/logo.svg}" alt="logo" class="logo"></li>
-                <li class="bannerTitle"><a th:href="@{/}" href="subject.html"
-                                           style="color: #03AA6D; font-weight: bold;">主题管理</a>
-                </li>
-                <li class="bannerTitle"><a th:href="@{/aritcles}" href="articles.html">文章管理</a></li>
-                <li class="bannerTitle"><a th:href="@{/navigation}" href="navigation.html">导航管理</a></li>
-                <ul class="innerBanner">
-                    <li>朱海保</li>
-                    <li><a href="login.html" th:href="@{/logout}">退出</a></li>
-                </ul>
-            </ul>
-        </nav>
+        <nav th:insert="~{common::navlist}"></nav>
     </header>
 </div>
 <div class="articleMain">
     <div class="articleNav">
         <div id="subjectDiv" class="subject" th:text="${subject.subjectTitle}" th:attr="data-subject-id=${subject.id}"></div><hr>
         <ul id="titleTree" th:insert="~{this::tree(${treeL})}">
-            <li th:unless="${#lists.isEmpty(treeL)}" th:fragment="tree(treeL)" th:each="parent:${treeL}" th:attr="data-article-info=${parent.id}">
+            <li th:fragment="tree(treeL)" th:unless="${#lists.isEmpty(treeL)}" th:each="parent:${treeL}" th:attr="data-article-info=${parent.id}">
                 <span th:text="${parent.title}" class="draggable" th:class="${parent.id eq article.id? 'draggable selected':'draggable' }" onmousedown="titleLiDrag(event)"></span>
-                <ul th:unless="${#lists.isEmpty(parent.children)}" th:insert="~{this::tree(${parent.children})}">
-                    <li th:each="sub:${parent.children}" th:attr="data-article-info=${sub.id}">
-                        <span th:text="${sub.title}" class="draggable" th:class="${sub.id eq article.id? 'draggable selected':'draggable' }" onmousedown="titleLiDrag(event)"></span>
-                    </li>
-                </ul>
+                <ul th:unless="${#lists.isEmpty(parent.children)}" th:insert="~{this::tree(${parent.children})}"></ul>
             </li>
         </ul>
     </div>

@@ -1,192 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./js/lib/prism/prism.css">
-    <script src="./js/lib/prism/prism.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/jodit.css">
-    <script src="./js/lib/jodit/jodit.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/paste-code/paste-code.css">
-    <script src="./js/lib/jodit/plugins/paste-code/paste-code.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/emoji/emoji.css">
-    <script src="./js/lib/jodit/plugins/emoji/emoji.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/autocomplete/autocomplete.css">
-    <script src="./js/lib/jodit/plugins/autocomplete/autocomplete.js"></script>
-    <link rel="stylesheet" href="./js/lib/jodit/plugins/color-picker/color-picker.css">
-    <script src="./js/lib/jodit/plugins/color-picker/color-picker.js"></script>
-    <script src="./js/lib/jodit/plugins/google-search/google-search.js"></script>
-    <script src="js/base.js"></script>
-    <link rel="stylesheet" href="../../static/css/subject-article.css">
-    <title>主题-文章树列表</title>
-    <style type="text/css">
-        /*文章编辑区域*/
-        .articleMain {
-            display: flex;
-            flex-direction: row;
-            width: 80%;
-            min-height: calc(100vh - 100px);
-            box-sizing: border-box;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 10px;
-        }
-
-        .articleEdit {
-            padding: 40px 20px;
-            width: 100%;
-            background-color: white;
-            margin-left: 5px;
-            box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .formRow {
-            margin-bottom: 20px;
-        }
-
-        .colValue {
-            width: 50%;
-        }
-
-        /*下拉框提示div---start*/
-        .pulldownDiv {
-            display: none;
-            flex-direction: column;
-            position: absolute;
-            z-index: 100;
-            left: 5px;
-            top: 45px;
-        }
-
-        .pulldownDivTipTop {
-            border-top: none;
-            border-right: 380px solid transparent;
-            border-bottom: 50px solid palevioletred;
-            border-left: 20px solid transparent;
-        }
-
-        .pulldownDivTipBody {
-            width: 400px;
-            max-height: 600px;
-            background-color: #efefef;
-            box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
-            overflow: auto;
-        }
-
-        .pulldownDivTipBody ul {
-            padding: 0px;
-            margin: 0px;
-        }
-
-        .pulldownDivTipBody ul li {
-            list-style: none;
-            padding: 10px 15px;
-        }
-
-        .pulldownDivTipBody ul li:hover {
-            background-color: #999999;
-        }
-
-        .pulldownButton {
-            border: none;
-            float: right;
-            padding: 2px 15px;
-            border-radius: 3px;
-            box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .pulldownButton:hover {
-            background-color: #5DB85D;
-        }
-
-        /*下拉框提示div----end*/
-    </style>
+    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
+    <script th:src="@{/js/lib/prism/prism.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
+    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
+    <script th:src="@{/js/lib/jodit/jodit.js}"></script>
+    <script th:src="@{/js/base.js}" src=""></script>
+    <link rel="stylesheet" th:href="@{/css/article.css}">
+    <title>单体文章</title>
 </head>
 
 <body>
 <div class="sticky">
     <header>
-        <nav>
-            <ul class="banner">
-                <li><img src="img/logo.svg" class="logo"></li>
-                <li class="bannerTitle"><a href="subject.html">主题管理</a></li>
-                <li class="bannerTitle"><a style="color: #03AA6D; font-weight: bold;" href="articles.html">文章管理</a>
-                </li>
-                <li class="bannerTitle"><a href="navigation.html">导航管理</a></li>
-                <ul class="innerBanner">
-                    <li>朱海保</li>
-                    <li><a href="login.html">退出</a></li>
-                </ul>
-            </ul>
-        </nav>
+        <nav th:insert="~{common::navlist}"></nav>
     </header>
 </div>
 <div class="articleMain">
     <div class="articleEdit">
-        <form class="formContainer">
+        <form class="formContainer" th:object="${article}" onsubmit="return false;">
             <div class="formRow">
                 <div class="colLabel">
-                    <label for="title">标题:<span style="color:red;">*</span></label>
+                    <label for="title">标题:</label>
                 </div>
                 <div class="colValue">
-                    <input type="text" name="title">
+                    <input type="text" name="title" id="title" th:value="*{title}" minlength="2" maxlength="100">
                 </div>
-
             </div>
             <div class="formRow">
                 <div class="colLabel">
-                    <label for="pid">选择所属上级文章:</label>
+                    <label>选择所属上级文章:</label>
                 </div>
                 <div class="colValue">
-                    <input type="text" name="pid" id="pid" oninput="changePulldown(event);"
-                           onfocus="changePulldown(event);">
+                    <input type="text" id="searchInput" oninput="changePullDown(event);"
+                           onfocus="changePullDown(event);">
+                    <input type="hidden" name="pid"/>
+                    <input type="hidden" name="sid"/>
                 </div>
                 <!--隐藏的下拉搜索框-->
-                <div class="pulldownDiv" id="pulldownDiv">
-                    <div class='pulldownDivTipTop'></div>
-                    <div class="pulldownDivTipBody">
-                        <ul class="zcool-xiaowei-regular" id="searchResult">
+                <div class="pullDownDiv" id="pullDownDiv">
+                    <div class='pullDownDivTipTop'></div>
+                    <div class="pullDownDivTipBody">
+                        <ul id="searchResult">
                         </ul>
                     </div>
                 </div>
             </div>
             <div id='editArea' class="formRow">
-                <textarea id="editor">开始创作吧</textarea>
+                <textarea id="editor" th:text="*{content}" placeholder="开始创作吧"></textarea>
             </div>
             <div style="text-align: center; margin-top: 10px;">
-                <a class="doButton" style="display: inline-block;" onclick="alert('保存文章')">保存</a>
-                <a class="doButton" style="display: inline-block;margin-left: 100px;" href='article-view.html'>预览</a>
+                <a class="doButton" style="display: inline-block;" onclick="addArticle()">保存</a>
+                <a class="doButton" style="display: inline-block;margin-left: 100px;" onclick="alert('待完善')">预览</a>
             </div>
         </form>
     </div>
-    <!--隐藏的下拉菜单数据源,编写后台后可清除-->
-    <ul id="serverData" style="display: none;">
-        <li>Vue.js->主题1
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>Kubernetes->主题2
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>Mybatis->主题3
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>hibernate->主题4
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>React.js->主题5
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>SpringBoot->主题6
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>Html->主题7
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-        <li>Css->主题8
-            <button type="button" class="pulldownButton" onclick="addLabel(this)">添加</button>
-        </li>
-    </ul>
 </div>
 <script type="text/javascript">
     /*加载editor*/
@@ -194,67 +67,99 @@
 
     /*搜索父标题,并添加*/
     //输入框变化,改变下拉框信息
-    let decorator = debounce(changePulldownInfo, 500);
+    let decorator = debounce(changePullDownInfo, 500);
 
-    function changePulldown(e) {
+    function changePullDown(e) {
         let searchKey = e.currentTarget.value;
-        if (searchKey) {
+        if (searchKey && searchKey.length>0) {
             decorator();
         } else {
-            clearPulldownInfo();
+            clearPullDownInfo();
         }
     }
 
-    function changePulldownInfo() { //改变下拉框
+    async function changePullDownInfo() { //改变下拉框
         //查询服务器,根据请求结果改编searchResult
-        if (searchResult.children.length > 0) { //先归位,----------待清除
-            clearPulldownInfo();
+        let keyword = document.getElementById("searchInput").value;
+        if(!keyword || keyword.trim().length===0) return;
+        let formData = new FormData();
+        formData.set("keyword",keyword);
+        let response = await fetch("/article/findArticlesWithParentAndSubjectByKeyword",{method:"POST",body:formData});
+        let serverData = await response.json();
+        if (document.getElementById("searchResult").children.length > 0) {
+            clearPullDownInfo();
         }
-        showPulldownInfo();
+        showPullDownInfo(serverData.data);
     }
 
     //清除下拉内容
-    function clearPulldownInfo() {
-        Array.from(searchResult.children).forEach(function (item) {
-            if (item.tagName == 'LI') {
-                serverData.append(item)
-            }
-        });
-        searchResult.innerHTML = null;
-        pulldownDiv.style.display = "none";
+    function clearPullDownInfo() {
+        document.getElementById("searchResult").innerHTML = null;
+        document.getElementById("pullDownDiv").style.display = "none";
     }
 
     //显示下拉内容
-    function showPulldownInfo() {
+    function showPullDownInfo(data) {
+        let searchResult = document.getElementById("searchResult");
+        let searchInput = document.getElementById("searchInput");
         //再添加
-        let data = serverData.children;
-        let length = randomInteger(data.length);
-        Array.from(data).slice(0, length).forEach(item => searchResult.append(item));
-        if (length == 0) {
+        if (!data || data.length === 0) {
             searchResult.insertAdjacentHTML('beforeend', "<p>暂无结果</p>");
+        }else{
+            let innerHtml = ``;
+            data.forEach(a=>{
+                innerHtml+=`<li data-subject-id=${a.subject.id}>`;
+                printRecursion(a);
+                innerHtml+=`<a data-subject-id=${a.subject.id}>${a.subject.subjectTitle}</a></li>`
+            });
+            function printRecursion(node){
+                if(!node) return;
+                innerHtml+=`<a data-article-id=${node.id}>${node.title}</a> ▶ `;
+                printRecursion(node.parent);
+            }
+            searchResult.insertAdjacentHTML('beforeend', innerHtml);
         }
         //显示下拉框
-        let inputCoords = pid.getBoundingClientRect();
-        pulldownDiv.style.display = "block";
-        pulldownDiv.style.left = inputCoords.left - 10 + "px";
-        pulldownDiv.style.top = inputCoords.top + 40 + "px";
+        let div = document.getElementById("pullDownDiv");
+        let inputCoords = searchInput.getBoundingClientRect();
+        div.style.display = "block";
+        div.style.left = inputCoords.left + "px";
+        div.style.top = inputCoords.bottom + "px";
     }
 
+    //下拉框绑定事件
+    document.getElementById("searchResult").addEventListener("click",(e)=>{
+        let a = e.target.closest('a');
+        if(!a)return;
+        document.forms[0].pid.value=a.dataset.articleId?a.dataset.articleId:'';
+        document.forms[0].sid.value=a.parentElement.dataset.subjectId;
 
+        document.forms[0].searchInput.value = a.textContent;
+        document.getElementById("pullDownDiv").style.display = "none";
+    });
     //下拉提示框,鼠标单击文档其它地方,会隐藏
     document.addEventListener("click", function (e) {
-        if (!e.target.closest('.pulldownDiv') && pulldownDiv.style.display == "block") {
-            Array.from(searchResult.children).forEach(item => serverData.append(item)); //----------待清除
-            pulldownDiv.style.display = "none";
+        if (!e.target.closest('.pullDownDiv') && document.getElementById("pullDownDiv").style.display === "block") {
+            document.getElementById("pullDownDiv").style.display = "none";
         }
     });
 
-    //下拉框按钮单击,添加标签
-    function addLabel(elem) {
-        let value = elem.parentNode.firstChild.nodeValue.trim();
-        pid.value = value;
+    async function addArticle(){
+        let formData = new FormData(document.forms[0]);
+        formData.set("content",editorObj.value);
+        let response = await fetch("/article/add",{method:'POST',body:formData});
+        let result = await response.json();
+        if (result.statusText === 'ok') {
+           alert("保存成功");
+           location.assign("/article/find")
+        } else {
+            //渲染错误
+            if(result.data) renderFormFieldErrors(document.forms[0], result.data);
+            else{
+                alert(`保存失败:${result.msg}`);
+            }
+        }
     }
-
 </script>
 </body>
 

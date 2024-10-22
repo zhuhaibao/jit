@@ -29,7 +29,7 @@ public class ArticleDTO implements Comparable<ArticleDTO>{
     private Integer status;//文章状态 0 无内容,1 已保存,2 已发布,3修改未发布
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @Column(insertable=false, updatable=false)
+
     private Integer pid;//上级文章
 
     @Column(insertable=false, updatable=false)
@@ -45,6 +45,8 @@ public class ArticleDTO implements Comparable<ArticleDTO>{
         this.createdAt = LocalDateTime.now();
     }
 
+    @Transient
+    private String keyword;
     @Transient
     private String subjectTitle;
     @Transient

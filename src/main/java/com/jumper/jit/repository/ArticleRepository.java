@@ -23,6 +23,14 @@ public interface ArticleRepository extends JpaRepository<Article,Integer>{
     @Query("update Article set pid = :pid where id=:id")
     void updatePid(Integer id,Integer pid);
     @Modifying
+    @Query("update Article set sid = :sid where id=:id")
+    void updateSidById(Integer id,Integer sid);
+
+    @Modifying
+    @Query("update Article set sid = :sid where pid=:pid")
+    void updateSidByPid(Integer pid,Integer sid);
+
+    @Modifying
     @Query("update Article set pid = :pid,orderNum=:orderNum where id=:id")
     void updatePidAndOrderNum(Integer id,Integer pid,Integer orderNum);
 
@@ -66,15 +74,25 @@ public interface ArticleRepository extends JpaRepository<Article,Integer>{
     void updateArticleTitle(Integer id,String title);
 
     @Modifying
+    @Query("update Article set sid=:sid,orderNum=:orderNum,pid=null where id=:id")
+    void updateArticleAsChildToSubject(Integer id,Integer sid,Integer orderNum);
+
+    @Modifying
+    @Query("update Article set sid=:sid,orderNum=:orderNum,pid=:pid where id=:id")
+    void updateArticleAsChildToNode(Integer id,Integer sid,Integer pid,Integer orderNum);
+
+    @Modifying
     @Query("delete from Article where id=:id")
     void delById(Integer id);
 
     @Query("select count(id) from Article where pid=:id")
     Integer findChildrenCountByPid(Integer id);
 
-    @Query("select max(orderNum) from Article where sid=:sid and pid is null")
+    @Query("select count(id) from Article where sid=:sid and pid is null")
     Integer findTopLevelArticleCountBySid(Integer sid);
 
+    @Query("select count(id) from Article where pid=:pid")
+    Integer findArticleCountByPid(Integer pid);
 
     List<Article> findByPid(Integer pid);
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<ul th:fragment="navlist" class="banner">
+    <li><img th:src="@{/img/logo.svg}" alt="logo" class="logo"></li>
+    <li class="bannerTitle"><a th:href="@{/subject/find}" id="subjectNav">主题管理</a>
+    </li>
+    <li class="bannerTitle"><a th:href="@{/article/find}" id="articleNav">文章管理</a></li>
+    <li class="bannerTitle"><a th:href="@{/navigation}" id="navigationNav">导航管理</a></li>
+    <ul class="innerBanner">
+        <li>朱海保</li>
+        <li><a th:href="@{/logout}">退出</a></li>
+    </ul>
+</ul>
+
+<div th:fragment="page" class="pageModule">
+    <div class="page">
+        <button class="pageButton" id="pagePrev" onclick="renderClickPage(this)">上一页</button>
+        <div class="pageIndex"></div>
+        <button class="pageButton" id="pageNext" onclick="renderClickPage(this)">下一页</button>
+    </div>
+    <div class="pageParam">
+        <label for="total">数据量:</label><input type="text" th:value="${data.total}" name="total" id="total"
+                                                 oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
+        <label for="pageSize">页大小:</label><input type="text" th:value="${data.pageSize}" name="pageSize" id="pageSize"
+                                                    onkeyup="setPageSize(event)"
+                                                    oninput="totalPage.value=Math.ceil(total.value/this.value);">
+        <label for="totalPage">总页数:</label><input type="text" th:value="${data.totalPage}" name="totalPage" id="totalPage" disabled>
+        <label for="currentPage">当前页:</label><input type="text" th:value="${data.pageNo + 1}" name="currentPage" id="currentPage"
+                                                       onkeyup="toPage(event)">
+        <label for="pageBarNum">显示多少页:</label><input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
+    </div>
+</div>
+
+
+</html>

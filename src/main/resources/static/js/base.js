@@ -73,7 +73,7 @@ function randomInteger(n) { //产生随机整数
 function loadJoditEditor(selector) {
     return Jodit.make(selector, {
         uploader: {
-            url: 'http://localhost:8181/index-test.php?action=fileUpload'
+            url: 'http://localhost:8181/index-test.php?action=fileUpload',
         },
         filebrowser: {
             ajax: {
@@ -82,7 +82,6 @@ function loadJoditEditor(selector) {
         }
     });
 }
-
 //分页脚本
     function renderPageParams() {
         //初始化分页参数
@@ -241,3 +240,19 @@ function loadJoditEditor(selector) {
             e.remove();
         });
     }
+
+    //页面判断页面加载给导航着色
+    window.addEventListener("load",()=>{
+        let url = window.location.href;
+        let color = "#03AA6D";
+        if(url.includes('/subject')){
+            document.getElementById("subjectNav").style.color=color;
+        }
+        if(url.includes('/article')){
+            document.getElementById("articleNav").style.color=color;
+        }
+        if(url.includes('/navigation')){
+            document.getElementById("navigationNav").style.color=color;
+        }
+    });
+

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 
 <head>
     <meta charset="utf-8">
@@ -12,28 +12,15 @@
 <body>
 <div class="sticky">
     <header>
-        <nav>
-            <ul class="banner">
-                <li><img th:src="@{/img/logo.svg}" alt="logo" class="logo"></li>
-                <li class="bannerTitle"><a th:href="@{/}" href="subject.html"
-                                           style="color: #03AA6D; font-weight: bold;">主题管理</a>
-                </li>
-                <li class="bannerTitle"><a th:href="@{/aritcles}" href="articles.html">文章管理</a></li>
-                <li class="bannerTitle"><a th:href="@{/navigation}" href="navigation.html">导航管理</a></li>
-                <ul class="innerBanner">
-                    <li>朱海保</li>
-                    <li><a href="login.html" th:href="@{/logout}">退出</a></li>
-                </ul>
-            </ul>
-        </nav>
+        <nav th:insert="~{common::navlist}"></nav>
     </header>
 </div>
 <div id='content'>
     <!-- 功能区域-->
     <div class="functionDiv">
         <div class="searchDiv" id='searchDiv'>
-            <form th:action="@{/}" th:object="${subject}" method="post" id="searchForm" onsubmit="submitSearch();return false;">
-                <input id="searchInput" name="subjectTitle" th:value="*{subjectTitle}" type="text" class="searchInput" placeholder="输入主题名">
+            <form th:action="@{/subject/find}" th:object="${subject}" method="get" id="searchForm" onsubmit="submitSearch();return false;">
+                <input id="searchInput" name="keyword" th:value="*{keyword}" type="text" class="searchInput" placeholder="输入主题名">
                 <input name="pageSize" type="hidden" th:value="*{pageSize}">
             </form>
             <img id='searchButton' class='searchButton' th:src="@{/img/searchicon.png}" src="img/searchicon.png">
@@ -44,7 +31,7 @@
     </div>
     <!--table展示标题数据-->
     <section>
-        <table id="subjectTable">
+        <table id="table">
             <tr>
                 <th>主题</th>
                 <th>创建日期</th>
@@ -67,31 +54,12 @@
                     /
                     <a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"
                                                                 th:src="@{/img/delete.svg}" src="img/delete.svg"
-                                                                th:onclick="delSub(event)"></a>
+                                                                onclick="delSub(event)"></a>
                 </td>
                 <td ondblclick="editSubject(event,2)" th:attr="data-td-id=${sub.id}">[[${sub.remark}]]</td>
             </tr>
         </table>
-        <nav>
-            <div class="pageModule">
-                <div class="page">
-                    <button class="pageButton" id="pagePrev" onclick="renderClickPage(this)">上一页</button>
-                    <div class="pageIndex"></div>
-                    <button class="pageButton" id="pageNext" onclick="renderClickPage(this)">下一页</button>
-                </div>
-                <div class="pageParam">
-                    <label for="total">数据量:</label><input type="text" th:value="${data.total}" name="total" id="total"
-                                                                                        oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
-                    <label for="pageSize">页大小:</label><input type="text" th:value="${data.pageSize}" name="pageSize" id="pageSize"
-                                                                onkeyup="setPageSize(event)"
-                                                                oninput="totalPage.value=Math.ceil(total.value/this.value);">
-                    <label for="totalPage">总页数:</label><input type="text" th:value="${data.totalPage}" name="totalPage" id="totalPage" disabled>
-                    <label for="currentPage">当前页:</label><input type="text" th:value="${data.pageNo + 1}" name="currentPage" id="currentPage"
-                                                                   onkeyup="toPage(event)">
-                    <label for="pageBarNum">显示多少页:</label><input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
-                </div>
-            </div>
-        </nav>
+        <nav th:insert="~{common::page}"></nav>
     </section>
 </div>
 <!--模态窗口div-->
@@ -128,38 +96,11 @@
     </div>
 </div>
 <script type="text/javascript" th:inline="javascript">
-    //搜索
-    function loadData() {
-        let formData = new FormData();
-        formData.set("subjectTitle", document.getElementById("searchInput").value);
-        formData.set("pageSize", document.getElementById("pageSize").value);
-        formData.set("pageNo", parseInt(document.getElementById("currentPage").value) - 1 + "");
-
-        fetch("/subject/find", {
-            method: "POST",
-            body: formData,
-        }).then(async result => {
-            let json = await result.json();
-            if (json.statusText === 'ok') {
-                //渲染table
-                renderTable(json);
-                //用返回的json数据改变页面导航的输入框数据
-                document.getElementById("total").value = json.data.total;
-                document.getElementById("totalPage").value = json.data.totalPage;
-                document.getElementById("pageSize").value = json.data.pageSize;
-                document.getElementById("currentPage").value = json.data.pageNo + 1;
-                bindLoadDataForPage();//绑定一下事件
-
-            } else {
-                alert("查询报错!" + json);
-            }
-        })
-    }
-
+    let loadUrl = "/subject/find";
     //用返回的json数据渲染table
     function renderTable(json) {
         //清除数据区
-        let table = document.getElementById("subjectTable");
+        let table = document.getElementById("table");
         Array.from(table.querySelectorAll("tr[data-tr-gen]")).forEach(tr => tr.remove());
         json.data.content.forEach(trData => {
             let trHtml = `<tr data-tr-gen = ${trData.id}>
@@ -265,6 +206,7 @@
     function delSub(e) {
         let tr = e.target.closest('tr');
         let id = tr.dataset.trGen;
+        if (!confirm('del subject?')) return;
         fetch("subject/" + id, {method: 'DELETE'}).then(async result => {
             let json = await result.json();
             if (json.statusText !== 'ok') {
@@ -277,62 +219,8 @@
             }
         });
     }
-
-    //分页组件脚本
-    let totalNumber = parseInt(document.getElementById("total").value);
-    let pageSizeNumber = parseInt(document.getElementById("pageSize").value);
-    const pageParams = {
-        //初始化分页参数
-        currentPage: 1, //当前页,默认页面加载时为0
-        pageBarNum: 10, //当前页导航最多显示多少页码,默认
-        startPage: 1, //当前页导航第一页,默认页面加载时为0
-        endPage: 5, //当前页导航最后一页,默认
-        toPage: 1, //要跳转的页,默认
-        total: totalNumber, //数据量
-        pageSize: pageSizeNumber, //单页数据量
-    };
-    initPage();
-
-    function initPage() {
-        renderPage();
-        //页面加载时绑定一下分页函数
-        bindLoadDataForPage();
-    }
-    function submitSearch(){
-        let form = document.getElementById("searchForm");
-        form.pageSize.value = document.getElementById("pageSize").value;
-        form.submit();
-    }
-    //注册监听--start---
-    document.getElementById("searchButton").addEventListener("click",submitSearch);
-    //单击上一页和下一页按钮时绑定分页变化
-    document.getElementById("pagePrev").addEventListener("click", loadData);
-    document.getElementById("pageNext").addEventListener("click", loadData);
-    document.getElementById("pageSize").addEventListener("keyup", (e) => {
-        if (e.key === 'Enter') {
-            submitSearch();
-        }
-    });
-    document.getElementById("currentPage").addEventListener("keyup", (e) => {
-        if (e.key === 'Enter') {
-            let totalPage = parseInt(document.getElementById("totalPage").value);
-            if (e.target.value > totalPage) return;
-            if (confirm(`跳转到${e.target.value}页么`)) {
-                loadData();
-            }
-        }
-    });
-
-    //单击页码时,页面会变化,给新的页码绑定事件
-    function bindLoadDataForPage() {
-        Array.from(document.body.querySelector(".pageIndex").querySelectorAll("a")).forEach(a => {
-            if (a.className !== "pageSelected") {
-                a.addEventListener("click", loadData)
-            }
-        });
-    }
-    //注册监听--end---
 </script>
+<script th:src="@{/js/page.js}"></script>
 </body>
 
 </html>

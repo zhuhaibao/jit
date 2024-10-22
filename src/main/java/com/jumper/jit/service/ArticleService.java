@@ -1,9 +1,6 @@
 package com.jumper.jit.service;
 
-import com.jumper.jit.dto.ArticleDTO;
-import com.jumper.jit.dto.SimpleArticleWithContentDTO;
-import com.jumper.jit.dto.SimpleArticleWithoutContentDTO;
-import com.jumper.jit.dto.SubjectDTO;
+import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import org.springframework.data.domain.Page;
 
@@ -33,16 +30,11 @@ public interface ArticleService {
     SimpleArticleWithContentDTO getSimpleWithContentById(Integer id);
 
     /**
-     * 查询所有主题以及主题的树状文章列表
-     * @return 树状列表
-     */
-    List<SubjectDTO> findAllSubjectArticles();
-
-    /**
      * 保存文章(添加顶级节点/子节点/单体文章)
      * @return 文章
      */
     Article add(Article article);
+
 
     Article updateContent(Article article);
     /**
@@ -62,6 +54,20 @@ public interface ArticleService {
      */
     void moveTo(Integer currenId,Integer targetId);
 
+    /**
+     * 不限专题:把current节点作为孩子插入target的最后
+     * @param currenId 当前节点Id
+     * @param targetId 目标节点Id
+     * @param isSubject 目标节点是主题么 true 是 false 非主题
+     */
+    void insertNodeAsChild(Integer currenId,Integer targetId,boolean isSubject);
+
+    /**
+     * 多条件分页查询文章列表(排除内容),附带主题
+     * @param dto 多条件查询参数
+     * @return ArticleDTO
+     */
+    Page<ArticleDTO> findArticles(ArticleDTO dto);
 
     /**
      * 修改文章父节点为专题,同时会修改相同pid下的同级文章的序号;在专题最后添加一条顶级节点
@@ -86,18 +92,12 @@ public interface ArticleService {
 
 
     /**
-     * 多条件分页查询文章列表(排除内容),附带主题
-     * @param dto 多条件查询参数
-     * @return ArticleDTO
-     */
-    Page<ArticleDTO> findArticles(ArticleDTO dto);
-
-    /**
      * 根据标题名模糊搜索文章,同时附带父节点和主题
      * @param title 文章标题
      * @return 文章列表
      */
-    List<ArticleDTO> findArticlesWithParentAndSubject(String title);
+    List<ArticleAndParentDTO> findArticlesWithParentAndSubject(String title);
+
     /**
      * 删除文章,同时修改序号
      */

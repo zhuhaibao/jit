@@ -1,11 +1,10 @@
 package com.jumper.jit.dto;
 
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -14,7 +13,7 @@ public class SubjectDTO {
     @NotNull(groups = {UpdateTitle.class,UpdateRemark.class})
     private Integer id;
 
-    @Length(min = 5,max = 50,message = "字符数介于5与50之间",groups = UpdateTitle.class)
+    @Length(min = 1,max = 50,message = "字符数介于5与50之间",groups = UpdateTitle.class)
     private String subjectTitle;
     private Integer articleSum;
 
@@ -29,7 +28,9 @@ public class SubjectDTO {
     public enum Order{
         DESC,ASC
     }
-    private List<SubjectArticleDTO> articles;
+    @Transient
+    private String keyword;
+
     public interface UpdateTitle{}
     public interface UpdateRemark{}
 

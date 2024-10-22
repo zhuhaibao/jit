@@ -4,6 +4,7 @@ import com.jumper.jit.aspect.DbException;
 import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import com.jumper.jit.model.Subject;
+import com.jumper.jit.repository.ArticleAndParentRepository;
 import com.jumper.jit.repository.ArticleRepository;
 import com.jumper.jit.repository.ArticleRepositoryPage;
 import com.jumper.jit.repository.SubjectRepository;
@@ -26,6 +27,7 @@ public class ArticleServiceImpl implements ArticleService {
     private SubjectRepository subjectRepository;
     private ArticleRepository repository;
     private ArticleRepositoryPage repositoryForPage;
+    private ArticleAndParentRepository articleAndParentRepository;
 
     @Autowired
     public void setRepository(ArticleRepository repository) {
@@ -40,6 +42,10 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     public void setSubjectRepository(SubjectRepository subjectRepository) {
         this.subjectRepository = subjectRepository;
+    }
+    @Autowired
+    public void setArticleAndParentRepository(ArticleAndParentRepository articleAndParentRepository) {
+        this.articleAndParentRepository = articleAndParentRepository;
     }
 
     @Override
@@ -84,68 +90,15 @@ public class ArticleServiceImpl implements ArticleService {
         return l;
     }
 
-    private List<SubjectArticleDTO> sortAllSubject(List<SubjectArticleDTO> l) {
-        Collections.sort(l);
-        l.forEach(e -> {
-            if (e.getChildren() != null) {
-                sortAllSubject(e.getChildren());
-            }
-        });
-        return l;
-    }
-
-    @Override
-    public List<SubjectDTO> findAllSubjectArticles() {
-        List<SubjectArticleDTO> subjectArticleDTOS = repositoryForPage.findAllSubjectsWithArticles();
-        Map<Integer, SubjectDTO> subjectMap = new HashMap<>();//所有主题
-        subjectArticleDTOS.forEach(a -> {//筛选所有主题
-            if (subjectMap.get(a.getSid()) == null) {
-                subjectMap.put(a.getSid(), SubjectDTO.builder().id(a.getSid()).subjectTitle(a.getSubjectTitle()).build());
-            }
-        });
-        subjectArticleDTOS.forEach(a -> {//为每个主题填充文章列表
-            List<SubjectArticleDTO> children = subjectMap.get(a.getSid()).getArticles();
-            if (children != null) {
-                children.add(a);
-            } else {
-                children = new ArrayList<>();
-                children.add(a);
-                subjectMap.get(a.getSid()).setArticles(children);
-            }
-        });
-        //排列每个主题中的文章列表
-        subjectMap.forEach((sid, subject) -> {
-            if (subject.getArticles() == null || subject.getArticles().isEmpty()) return;
-            List<SubjectArticleDTO> sorted = new ArrayList<>();
-            Map<Integer, SubjectArticleDTO> index = new HashMap<>();
-            subject.getArticles().forEach(a -> index.put(a.getId(), a));
-            subject.getArticles().forEach(a -> {
-                if (a.getPid() == null) {
-                    sorted.add(a);//顶级
-                } else {//非顶级
-                    List<SubjectArticleDTO> children = index.get(a.getPid()).getChildren();
-                    if (children != null) children.add(a);
-                    else {
-                        children = new ArrayList<>();
-                        children.add(a);
-                        index.get(a.getPid()).setChildren(children);
-                    }
-                }
-            });
-            subject.setArticles(sortAllSubject(sorted));
-        });
-        return new ArrayList<>(subjectMap.values());
-    }
-
     @Override
     public Article add(Article article) {
         if (article.getPid() == null && article.getSid() != null) {//专题下顶级文章
             Integer maxOrderNum = repository.findTopLevelArticleCountBySid(article.getSid());
-            article.setOrderNum(maxOrderNum==null?1:maxOrderNum + 1);
+            article.setOrderNum(maxOrderNum == null ? 1 : maxOrderNum + 1);
         }
         if (article.getPid() != null && article.getSid() != null) {//专题下子节点
             Integer count = repository.findChildrenCountByPid(article.getPid());
-            article.setOrderNum(count==null?1:count + 1);
+            article.setOrderNum(count == null ? 1 : count + 1);
         }
         if (article.getSid() != null) {//如果是专题文章则文章数+1
             subjectRepository.setSubjectArticleSum(article.getSid(), 1);
@@ -153,8 +106,8 @@ public class ArticleServiceImpl implements ArticleService {
 
         if (article.getSid() != null) article.setSubject(Subject.builder().id(article.getSid()).build());
         if (article.getPid() != null) article.setArticle(Article.builder().id(article.getPid()).build());
-        if (article.getContent() != null) {
-            article.setStatus(Article.Status.NO_CONTENT.getCode());
+        if (article.getContent() != null && !article.getContent().isEmpty()) {
+            article.setStatus(Article.Status.SAVE_CONTENT.getCode());
         }
         repository.save(article);
         return article;
@@ -199,20 +152,22 @@ public class ArticleServiceImpl implements ArticleService {
         }
     }
 
+
     @Override
     public void updateTitle(Integer id, String title) {
-        repository.updateArticleTitle(id,title);
+        repository.updateArticleTitle(id, title);
     }
 
 
     @Override
     public Article updateContent(Article article) {
-        Article dbResult = repository.findById(article.getId()).orElseThrow(()-> new DbException("article id="+article.getId()));
+        Article dbResult = repository.findById(article.getId()).orElseThrow(() -> new DbException("article id=" + article.getId()));
         dbResult.setContent(article.getContent());
         dbResult.setStatus(Article.Status.SAVE_CONTENT.getCode());
         repository.save(dbResult);
         return dbResult;
     }
+
     @Override
     public void moveTo(Integer id, Integer targetId) {
         SimpleArticleWithoutContentDTO current = repository.getArticleWithoutContentById(id);//拖拽当前节点
@@ -220,10 +175,10 @@ public class ArticleServiceImpl implements ArticleService {
         /*
          * 如果拖到父节点后面,则该节点成为父节点第一个节点,序号变为1,同时父节点的第一个节点和current之间的节点序号+1
          */
-        if (current.getPid()!=null && targetId.equals(current.getPid())) {
+        if (current.getPid() != null && targetId.equals(current.getPid())) {
             repository.setAllOrderNumByBetween(current.getPid(), 1, current.getOrderNum() - 1, 1);
             repository.setOrderNum(id, 1);
-        } else if (target.getPid()!=null && target.getPid().equals(current.getPid())) {//目标节点是同级子节点
+        } else if (target.getPid() != null && target.getPid().equals(current.getPid())) {//目标节点是同级子节点
             /*
              * 向前拖:如果拖到子节点后面(子节点序号为orderNum),则序号变为子节点的序号orderNum+1,
              * 同时子节点序号orderNum后面的节点和当前节点的旧序号之间的节点序号+1
@@ -235,37 +190,113 @@ public class ArticleServiceImpl implements ArticleService {
                 repository.setAllOrderNumByBetween(current.getPid(), current.getOrderNum() + 1, target.getOrderNum(), -1);
                 repository.setOrderNum(id, target.getOrderNum());
             }
-        } else if(current.getPid()!=null) {//如果拖到了父节点外的节点后面
-            if(target.getPid()!=null){
-                repository.setAllOrderNumByAfter(target.getPid(), target.getOrderNum(),1);
+        } else if (current.getPid() != null) {//如果拖到了父节点外的节点后面
+            if (target.getPid() != null) {
+                repository.setAllOrderNumByAfter(target.getPid(), target.getOrderNum(), 1);
                 repository.updatePidAndOrderNum(id, target.getPid(), target.getOrderNum() + 1);
                 //同时修改原来的父节点的序号
-                repository.setAllOrderNumByAfter(current.getPid(), current.getOrderNum(),-1);
-            }else{//非顶级节点到顶级节点移动
-                repository.setAllOrderNumByAfter(current.getPid(),current.getOrderNum(),-1);
+                repository.setAllOrderNumByAfter(current.getPid(), current.getOrderNum(), -1);
+            } else {//非顶级节点到顶级节点移动
+                repository.setAllOrderNumByAfter(current.getPid(), current.getOrderNum(), -1);
                 //目标节点处理
-                repository.setAllOrderNumAfterCurrentNodeBySid(target.getSid(),target.getOrderNum(),1);
+                repository.setAllOrderNumAfterCurrentNodeBySid(target.getSid(), target.getOrderNum(), 1);
                 //修改当前节点pid
-                repository.updatePidAndOrderNum(current.getId(),target.getPid(),target.getOrderNum()+1);
+                repository.updatePidAndOrderNum(current.getId(), target.getPid(), target.getOrderNum() + 1);
             }
-        }else{//移动的是顶级节点
+        } else {//移动的是顶级节点
             //如果目标节点顶级节点
-            if(target.getPid()==null){
+            if (target.getPid() == null) {
                 //如果是向前移动
-                if(current.getOrderNum()>target.getOrderNum()){
-                    repository.setAllOrderNumBetweenBySid(current.getSid(),1, current.getOrderNum()+1,target.getOrderNum()-1 );
-                    repository.setOrderNum(current.getId(),target.getOrderNum()+1);
-                }else{//如果是向后移动
-                    repository.setAllOrderNumBetweenBySid(current.getSid(),-1, current.getOrderNum()+1,target.getOrderNum() );
-                    repository.setOrderNum(current.getId(),target.getOrderNum());
+                if (current.getOrderNum() > target.getOrderNum()) {
+                    repository.setAllOrderNumBetweenBySid(current.getSid(), 1, current.getOrderNum() + 1, target.getOrderNum() - 1);
+                    repository.setOrderNum(current.getId(), target.getOrderNum() + 1);
+                } else {//如果是向后移动
+                    repository.setAllOrderNumBetweenBySid(current.getSid(), -1, current.getOrderNum() + 1, target.getOrderNum());
+                    repository.setOrderNum(current.getId(), target.getOrderNum());
                 }
-            }else{//如果目标节点非顶级节点
+            } else {//如果目标节点非顶级节点
                 //本级节点修改
                 repository.setAllOrderNumAfterCurrentNodeBySid(current.getSid(), current.getOrderNum(), -1);
                 //目标节点修改
-                repository.setAllOrderNumByAfter(target.getPid(), target.getOrderNum(),1);
-                repository.updatePidAndOrderNum(current.getId(),target.getPid(),target.getOrderNum()+1);
+                repository.setAllOrderNumByAfter(target.getPid(), target.getOrderNum(), 1);
+                repository.updatePidAndOrderNum(current.getId(), target.getPid(), target.getOrderNum() + 1);
             }
+        }
+    }
+
+    @Override
+    public void insertNodeAsChild(Integer currentId, Integer targetId, boolean isSubject) {
+        /*
+         * 1 前端已经排除自身和自身的父节点,此处只考虑其它父节点
+         * 2 由于是插入到目标节点的所有子节点之后,所以不用考虑目标节点序号问题
+         */
+        SimpleArticleWithoutContentDTO current = repository.getArticleWithoutContentById(currentId);
+        //如果目标节点是主题
+        if (isSubject) {
+            //如果本来存在于此主题下,并且是顶级节点,则不做处理
+            if (targetId.equals(current.getSid()) && current.getPid() == null) return;
+            //修改文章自身sid,orderNum,pid置空
+            Integer orderNum = repository.findTopLevelArticleCountBySid(targetId);
+            repository.updateArticleAsChildToSubject(currentId, targetId, orderNum + 1);
+
+            //修改子孙节点sid,同时返回计数
+            AtomicInteger counter = new AtomicInteger(1);
+            if(current.getSid()!= null && !current.getSid().equals(targetId)){
+                updateDescendantRecursionById(currentId,targetId,counter);
+            }
+
+            //修改自身主题的文章数量-1,排除单体文章,排除相同主题
+            if(current.getSid()!= null && !current.getSid().equals(targetId)){
+                subjectRepository.setSubjectArticleSum(current.getSid(), -counter.get());
+            }
+            //修改目标主题文章数量+1,只要不是一个主题
+            if(!targetId.equals(current.getSid())){
+                subjectRepository.setSubjectArticleSum(targetId, counter.get());
+            }
+        } else {
+            SimpleArticleWithoutContentDTO target = repository.getArticleWithoutContentById(targetId);
+            //修改自身sid,pid,orderNum
+            Integer orderNum = repository.findArticleCountByPid(targetId);
+            repository.updateArticleAsChildToNode(currentId, target.getSid(), targetId, orderNum + 1);
+
+            //修改子孙节点sid,同时返回计数
+            AtomicInteger counter = new AtomicInteger(1);
+            if(current.getSid()!= null && !current.getSid().equals(target.getSid())){
+                updateDescendantRecursionById(currentId,target.getSid(),counter);
+            }
+
+            //修改自身主题的文章数量-1,排除单体文章,排除相同主题
+            if(current.getSid()!= null && !current.getSid().equals(target.getSid())){
+                subjectRepository.setSubjectArticleSum(current.getSid(), -counter.get());
+            }
+            //修改目标主题文章数量+1,只要不是一个主题
+            if(!target.getSid().equals(current.getSid())){
+                subjectRepository.setSubjectArticleSum(targetId, counter.get());
+            }
+        }
+        //修改自身原来同级节点序号orderNum
+        boolean isTopLevel = current.getPid() == null;
+        if (isTopLevel) {
+            repository.setAllOrderNumAfterCurrentNodeBySid(current.getSid(), current.getOrderNum(), -1);
+        } else {
+            repository.setAllOrderNumAfterCurrentNodeByPid(current.getPid(), current.getOrderNum(), -1);
+        }
+    }
+
+    /**
+     * 父节点改变sid后,子节点跟随
+     * @param id 父节点
+     * @param sid 主题id
+     * @param counter 计数器
+     */
+    public void updateDescendantRecursionById(Integer id,final Integer sid, AtomicInteger counter) {
+        if (repository.existsByPid(id)) {
+            List<SimpleArticleWithoutContentDTO> children = repository.findArticlesWithoutContentByPid(id);
+            repository.updateSidByPid(id,sid);//批量修改sid
+            children.forEach(a -> {
+                counter.getAndAdd(1);
+                updateDescendantRecursionById(a.getId(),sid,counter);
+            });
         }
     }
 
@@ -288,8 +319,8 @@ public class ArticleServiceImpl implements ArticleService {
     public Page<ArticleDTO> findArticles(ArticleDTO dto) {
         Specification<ArticleDTO> spec = ((root, q, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (dto.getSubjectTitle() != null) {
-                predicates.add(cb.like(root.get("title"), "%" + dto.getTitle() + "%"));
+            if (dto.getKeyword() != null && !dto.getKeyword().isEmpty()) {
+                predicates.add(cb.like(root.get("title"), "%" + dto.getKeyword() + "%"));
             }
             assert q != null;
             q.multiselect(root.get("id"), root.get("title"), root.get("pid"), root.get("createdAt")
@@ -307,8 +338,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public List<ArticleDTO> findArticlesWithParentAndSubject(String title) {
-        return repositoryForPage.findByTitleContainingIgnoreCaseAndSidIsNotNullOrderBySidAscPidAscOrderNumAsc(title);
+    public List<ArticleAndParentDTO> findArticlesWithParentAndSubject(String title) {
+        return articleAndParentRepository.findByTitleContainingIgnoreCase(title);
     }
 
     @Override

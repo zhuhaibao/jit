@@ -3,11 +3,13 @@ package com.jumper.jit.controller;
 import com.jumper.jit.dto.PageDTO;
 import com.jumper.jit.dto.SimpleArticleWithoutContentDTO;
 import com.jumper.jit.dto.SubjectDTO;
+import com.jumper.jit.model.Article;
 import com.jumper.jit.model.Subject;
 import com.jumper.jit.service.ArticleService;
 import com.jumper.jit.service.SubjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +41,13 @@ public class SubjectController {
     public PageDTO findAllBy(SubjectDTO subject){
         return PageDTO.toPageDTO(service.findSubjectBy(subject));
     }
+    @GetMapping( "find")
+    public String find(SubjectDTO subject, Model model){
+        Page<Subject> page = service.findSubjectBy(subject);
+        model.addAttribute("data", PageDTO.toPageDTO(page));
+        model.addAttribute("subject", subject);
+        return "subject";
+    }
 
     @PostMapping("updateSubjectTitle")
     @ResponseBody
@@ -58,12 +67,24 @@ public class SubjectController {
     }
 
     @GetMapping("{sid}")
-    public String subjectArticleBySid(@PathVariable("sid") Integer sid, Model model){
+    public String subjectArticleBySid(@PathVariable("sid") Integer sid,@RequestParam(value = "id",required = false) Integer id, Model model){
         model.addAttribute("subject",service.findById(sid));
         List<SimpleArticleWithoutContentDTO> list = articleService.findArticleTree(sid);
         model.addAttribute("treeL",list);
-        if(!list.isEmpty())
-            model.addAttribute("article",articleService.getSimpleWithContentById(list.getFirst().getId()));
+        if(id==null && !list.isEmpty()){
+            id = list.getFirst().getId();
+        }
+        if(id == null){
+            model.addAttribute("article",new Article());
+        }else{
+            model.addAttribute("article",articleService.getSimpleWithContentById(id));
+        }
         return "subject-article";
+    }
+
+    @PostMapping("findSimpleArticlesById")
+    @ResponseBody
+    public List<SimpleArticleWithoutContentDTO> findAllSimpleWithoutContent(@RequestParam("id") Integer id){
+        return articleService.findArticleTree(id);
     }
 }

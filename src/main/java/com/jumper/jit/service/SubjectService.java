@@ -1,10 +1,13 @@
 package com.jumper.jit.service;
 
+import com.jumper.jit.dto.SimpleSubjectDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.Subject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 
 public interface SubjectService {
@@ -13,6 +16,8 @@ public interface SubjectService {
     void delete(Integer id);
     Page<Subject> findSubjectBy(SubjectDTO dto);
     Subject findById(Integer id);
+
+    List<SimpleSubjectDTO> findAllSimpleSubject();
 
     /**
      * 调整文章数量
