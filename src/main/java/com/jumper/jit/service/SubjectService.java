@@ -28,4 +28,32 @@ public interface SubjectService {
     @Modifying
     @Query("update Subject set articleSum=articleSum+:num where id=:id")
     Integer updateSubjectArticleSum(Integer id,Integer num);
+
+    /**
+     * 根据导航状态查询主题
+     * @param navigation true 已经是导航 false 非导航
+     * @param keyword 主题关键词
+     * @return 列表
+     */
+    List<Subject> findByNavigation(boolean navigation,String keyword);
+
+    /**
+     * 把节点插入到目标节点后
+     * @param id 当前节点
+     * @param targetId 目标节点
+     */
+    void moveTo(Integer id,Integer targetId);
+
+    /**
+     * 删除当前主题作为导航
+     * @param id 主题id
+     */
+    void deleteNavigation(Integer id);
+
+    /**
+     * 添加当前主题作为导航
+     * @param id 主题id
+     */
+    Subject addNavigation(Integer id);
+
 }

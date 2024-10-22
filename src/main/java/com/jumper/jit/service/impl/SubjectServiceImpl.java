@@ -15,10 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Transactional
 @Service
@@ -90,13 +87,50 @@ public class SubjectServiceImpl implements SubjectService {
         return dao.setSubjectArticleSum(id,num);
     }
 
-    @Autowired
-    public void setSubjectRepository(SubjectRepository subjectRepository) {
-        this.dao = subjectRepository;
-    }
 
     @Override
     public List<SimpleSubjectDTO> findAllSimpleSubject() {
         return dao.queryAllByIdNotNullOrderByCreatedAtDescUpdatedAtDesc();
+    }
+/****************************下面是导航操作*****************************/
+    @Override
+    public List<Subject> findByNavigation(boolean navigation,String keyword) {
+        List<Subject> l;
+        if(keyword!=null && !keyword.isEmpty()){
+            l = dao.findSubjectByNavigationAndSubjectTitleContainingIgnoreCase(navigation,keyword);
+        }else{
+            l = dao.findSubjectByNavigation(navigation);
+        }
+        if(navigation){//导航要排序
+            Collections.sort(l);
+        }
+        return l;
+    }
+
+    @Override
+    public void moveTo(Integer id, Integer targetId) {
+        Subject current = dao.findById(id).orElseThrow(()->new DbException("id="+id));
+        Subject target = dao.findById(targetId).orElseThrow(()->new DbException("targetId="+targetId));
+        if(current.getOrderNum()<target.getOrderNum()){//往后
+            dao.setSubjectOrderNumBetween(-1,current.getOrderNum()+1,target.getOrderNum());
+            dao.setSubjectOrderNum(current.getId(),target.getOrderNum());
+        }else{//往前
+            dao.setSubjectOrderNumBetween(1,target.getOrderNum()+1,current.getOrderNum()-1);
+            dao.setSubjectOrderNum(current.getId(),target.getOrderNum()+1);
+        }
+    }
+
+    @Override
+    public void deleteNavigation(Integer id) {
+        Subject current = dao.findById(id).orElseThrow(()->new DbException("id="+id));
+        dao.updateSubjectByNavigation(null,false,id);//修改为非导航
+        dao.setOrderNumAfter(-1,current.getOrderNum());
+    }
+
+    @Override
+    public Subject addNavigation(Integer id) {
+        Integer count = dao.findNavigationCount();
+        dao.setSubjectAsNavigation(id,count+1);
+        return dao.findById(id).orElseThrow();
     }
 }

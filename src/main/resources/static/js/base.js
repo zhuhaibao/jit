@@ -1,5 +1,5 @@
 /*弹出对话框通用函数*/
-function showPublicConfirm(e, message) {
+function showPublicConfirm(e,callback, message) {
     //1 通用确认对话框位置确定
     //在当前单击位置的右边显示
     let left = e.clientX + 10;
@@ -18,9 +18,7 @@ function showPublicConfirm(e, message) {
     publicConfirmTip.style.display = "block";
 
     publicConfirmTipButtonConfirm.onclick = function () {
-        //后台服务
-        /*后代服务代码*/
-        e.target.offsetParent.remove();
+        callback(e);
         publicConfirmTip.style.display = 'none';
     }
     publicConfirmTipButtonCancel.onclick = function () {

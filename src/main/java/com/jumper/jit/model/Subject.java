@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Builder
-public class Subject {
+public class Subject implements Comparable<Subject>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -25,9 +25,16 @@ public class Subject {
     private String remark;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean navigation = false;
+    private Integer orderNum;
 
     public Subject() {
 
+    }
+
+    @Override
+    public int compareTo(Subject o) {
+        return this.getOrderNum().compareTo(o.getOrderNum());
     }
 
     @PrePersist

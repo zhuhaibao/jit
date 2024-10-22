@@ -25,6 +25,9 @@ public class SubjectDTO {
     private Order orderByCreate;//按照创建日期排序
     private Order orderByUpdate;//按照更新日期排序
 
+    private Boolean navigation=false;
+    private Integer orderNum;
+
     public enum Order{
         DESC,ASC
     }

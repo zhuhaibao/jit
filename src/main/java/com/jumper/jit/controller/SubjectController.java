@@ -87,4 +87,6 @@ public class SubjectController {
     public List<SimpleArticleWithoutContentDTO> findAllSimpleWithoutContent(@RequestParam("id") Integer id){
         return articleService.findArticleTree(id);
     }
+
+
 }
