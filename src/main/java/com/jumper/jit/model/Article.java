@@ -26,7 +26,7 @@ public class Article {
     @Length(min = 2,max = 100,message = "title长度在2和100之间",groups = {AddSub.class, AddTop.class, AddSingleArticle.class})
     private String title;
 
-    @Length(min = 100,message = "不能少于100个字符",groups = {AddSingleArticle.class,SaveContent.class})
+    @Length(min = 20,message = "不能少于100个字符",groups = {AddSingleArticle.class,SaveContent.class})
     private String content;
 
     private Integer status=Status.NO_CONTENT.code;//文章状态 0 无内容,1 已保存,2 已发布,3修改未发布

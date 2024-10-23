@@ -126,6 +126,11 @@ public class ArticleServiceImpl implements ArticleService {
         dbArticle.setContent(article.getContent());
         dbArticle.setStatus(Article.Status.SAVE_CONTENT.getCode());
         repository.save(dbArticle);
+        if(article.getPid()==null){
+            this.insertNodeAsChild(id,article.getSid(),true);
+        }else{
+            this.insertNodeAsChild(id,article.getPid(),false);
+        }
         return dbArticle;
     }
 
