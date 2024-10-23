@@ -1,9 +1,6 @@
 package com.jumper.jit.controller;
 
-import com.jumper.jit.dto.ArticleAndParentDTO;
-import com.jumper.jit.dto.ArticleDTO;
-import com.jumper.jit.dto.PageDTO;
-import com.jumper.jit.dto.SimpleArticleWithContentDTO;
+import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import com.jumper.jit.service.ArticleService;
 import com.jumper.jit.service.SubjectService;
@@ -13,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -118,5 +116,11 @@ public class ArticleController {
     public List<ArticleAndParentDTO> findArticlesWithParentAndSubject(@RequestParam("keyword")String keyword){
         return service.findArticlesWithParentAndSubject(keyword);
     }
+    @ResponseBody
+    @PostMapping("uploadFile")
+    public FileDTO findArticlesWithParentAndSubject(FileDTO fileDTO) throws IOException {
+        return service.saveFile(fileDTO);
+    }
+
 
 }

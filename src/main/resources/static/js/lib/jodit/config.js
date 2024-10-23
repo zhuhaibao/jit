@@ -31,7 +31,7 @@ Jodit.defaultOptions.extraPlugins = [
     'autocomplete',
     'emoji',
     'google-search',
-    'paste-code',
+    'pasteCode',
     'color-picker',
 ];
 Jodit.defaultOptions.buttons = [

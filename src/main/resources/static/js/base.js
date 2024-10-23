@@ -71,11 +71,15 @@ function randomInteger(n) { //产生随机整数
 function loadJoditEditor(selector) {
     return Jodit.make(selector, {
         uploader: {
-            url: 'http://localhost:8181/index-test.php?action=fileUpload',
-        },
-        filebrowser: {
-            ajax: {
-                url: 'http://localhost:8181/index-test.php'
+            url: '/article/uploadFile',
+            format:'json',
+            getMessage: function (resp) {
+                if(resp.statusText==='ok'){
+                    resp.data.fileNames.forEach(fileName=>{
+                        this.jodit.selection.insertImage(resp.data.baseurl+ resp.data.path + fileName);
+                    });
+                }
+                return resp.msg;
             }
         }
     });

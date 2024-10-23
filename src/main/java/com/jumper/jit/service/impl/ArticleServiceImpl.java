@@ -13,11 +13,16 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -310,22 +315,6 @@ public class ArticleServiceImpl implements ArticleService {
             });
         }
     }
-
-    @Override
-    public void updatePidToSubject(Integer id, Integer pid, Integer targetSubjectId) {
-
-    }
-
-    @Override
-    public Article findWithSubject(Integer id) {
-        return null;
-    }
-
-    @Override
-    public List<Article> findArticleByPid(Integer pid) {
-        return List.of();
-    }
-
     @Override
     public Page<ArticleDTO> findArticles(ArticleDTO dto) {
         Specification<ArticleDTO> spec = ((root, q, cb) -> {
@@ -352,6 +341,46 @@ public class ArticleServiceImpl implements ArticleService {
     public List<ArticleAndParentDTO> findArticlesWithParentAndSubject(String title) {
         return articleAndParentRepository.findByTitleContainingIgnoreCase(title);
     }
+
+    @Value("${upload.save-path}")
+    private String savePath;
+    @Value("${upload.base-url}")
+    private String baseUrl;
+    @Value("${upload.relative-path}")
+    private String relativePath;
+
+    @Override
+    public FileDTO saveFile(FileDTO fileDTO) throws IOException {
+        MultipartFile[] files = fileDTO.getFiles();
+        String[] names = new String[files.length];
+        for(int i = 0;i < files.length;i+=1){
+            File file = new File(savePath+files[i].getOriginalFilename());
+            FileCopyUtils.copy(files[i].getBytes(),file);
+            names[i] = files[i].getOriginalFilename();
+        }
+        fileDTO.setBaseurl(baseUrl);
+        fileDTO.setPath(relativePath);
+        fileDTO.setFileNames(Arrays.asList(names));
+        fileDTO.setFiles(null);
+        return fileDTO;
+    }
+
+    @Override
+    public void updatePidToSubject(Integer id, Integer pid, Integer targetSubjectId) {
+
+    }
+
+    @Override
+    public Article findWithSubject(Integer id) {
+        return null;
+    }
+
+    @Override
+    public List<Article> findArticleByPid(Integer pid) {
+        return List.of();
+    }
+
+
 
     @Override
     public void delAndUpdateOrderNum() {

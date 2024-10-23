@@ -4,6 +4,7 @@ import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ArticleService {
@@ -71,6 +72,19 @@ public interface ArticleService {
     Page<ArticleDTO> findArticles(ArticleDTO dto);
 
     /**
+     * 根据标题名模糊搜索文章,同时附带父节点和主题
+     * @param title 文章标题
+     * @return 文章列表
+     */
+    List<ArticleAndParentDTO> findArticlesWithParentAndSubject(String title);
+
+    /**
+     * 保存上传文件
+     * @param fileDTO 接收容器
+     * @return FileDTO
+     */
+    FileDTO saveFile(FileDTO fileDTO) throws IOException;
+    /**
      * 修改文章父节点为专题,同时会修改相同pid下的同级文章的序号;在专题最后添加一条顶级节点
      * @param id 文章id
      * @param pid 上级文章id
@@ -91,13 +105,6 @@ public interface ArticleService {
      */
     List<Article> findArticleByPid(Integer pid);
 
-
-    /**
-     * 根据标题名模糊搜索文章,同时附带父节点和主题
-     * @param title 文章标题
-     * @return 文章列表
-     */
-    List<ArticleAndParentDTO> findArticlesWithParentAndSubject(String title);
 
     /**
      * 删除文章,同时修改序号
