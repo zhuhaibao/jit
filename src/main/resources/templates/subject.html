@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="zh">
 
 <head>
     <meta charset="utf-8">
@@ -36,32 +36,46 @@
                 <th>主题</th>
                 <th>创建日期</th>
                 <th>文章数量</th>
+                <th>英文名</th>
+                <th>图片</th>
                 <th>操作</th>
                 <th>备注</th>
             </tr>
             <tr th:each="sub , stat:${data.content}" th:data-tr-gen="${sub.id}">
-                <td ondblclick="editSubject(event,1)" th:attr="data-td-id=${sub.id}">
+                <td ondblclick="editSubject(event,1)" th:attr="data-td-id=${sub.id}" class="updateTd">
                     [[${sub.subjectTitle}]]
                 </td>
                 <td>[[${sub.createdAt}]]</td>
+                <td>[[${sub.articleSum}]]</td>
+                <td ondblclick="editSubject(event,3)" th:attr="data-td-id=${sub.id}" class="updateTd">[[${sub.enName}]]</td>
+                <td th:attr="data-td-id=${sub.id}" class="uploadTd">
+                    <div class="upload-div">
+                        <a>上传图片</a>
+                        <input type="file" accept="image/*" onchange="changeImg(event)">
+                        <img onmouseover="previewBigImg(this)" onmouseleave="document.getElementById('previewBigImg').style.display='none';" th:unless="${sub.pic eq null}" th:src="${sub.pic}" >
+                        <span th:if="${sub.pic eq null}">无图片</span>
+                    </div>
+                </td>
                 <td>[[${sub.articleSum}]]</td>
                 <td>
                     <a th:href="|/subject/${sub.id}|"><img alt="edit subject"
                                                                                             th:src="@{/img/edit.svg}"
                                                                                             title='edit subject'
-                                                                                            class="edit"
+                                                                                            
                                                                                             src="img/edit.svg"></a>
                     /
-                    <a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"
+                    <a href="javascript:void(0);"><img alt="del subject" title='del subject' 
                                                                 th:src="@{/img/delete.svg}" src="img/delete.svg"
                                                                 onclick="delSub(event)"></a>
                 </td>
-                <td ondblclick="editSubject(event,2)" th:attr="data-td-id=${sub.id}">[[${sub.remark}]]</td>
+                <td ondblclick="editSubject(event,2)" th:attr="data-td-id=${sub.id}" class="updateTd">[[${sub.remark}]]</td>
             </tr>
         </table>
         <nav th:insert="~{common::page}"></nav>
     </section>
 </div>
+<!-- 隐藏的图片位-->
+<img style="display: none;width: 100px;height: 100px;position: absolute" id="previewBigImg">
 <!--模态窗口div-->
 <div class="modal" id="modal" onclick="if(event.target==modal)modal.style.display='none'">
     <div class="modalContent">
@@ -72,15 +86,34 @@
         <div class="modalBody">
             <form id="subjectForm" class="formContainer" onsubmit="return false">
                 <div class="formRow">
-                    <div class="colLabel">
+                    <div class="colLabel" style="padding-top: 0">
                         <label for="subjectTitle">主题<span style="color:red;">*</span>:</label>
                     </div>
-                    <div class="colValue">
+                    <div class="colValue" style="padding-top: 0">
                         <input type="input" id="subjectTitle" name="subjectTitle" placeholder="输入标题"
                                required>
                     </div>
                 </div>
-                <div class="formRow" style="margin-top: 40px;">
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="enName">英文名<span style="color:red;">*</span>:</label>
+                    </div>
+                    <div class="colValue">
+                        <input type="input" id="enName" name="enName" placeholder="英文名" required>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="picFile">图片:</label>
+                    </div>
+                    <div class="colValue">
+                        <div class="upload-div" style="width: 200px">
+                            <a style="padding: 10px">上传图片</a>
+                            <input type="file" id="picFile" name="picFile" accept="image/*" onchange="previewImg(this)">
+                        </div>
+                    </div>
+                </div>
+                <div class="formRow">
                     <div class="colLabel">
                         <label for="remark">备注: </label>
                     </div>
@@ -94,6 +127,7 @@
             <a class="doButton" onclick="addSubject()">确定</a>
         </div>
     </div>
+
 </div>
 <script type="text/javascript" th:inline="javascript">
     let loadUrl = "/subject/find";
@@ -103,12 +137,23 @@
         let table = document.getElementById("table");
         Array.from(table.querySelectorAll("tr[data-tr-gen]")).forEach(tr => tr.remove());
         json.data.content.forEach(trData => {
+            let enName = trData.enName || '';
+            let imgPlace = trData.pic?`<img onmouseover="previewBigImg(this)" onmouseleave="document.getElementById('previewBigImg').style.display='none';" src="${trData.pic}" >`:`<span>无图片</span>`;
             let trHtml = `<tr data-tr-gen = ${trData.id}>
-                                <td ondblclick="editSubject(event,1)" data-td-id="${trData.id}">${trData.subjectTitle}</td>
+                                <td class="updateTd" ondblclick="editSubject(event,1)" data-td-id="${trData.id}">${trData.subjectTitle}</td>
                                 <td>${trData.createdAt}</td>
                                 <td>${trData.articleSum}</td>
-                                <td><a href="/subject/${trData.id}"><img alt="edit subject" title='edit subject' class="edit" src="/img/edit.svg"></a>/<a href="javascript:void(0);" class=""><img alt="del subject" title='del subject' class="edit"  src="/img/delete.svg" onclick="delSub(event);"></a></td>
-                                <td ondblclick="editSubject(event,2)" data-td-id="${trData.id}">${trData.remark}</td>
+                                <td class="updateTd" ondblclick="editSubject(event,3)" data-td-id=${trData.id}>${enName}</td>
+
+                                <td data-td-id=${trData.id} class="uploadTd">
+                                    <div class="upload-div">
+                                        <a>上传图片</a>
+                                        <input type="file" accept="image/*" onchange="changeImg(event)">
+                                        ${imgPlace}
+                                    </div>
+                                </td>
+                                <td><a href="/subject/${trData.id}"><img alt="edit subject" title='edit subject'  src="/img/edit.svg"></a>/<a href="javascript:void(0);"><img alt="del subject" title='del subject'   src="/img/delete.svg" onclick="delSub(event);"></a></td>
+                                <td class="updateTd" ondblclick="editSubject(event,2)" data-td-id="${trData.id}">${trData.remark}</td>
                                 </tr>
                                `;
             table.tBodies[0].insertAdjacentHTML("beforeend", trHtml);
@@ -121,7 +166,7 @@
         if (currentTd) return;
         let oldValue = event.currentTarget.innerHTML.trim();//旧的td数据
         currentTd = event.currentTarget;
-        currentTd.innerHTML = `<input class='editButton' type="text" name="title" value='${oldValue}'">`;
+        currentTd.innerHTML = `<input class='editButton' type="text" value='${oldValue}'">`;
         currentTd.firstElementChild.focus();
 
         let updated = null;
@@ -152,6 +197,10 @@
                         //save 备注
                         url = "/subject/updateRemark"
                         formData.set("remark", e.target.value);
+                    }else{
+                        //save 英文名
+                        url = "/subject/updateEnName"
+                        formData.set("enName", e.target.value);
                     }
                     updateSubject(url, formData);
                     currentTd.innerHTML = e.target.value;
@@ -164,6 +213,52 @@
             currentTd = null;
         }
     }
+    function changeImg(event) {
+        let formData = new FormData(); //利用formData上传图片
+        let tdId = event.target.closest("td[data-td-id]").dataset.tdId;
+        formData.set("id",tdId);
+        formData.append("picFile", event.target.files[0]);
+        fetch("/subject/updatePic", {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(result => {
+                if(result.statusText==='ok'){
+                    if(event.target.nextElementSibling.tagName==='IMG'){
+                        event.target.nextElementSibling.src = result.data.pic;
+                    }else{
+                        event.target.nextElementSibling.remove();
+                        event.target.insertAdjacentHTML("afterend",`<img onmouseover="previewBigImg(this)" onmouseleave="document.getElementById('previewBigImg').style.display='none';" alt="uploadpic" src="${result.data.pic}">`)
+                    }
+                }else{
+                    alert("修改失败:"+result.msg);
+                }
+            });
+    }
+    function previewBigImg(target){
+        let img = document.getElementById("previewBigImg");
+        let coords = target.getBoundingClientRect();
+        img.src= target.src;
+        img.style.display = "block";
+        img.style.top = coords.top-img.offsetWidth+"px";
+        img.style.left = coords.left+target.offsetHeight+"px";
+    }
+    function previewImg(target){
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(target.files[0]);
+        fileReader.onload = function(e) {
+            if(target.nextElementSibling) target.nextElementSibling.remove();
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.width = '40px';
+            img.style.height = '40px';
+            img.style.backgroundColor = '#F2F2F2';
+            img.style.verticalAlign = "middle";
+            target.insertAdjacentElement("afterend",img);
+        }
+    }
+
 
     //修改Subject
     function updateSubject(url, formData) {
@@ -180,11 +275,13 @@
     //编辑---新增主题--------------------
     function addSubject() {
         let subjectForm = document.forms.subjectForm;
-        fetch("subject", {
+        console.log(subjectForm);
+        fetch("/subject", {
             method: "POST",
             body: new FormData(subjectForm),
         }).then(async result => {
             let json = await result.json();
+            console.log(json);
             if (json.statusText === 'ok') {
                 modal.style.display = 'none';
                 loadData();

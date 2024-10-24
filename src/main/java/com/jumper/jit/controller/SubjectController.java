@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -33,8 +34,8 @@ public class SubjectController {
 
     @PostMapping
     @ResponseBody
-    public Subject saveSubject(@Valid Subject subject){
-        return service.save(subject);
+    public Subject saveSubject(@Valid Subject subject) throws IOException {
+        return service.add(subject);
     }
     @PostMapping("find")
     @ResponseBody
@@ -51,12 +52,22 @@ public class SubjectController {
 
     @PostMapping("updateSubjectTitle")
     @ResponseBody
-    public Subject updateSubjectTitle(@Validated(SubjectDTO.UpdateTitle.class) SubjectDTO subject){
+    public Subject updateSubjectTitle(@Validated(SubjectDTO.UpdateTitle.class) SubjectDTO subject) throws IOException{
         return service.updateSubject(subject);
     }
     @PostMapping("updateRemark")
     @ResponseBody
-    public Subject updateRemark(@Validated(SubjectDTO.UpdateRemark.class) SubjectDTO subject){
+    public Subject updateRemark(@Validated(SubjectDTO.UpdateRemark.class) SubjectDTO subject) throws IOException{
+        return service.updateSubject(subject);
+    }
+    @PostMapping("updateEnName")
+    @ResponseBody
+    public Subject updateEnName(@Validated(SubjectDTO.UpdateEnName.class) SubjectDTO subject) throws IOException{
+        return service.updateSubject(subject);
+    }
+    @PostMapping("updatePic")
+    @ResponseBody
+    public Subject updatePic(@Validated(SubjectDTO.UpdatePic.class) SubjectDTO subject) throws IOException{
         return service.updateSubject(subject);
     }
 

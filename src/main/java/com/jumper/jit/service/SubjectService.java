@@ -7,12 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.io.IOException;
 import java.util.List;
 
 
 public interface SubjectService {
-    Subject save(Subject subject);
-    Subject updateSubject(SubjectDTO subject);
+    Subject add(Subject subject) throws IOException;
+    Subject updateSubject(SubjectDTO subject) throws IOException;
     void delete(Integer id);
     Page<Subject> findSubjectBy(SubjectDTO dto);
     Subject findById(Integer id);
@@ -27,6 +28,7 @@ public interface SubjectService {
      */
     @Modifying
     @Query("update Subject set articleSum=articleSum+:num where id=:id")
+
     Integer updateSubjectArticleSum(Integer id,Integer num);
 
     /**

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +28,12 @@ public class Subject implements Comparable<Subject>{
     private LocalDateTime updatedAt;
     private Boolean navigation = false;
     private Integer orderNum;
+    @Length(min=1,max=100,message = "英文名长度在1~100之间")
+    private String enName;//英文名,主要作为目录使用
+    private String pic;//图标
+
+    @Transient
+    private MultipartFile picFile;
 
     public Subject() {
 

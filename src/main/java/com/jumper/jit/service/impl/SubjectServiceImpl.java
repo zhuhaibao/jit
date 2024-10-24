@@ -10,11 +10,16 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @Transactional
@@ -32,17 +37,39 @@ public class SubjectServiceImpl implements SubjectService {
         return dao.findById(id).orElseThrow(()->new DbException("id="+id));
     }
 
+    @Value("${upload.save-path}")
+    private String savePath;
+    @Value("${upload.base-url}")
+    private String baseUrl;
+    @Value("${upload.relative-subject-path}")
+    private String relativePath;
+    @Value("${upload.subject-pic}")
+    private String subjectPic;
     @Override
-    public Subject save(Subject subject) {
+    public Subject add(Subject subject) throws IOException {
+        //首先处理图片
+        MultipartFile file = subject.getPicFile();
+        if(file!=null){
+            subject.setPic(savePicFile(file));
+            subject.setPicFile(null);
+        }
         return dao.save(subject);
     }
-
+    private String savePicFile(MultipartFile file) throws IOException{
+        String fileUrl = savePath+subjectPic+file.getOriginalFilename();
+        FileCopyUtils.copy(file.getBytes(),new File(fileUrl));
+        return baseUrl+relativePath+file.getOriginalFilename();
+    }
     @Override
-    public Subject updateSubject(SubjectDTO subject) {
+    public Subject updateSubject(SubjectDTO subject) throws IOException{
         Optional<Subject> optional = dao.findById(subject.getId());
         Subject returnO = optional.orElseThrow(()->new DbException(subject));
         if(subject.getRemark()!=null)returnO.setRemark(subject.getRemark());
         if(subject.getSubjectTitle()!=null) returnO.setSubjectTitle(subject.getSubjectTitle());
+        if(subject.getEnName()!=null) returnO.setEnName(subject.getEnName());
+        if(subject.getPicFile()!=null){
+            returnO.setPic(savePicFile(subject.getPicFile()));
+        }
         return dao.save(returnO);
     }
 
