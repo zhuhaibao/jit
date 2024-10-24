@@ -34,3 +34,4 @@ build/
 /frontend/*.html
 /tmp
 /src/main/resources/static/img/upload/
+frontend/img/upload/
