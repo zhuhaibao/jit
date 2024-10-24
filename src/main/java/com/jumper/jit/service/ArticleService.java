@@ -84,31 +84,5 @@ public interface ArticleService {
      * @return FileDTO
      */
     FileDTO saveFile(FileDTO fileDTO) throws IOException;
-    /**
-     * 修改文章父节点为专题,同时会修改相同pid下的同级文章的序号;在专题最后添加一条顶级节点
-     * @param id 文章id
-     * @param pid 上级文章id
-     * @param targetSubjectId 目标节点id
-     */
-    void updatePidToSubject(Integer id, Integer pid,Integer targetSubjectId);
-    /**
-     * 根据ID查询文章,附带主题
-     * @param id 文章id
-     * @return 文章
-     */
-    Article findWithSubject(Integer id);
-
-    /**
-     * 根据pid查询文章列表(排除内容)
-     * @param pid 上级文章id
-     * @return 文章列表
-     */
-    List<Article> findArticleByPid(Integer pid);
-
-
-    /**
-     * 删除文章,同时修改序号
-     */
-    void delAndUpdateOrderNum();
 
 }

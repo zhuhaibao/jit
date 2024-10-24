@@ -369,26 +369,4 @@ public class ArticleServiceImpl implements ArticleService {
         fileDTO.setFiles(null);
         return fileDTO;
     }
-
-    @Override
-    public void updatePidToSubject(Integer id, Integer pid, Integer targetSubjectId) {
-
-    }
-
-    @Override
-    public Article findWithSubject(Integer id) {
-        return null;
-    }
-
-    @Override
-    public List<Article> findArticleByPid(Integer pid) {
-        return List.of();
-    }
-
-
-
-    @Override
-    public void delAndUpdateOrderNum() {
-
-    }
 }

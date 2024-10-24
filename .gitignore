@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+/frontend/*.html
+/tmp
+/src/main/resources/static/img/upload/
