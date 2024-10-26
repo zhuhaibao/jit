@@ -23,6 +23,9 @@ function initPage() {
 function submitSearch(){
     let form = document.getElementById("searchForm");
     form.pageSize.value = document.getElementById("pageSize").value;
+    if(document.getElementById("status")){
+        form.status.value = document.getElementById("status").value;
+    }
     form.submit();
 }
 //注册监听--start---
@@ -58,7 +61,11 @@ function loadData() {
     let formData = new FormData();
     formData.set("keyword", document.getElementById("searchInput").value);
     formData.set("pageSize", document.getElementById("pageSize").value);
+    if(document.getElementById("status")){
+        formData.set("status",document.getElementById("status").value);
+    }
     formData.set("pageNo", parseInt(document.getElementById("currentPage").value) - 1 + "");
+
 
     fetch(loadUrl, {
         method: "POST",

@@ -32,14 +32,17 @@ td img{
 td.uploadTd {
     width: 150px;
     padding: 2px 5px;
+    cursor: pointer;
 }
 td.tdCenter {
     text-align: center;
 }
-td.updateTd{
-  cursor: pointer;
+td.updateTd:hover{
+    font-style: italic;
+    font-weight: bolder;
 }
 /*搜索按钮与图标的位置*/
+
 .searchInput {
     background: none;
 }

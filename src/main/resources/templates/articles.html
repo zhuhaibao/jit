@@ -17,35 +17,61 @@
 <div id='content'>
     <!-- 搜索条件-->
     <search>
-            <div class="functionDiv">
-                <div class="searchDiv" id='searchDiv'>
-                    <form th:action="@{/article/find}"  th:object="${article}" id="searchForm" onsubmit="submitSearch();return false;">
-                        <input id="searchInput" type="text" name="keyword" th:value="*{keyword}" class="searchInput" placeholder="输入文章名">
-                        <input name="pageSize" type="hidden" th:value="*{pageSize}">
-                    </form>
+        <div class="functionDiv">
+            <div class="searchDiv" id='searchDiv'>
+                <form th:action="@{/article/find}" th:object="${article}" id="searchForm" th:method="get"
+                      onsubmit="submitSearch();return false;">
+                    <input id="searchInput" type="text" name="keyword" th:value="*{keyword}" class="searchInput"
+                           placeholder="输入文章名">
+                    <input name="pageSize" type="hidden" th:value="*{pageSize}">
                     <img id='searchButton' class='searchButton' th:src="@{/img/searchicon.png}">
-                </div>
-                <div class='editDiv'>
-                    <a class="doButton" th:href="@{/article/add}">添加文章</a>
-                </div>
+                    <label for="status">发布状态:</label>
+                    <select id="status" name="status" th:value="*{status}" onchange="submitSearch();return false;">
+                        <option value=""></option>
+                        <option value="0" th:selected="*{status eq 0}">无内容</option>
+                        <option value="1" th:selected="*{status eq 1}">未发布</option>
+                        <option value="2" th:selected="*{status eq 2}">已发布</option>
+                        <option value="3" th:selected="*{status eq 3}">修改未发布</option>
+                    </select>
+                </form>
             </div>
+            <div class='editDiv'>
+                <a class="doButton" th:href="@{/article/add}">添加文章</a>
+            </div>
+        </div>
     </search>
     <!--table展示标题数据-->
     <section>
         <table id="table">
             <tr>
                 <th>标题</th>
+                <th>英文名</th>
                 <th>创建日期</th>
                 <th>所属主题</th>
                 <th>操作</th>
+                <th>发布状态</th>
             </tr>
             <tr th:each="sub , stat:${data.content}" th:data-tr-gen="${sub.id}" th:data-parent-id="${sub.pid}">
-                <td ondblclick="updateTitle(event)" th:attr="data-td-id=${sub.id}" th:text="${sub.title}"></td>
+                <td class="updateTd" ondblclick="updateTitle(event)" th:attr="data-td-id=${sub.id}"
+                    th:text="${sub.title}"></td>
+                <td data-type-enName class="updateTd" ondblclick="updateTitle(event,2)" th:attr="data-td-id=${sub.id}"
+                    th:text="${sub.enName}"></td>
                 <td th:text="${sub.createdAt}"></td>
-                <td ondblclick="clickSubject(event)" th:text="${sub.subject!=null}? ${sub.subject.subjectTitle}:'无主题'"></td>
+                <td class="tdCenter" ondblclick="clickSubject(event)"
+                    th:text="${sub.subject!=null}? ${sub.subject.subjectTitle}:'无主题'"></td>
                 <td>
-                    <img alt="edit subject" th:onclick="'edit('+${sub.id}+','+${sub.sid}+')'" title='edit subject' class="edit" th:src="@{/img/edit.svg}">/
-                    <img alt="edit subject" title='edit subject' class="edit" th:src="@{/img/delete.svg}" onclick="delArticle(event);">
+                    <img alt="edit subject" th:onclick="'edit('+${sub.id}+','+${sub.sid}+')'" title='edit subject'
+                         class="edit" th:src="@{/img/edit.svg}">/
+                    <img alt="edit subject" title='edit subject' class="edit" th:src="@{/img/delete.svg}"
+                         onclick="delArticle(event);">
+                </td>
+                <td class="tdCenter">
+                    <th:block th:if="${sub.status eq 0}">无内容</th:block>
+                    <th:block th:if="${sub.status eq 1}">未发布
+                        <button class="deployButton" onclick="alert('待完善')">发布</button>
+                    </th:block>
+                    <th:block th:if="${sub.status eq 2}">已发布</th:block>
+                    <th:block th:if="${sub.status eq 3}">修改未发布</th:block>
                 </td>
             </tr>
         </table>
@@ -76,37 +102,44 @@
     let loadUrl = "/article/find";
     //当前编辑的td
     let currentTd = null;
-    function updateTitle(event) {
+
+    function updateTitle(event, type) {
         event.preventDefault();
         if (currentTd) return;
         let oldValue = event.currentTarget.innerHTML.trim();
         currentTd = event.currentTarget;
-        currentTd.innerHTML = `<input class='editButton' type="text" name="title" value='${oldValue}'">`;
+        currentTd.innerHTML = `<input class='editButton' type="text" value='${oldValue}'">`;
         currentTd.firstElementChild.focus();
         let updated = false;
         //失去焦点时要提示保存
         currentTd.firstElementChild.onblur = function (e) {
-            if(!updated)
+            if (!updated)
                 update(e);
         }
         currentTd.firstElementChild.onkeyup = function (e) {
-            if(e.key === 'Enter'){
+            if (e.key === 'Enter') {
                 update(e);
-                updated=true;
+                updated = true;
             }
         }
+
         async function update(e) {
             let newValue = e.currentTarget.value;
             if (e.currentTarget.value !== oldValue) {
                 let save = confirm("save updated?")
                 if (save) {
                     //此处调用后端服务保存
-                    if (!newValue || newValue.trim().length < 2 || newValue.trim().length > 100) {
+                    if (!newValue || newValue.trim().length < 1 || newValue.trim().length > 100) {
                         alert("title字符在2~100之间");
                         return;
                     }
                     let articleId = currentTd.dataset.tdId;
-                    let result = await updateTitleToServer(articleId, newValue);
+                    let result;
+                    if (currentTd.hasAttribute("data-type-enName")) {
+                        result = await updateTitleToServer(articleId, '', newValue);
+                    } else {
+                        result = await updateTitleToServer(articleId, newValue, '');
+                    }
                     if (result.statusText === 'ok') {
                         currentTd.innerHTML = newValue;
                     } else {
@@ -123,43 +156,47 @@
             currentTd = null;
         }
     }
-    async function updateTitleToServer(id,title){
+
+    async function updateTitleToServer(id, title, enName) {
         let formData = new FormData();
-        formData.set("id",id);
-        formData.set("title",title);
-        let response = await fetch("/article/updateTitle",{
-            method:"POST",
-            body:formData,
+        formData.set("id", id);
+        if (title) formData.set("title", title);
+        if (enName) formData.set("enName", enName);
+        let response = await fetch("/article/updateTitle", {
+            method: "POST",
+            body: formData,
         });
         return await response.json();
     }
+
     //双击主题,显示modal
-    function clickSubject(e){
+    function clickSubject(e) {
         modal.style.display = 'block';
         modal.articleId = e.target.parentElement.dataset.trGen;
         modal.parentId = e.target.parentElement.dataset.parentId;
     }
+
     //为modal弹出框绑定函数
     let selectLi = null;
-    document.body.querySelector(".modalBody").addEventListener('click', async function(e) {
+    document.body.querySelector(".modalBody").addEventListener('click', async function (e) {
         let li = e.target.closest("li");
         if (!li) return;
         if (li.firstElementChild) {
             li.firstElementChild.style.background = "#A6A7AB";
             //切换文件夹开关
             let elemI = li.firstElementChild.querySelector("i");
-            if(elemI.classList.contains('fa-folder')){
+            if (elemI.classList.contains('fa-folder')) {
                 elemI.classList.remove("fa-folder");
                 elemI.classList.add("fa-folder-open");
                 //加载数据
                 await loadArticles(li);
-            }else{
+            } else {
                 elemI.classList.remove("fa-folder-open");
                 elemI.classList.add("fa-folder");
             }
             //隐藏子元素ul
             let subUl = li.querySelector("ul");
-            if(subUl)
+            if (subUl)
                 subUl.classList.toggle("hiddenUl");
         } else {
             li.style.background = "#A6A7AB";
@@ -170,67 +207,69 @@
         }
         selectLi = li;
     });
+
     //在model窗口中,单击主题加载文章列表
-    async function loadArticles(li){
-        if(!li.dataset.subId)return;//不是主题li
-        if(li.dataset.loadStatus==='loaded') return;//已经加载了
-        li.dataset.loadStatus= 'loaded';//已经加载
+    async function loadArticles(li) {
+        if (!li.dataset.subId) return;//不是主题li
+        if (li.dataset.loadStatus === 'loaded') return;//已经加载了
+        li.dataset.loadStatus = 'loaded';//已经加载
         let sid = li.dataset.subId;
-        let response = await fetch(`/subject/findSimpleArticlesById?id=${sid}`,{method:'POST'})
-        let result =  await response.json();
-        if(!result.data || result.data.length===0) return;
+        let response = await fetch(`/subject/findSimpleArticlesById?id=${sid}`, {method: 'POST'})
+        let result = await response.json();
+        if (!result.data || result.data.length === 0) return;
         let liHtml = ``;
         recursionTree(result.data);
-        if(liHtml){
-            li.insertAdjacentHTML('beforeend',liHtml);
+        if (liHtml) {
+            li.insertAdjacentHTML('beforeend', liHtml);
         }
-        function recursionTree(list){
-            if(!list||list.length===0) return liHtml;
-            liHtml+=`<ul class="hiddenUl">`;
-            list.forEach(a=>{
-                liHtml+=`<li data-article-id="${a.id}"><span>${a.title}<i class="fa fa-folder folder"></i></span>`;
+
+        function recursionTree(list) {
+            if (!list || list.length === 0) return liHtml;
+            liHtml += `<ul class="hiddenUl">`;
+            list.forEach(a => {
+                liHtml += `<li data-article-id="${a.id}"><span>${a.title}<i class="fa fa-folder folder"></i></span>`;
                 recursionTree(a.children);
             });
-            liHtml+=`</ul>`;
+            liHtml += `</ul>`;
         }
     }
 
     //保存位置
     async function updatePosition() {
         if (selectLi) {
-            if(!confirm(`are you sure select the <${selectLi.firstElementChild.textContent}> as parent?`)) return;
+            if (!confirm(`are you sure select the <${selectLi.firstElementChild.textContent}> as parent?`)) return;
             //保存 调用服务器
             let id = modal.articleId;
             let pid = modal.parentId;
             let targetId = null;
             let url = `/article`;
-            if(selectLi.dataset.subId){
+            if (selectLi.dataset.subId) {
                 targetId = selectLi.dataset.subId;
-                url+=`/insertAsChildToSubject/${id}/${targetId}`;
+                url += `/insertAsChildToSubject/${id}/${targetId}`;
             }
-            if(selectLi.dataset.articleId){
+            if (selectLi.dataset.articleId) {
                 targetId = selectLi.dataset.articleId;
-                if(targetId === id){
+                if (targetId === id) {
                     alert("不能插入自身");
                     return;
                 }
-                if(targetId === pid){
+                if (targetId === pid) {
                     alert("已经存在此父节点中,请选择其它节点");
                     return;
                 }
-                url+=`/insertAsChildToNode/${id}/${targetId}`;
+                url += `/insertAsChildToNode/${id}/${targetId}`;
             }
-            let response = await fetch(url,{method:'POST'});
+            let response = await fetch(url, {method: 'POST'});
             let result = await response.json();
-            if(result.statusText==='ok'){
+            if (result.statusText === 'ok') {
                 alert('插入成功');
                 //清除当前状态
                 selectLi.style.background = 'none';
                 selectLi = null;
                 //隐藏
                 modal.style.display = "none";
-            }else{
-                alert("插入失败:"+result.msg);
+            } else {
+                alert("插入失败:" + result.msg);
             }
         } else {
             alert("请选择插入位置");
@@ -252,28 +291,32 @@
             }
         });
     }
+
     //用返回的json数据渲染table
     function renderTable(json) {
         //清除数据区
         let table = document.getElementById("table");
         Array.from(table.querySelectorAll("tr[data-tr-gen]")).forEach(tr => tr.remove());
         json.data.content.forEach(trData => {
-            let subjectTitle = trData.subject?trData.subject.subjectTitle:"无主题";
+            let subjectTitle = trData.subject ? trData.subject.subjectTitle : "无主题";
+            let status = trData.status === 0 ? '无内容' : (trData.status === 1 ? '未发布<button class="deployButton" onclick="alert(\'待完善\')">发布</button>' : (trData.status === 2 ? '已发布' : '修改未发布'));
             let trHtml = `<tr data-tr-gen=${trData.id} data-parent-id=${trData.pid}>
-                            <td ondblclick="updateTitle(event)" data-td-id=${trData.id}>${trData.title}</td>
-                            <td>${trData.createdAt}</td>
-                            <td ondblclick="clickSubject(event)">${subjectTitle}</td>
+                            <td class="updateTd" ondblclick="updateTitle(event)" data-td-id=${trData.id}>${trData.title}</td>
+                            <td data-type-enName class="updateTd" ondblclick="updateTitle(event)" data-td-id=${trData.id}>${trData.enName}</td>
+                            <td class="tdCenter">${trData.createdAt}</td>
+                            <td class="tdCenter" ondblclick="clickSubject(event)">${subjectTitle}</td>
                             <td>
                                 <a><img alt="edit subject" title='edit subject' onclick="edit(${trData.id},${trData.sid})" class="edit" src="/img/edit.svg"></a>/
                                 <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="/img/delete.svg" onclick="delArticle(event);"></a>
                             </td>
+                            <td class="tdCenter">${status}</td>
                         </tr>`;
             table.tBodies[0].insertAdjacentHTML("beforeend", trHtml);
         });
     }
 
-    function edit(id,sid){
-        sid?location.assign(`/subject/${sid}?id=${id}`):location.assign("/article/update/"+id);
+    function edit(id, sid) {
+        sid ? location.assign(`/subject/${sid}?id=${id}`) : location.assign("/article/update/" + id);
     }
 </script>
 <script type="text/javascript" th:src="@{/js/page.js}"></script>

@@ -28,7 +28,16 @@
                 </div>
                 <div class="colValue">
                     <input type="hidden" name="id" th:value="*{id}">
-                    <input type="text" name="title" id="title" th:value="*{title}" minlength="2" maxlength="100">
+                    <input type="text" name="title" id="title" th:value="*{title}" minlength="2" maxlength="100"
+                           required>
+                </div>
+            </div>
+            <div class="formRow">
+                <div class="colLabel">
+                    <label for="enName">英文名:</label>
+                </div>
+                <div class="colValue">
+                    <input type="text" name="enName" id="enName" th:value="*{enName}" minlength="1" maxlength="100">
                 </div>
             </div>
             <div class="formRow">
@@ -70,7 +79,7 @@
 
     function changePullDown(e) {
         let searchKey = e.currentTarget.value;
-        if (searchKey && searchKey.length>0) {
+        if (searchKey && searchKey.length > 0) {
             decorator();
         } else {
             clearPullDownInfo();
@@ -80,10 +89,13 @@
     async function changePullDownInfo() { //改变下拉框
         //查询服务器,根据请求结果改编searchResult
         let keyword = document.getElementById("searchInput").value;
-        if(!keyword || keyword.trim().length===0) return;
+        if (!keyword || keyword.trim().length === 0) return;
         let formData = new FormData();
-        formData.set("keyword",keyword);
-        let response = await fetch("/article/findArticlesWithParentAndSubjectByKeyword",{method:"POST",body:formData});
+        formData.set("keyword", keyword);
+        let response = await fetch("/article/findArticlesWithParentAndSubjectByKeyword", {
+            method: "POST",
+            body: formData
+        });
         let serverData = await response.json();
         if (document.getElementById("searchResult").children.length > 0) {
             clearPullDownInfo();
@@ -104,18 +116,20 @@
         //再添加
         if (!data || data.length === 0) {
             searchResult.insertAdjacentHTML('beforeend', "<p>暂无结果</p>");
-        }else{
+        } else {
             let innerHtml = ``;
-            data.forEach(a=>{
-                innerHtml+=`<li data-subject-id=${a.subject.id}>`;
+            data.forEach(a => {
+                innerHtml += `<li data-subject-id=${a.subject.id}>`;
                 printRecursion(a);
-                innerHtml+=`<a data-subject-id=${a.subject.id}>${a.subject.subjectTitle}</a></li>`
+                innerHtml += `<a data-subject-id=${a.subject.id}>${a.subject.subjectTitle}</a></li>`
             });
-            function printRecursion(node){
-                if(!node) return;
-                innerHtml+=`<a data-article-id=${node.id}>${node.title}</a> ▶ `;
+
+            function printRecursion(node) {
+                if (!node) return;
+                innerHtml += `<a data-article-id=${node.id}>${node.title}</a> ▶ `;
                 printRecursion(node.parent);
             }
+
             searchResult.insertAdjacentHTML('beforeend', innerHtml);
         }
         //显示下拉框
@@ -127,11 +141,11 @@
     }
 
     //下拉框绑定事件
-    document.getElementById("searchResult").addEventListener("click",(e)=>{
+    document.getElementById("searchResult").addEventListener("click", (e) => {
         let a = e.target.closest('a');
-        if(!a)return;
-        document.forms[0].pid.value=a.dataset.articleId?a.dataset.articleId:'';
-        document.forms[0].sid.value=a.parentElement.dataset.subjectId;
+        if (!a) return;
+        document.forms[0].pid.value = a.dataset.articleId ? a.dataset.articleId : '';
+        document.forms[0].sid.value = a.parentElement.dataset.subjectId;
 
         document.forms[0].searchInput.value = a.textContent;
         document.getElementById("pullDownDiv").style.display = "none";
@@ -143,18 +157,18 @@
         }
     });
 
-    async function addArticle(){
+    async function addArticle() {
         let formData = new FormData(document.forms[0]);
-        formData.set("content",editorObj.value);
-        let response = await fetch("/article/add",{method:'POST',body:formData});
+        formData.set("content", editorObj.value);
+        let response = await fetch("/article/add", {method: 'POST', body: formData});
         let result = await response.json();
         if (result.statusText === 'ok') {
-           alert("保存成功");
-           location.assign("/article/find")
+            alert("保存成功");
+            location.assign("/article/find")
         } else {
             //渲染错误
-            if(result.data) renderFormFieldErrors(document.forms[0], result.data);
-            else{
+            if (result.data) renderFormFieldErrors(document.forms[0], result.data);
+            else {
                 alert(`保存失败:${result.msg}`);
             }
         }

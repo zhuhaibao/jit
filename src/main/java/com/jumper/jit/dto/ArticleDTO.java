@@ -20,19 +20,21 @@ import java.util.List;
 @AllArgsConstructor
 @Entity(name = "article")
 @Table(name = "article")
-public class ArticleDTO implements Comparable<ArticleDTO>{
+public class ArticleDTO implements Comparable<ArticleDTO> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Length(min = 2,max = 100,message = "title长度在2和100之间",groups = UpdateTitle.class)
+    @Length(min = 2, max = 100, message = "title长度在2和100之间", groups = UpdateTitle.class)
     private String title;
     private Integer status;//文章状态 0 无内容,1 已保存,2 已发布,3修改未发布
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String enName;
+
     private Integer pid;//上级文章
 
-    @Column(insertable=false, updatable=false)
+    @Column(insertable = false, updatable = false)
     private Integer sid;//所属主题
     private Integer orderNum;//相同pid内的文章的排序
 
@@ -41,7 +43,7 @@ public class ArticleDTO implements Comparable<ArticleDTO>{
     private Subject subject;
 
     @PrePersist
-    void prePersist(){
+    void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
 
@@ -56,7 +58,8 @@ public class ArticleDTO implements Comparable<ArticleDTO>{
     @Transient
     private Integer pageSize;
 
-    public interface UpdateTitle{}
+    public interface UpdateTitle {
+    }
 
     @Override
     public int compareTo(ArticleDTO o) {

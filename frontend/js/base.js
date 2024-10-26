@@ -92,9 +92,9 @@ function showNavBar() {
         }
         showArrow(nav);
     }
-    let width = 100,
-        start = 500,
-        step = 100;
+    let width = 100,//100像素
+        start = 500,//半秒
+        step = 100;//0.1秒
 
     function toRight() {
         nav.scrollBy(width, 0);
@@ -118,7 +118,14 @@ function showNavBar() {
     }
 }
 
-//taphold事件包装器
+/**
+ * tapHold 事件包装器
+ * @param elem 按住的元素
+ * @param f 被包装的移动函数
+ * @param start 开始执行时间,只要按住超过start的时间,那么就会执行步长为step的移动
+ * @param step 时间间隔,
+ * @returns {(function(): void)|*}
+ */
 function tapHold(elem, f, start, step) {
     let timerOut, timeInterval;
     return function () {
@@ -194,22 +201,122 @@ function gSearchByKey() {
     modalResult.style.display = 'block';
 }
 
-//导航点击事件
-function navigateArticle(e) {
-    document.body.querySelector('.titleTree a.selected').classList.remove('selected');
-    e.target.classList.add('selected');
-}
-
 //treeBar点击处理
 function treeBarFun() {
-    titleTreeDiv.classList.toggle('titleTreeDiv700');
+    document.getElementById("titleTreeDiv").classList.toggle('titleTreeDiv700');
 }
 
 //页面委托处理treeBar的显示与否
 document.addEventListener('click', e => {
+    let div = document.getElementById("titleTreeDiv");
+    if (!div) return;
     if (e.target.closest('#treeBar')) return;
     if (e.target.closest('.titleTreeDiv')) return;
-    if (!titleTreeDiv.classList.contains('titleTreeDiv700')) {
-        titleTreeDiv.classList.toggle('titleTreeDiv700');
+    if (!div.classList.contains('titleTreeDiv700')) {
+        div.classList.toggle('titleTreeDiv700');
     }
 });
+
+//加载导航数据
+async function loadNavData() {
+    let response = await fetch("common/nav.json");
+    return await response.json();
+}
+
+//加载article
+async function loadArticle(url) {
+    let tree = document.getElementById("#titleTree");
+    tree.querySelector('a.selected').classList.remove('selected');
+    this.classList.add('selected');
+    alert('请完成 loadArticle函数');
+}
+
+//首页加载导航和下面的专题
+async function loadNavAndSubject() {
+    let result = await loadNavData();
+    let ul = document.getElementById("topNav");
+    let subjectArea = document.body.getElementById(".subjectArea");
+    let innerHtml = ``, subjectHtml = ``;
+
+    result.data.content.forEach(sub => {
+        if (sub.enName) {
+            innerHtml += `<li><a href="${sub.enName}.html">${sub.subjectTitle}</a></li>`;
+            subjectHtml += `<div class="subjectHeader">
+                                    <a href="${sub.enName}.html">
+                                        <img src="${sub.pic}">
+                                        <h3>${sub.subjectTitle}</h3>
+                                        <p>${sub.remark}</p>
+                                    </a>
+                                </div>`;
+        }
+    });
+    ul.insertAdjacentHTML("beforeend", innerHtml);
+    subjectArea.insertAdjacentHTML("beforeend", subjectHtml);
+    showNavBar(); //显示导航条
+}
+
+//首页加载10条文章列表
+async function loadSomeArticles() {
+    let div = document.getElementById("articleList");
+    let response = await fetch("articles/articles.json");
+    let result = await response.json();
+    let len = result.length < 10 ? result.length : 10;
+    let innerHtml = ``;
+    for (let i = 0; i < len; i++) {
+        innerHtml += `<div class="articleHeader">
+                        <h4>${data[i].createdAt}</h4>
+                        <span><a href="articles/${data[i].id}.html">${data[i].title}</a></span>
+                    </div>`;
+    }
+    div.insertAdjacentHTML("afterbegin", innerHtml);
+}
+
+//每个页面顶部要加载的导航
+async function loadNav() {
+    let result = await loadNavData();
+    let ul = document.getElementById("topNav");
+    let innerHtml = ``;
+    result.data.content.forEach(sub => {
+        if (sub.enName) {
+            innerHtml += `<li><a href="${sub.enName}.html">${sub.subjectTitle}</a></li>`;
+        }
+    });
+    ul.insertAdjacentHTML("beforeend", innerHtml);
+    showNavBar(); //显示导航条
+}
+
+//加载专题文章树状列表
+async function loadSubjectArticleTree() {
+    let nav = document.getElementById("titleTree");
+    let dir = nav.previousElementSibling.dataset.subDir;
+    let response = await fetch(`subject/${dir}/${dir}.json`);
+    let data = await response.json();
+    let innerHtml = ``;
+    treeRecursion(data);
+    nav.insertAdjacentHTML("afterbegin", innerHtml);
+
+    function treeRecursion(list) {
+        list.forEach(a => {
+            innerHtml += `<a href="javascript:void(0)" onClick='loadArticle("subject/${dir}/${a.id}.html")'>Java简介</a>`;
+            if (a.children) {
+                innerHtml += `<div>`;
+                treeRecursion(a.children);
+                innerHtml += `</div>`;
+            }
+        });
+    }
+}
+
+//加载文章列表
+async function loadSingleArticleTree() {
+    let nav = document.getElementById("titleTree");
+    let response = await fetch(`article/articles.json`);
+    let data = await response.json();
+    let innerHtml = ``;
+    data.forEach(a => {
+        innerHtml += `
+            <span class='publishTime'>${a.updatedAt}</span><br>
+            <a href="javascript:void(0)" onclick='loadArticle("articles/${a.id}.html")'>${a.title}</a>`;
+    });
+    nav.insertAdjacentHTML("afterbegin", innerHtml);
+}

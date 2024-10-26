@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
 
 <head>
     <meta charset="utf-8">
@@ -12,7 +12,7 @@
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
     <script th:src="@{/js/base.js}"></script>
     <link rel="stylesheet" th:href="@{/css/subject-article.css}">
-    <title>주재-글의 리스트</title>
+    <title>主题-文章列表</title>
 </head>
 
 <body>
@@ -23,15 +23,29 @@
 </div>
 <div class="articleMain">
     <div class="articleNav">
-        <div id="subjectDiv" class="subject" th:text="${subject.subjectTitle}" th:attr="data-subject-id=${subject.id}"></div><hr>
+        <div id="subjectDiv" class="subject" th:text="${subject.subjectTitle}"
+             th:attr="data-subject-id=${subject.id}"></div>
+        <hr>
         <ul id="titleTree" th:insert="~{this::tree(${treeL})}">
-            <li th:fragment="tree(treeL)" th:unless="${#lists.isEmpty(treeL)}" th:each="parent:${treeL}" th:attr="data-article-info=${parent.id}">
-                <span th:text="${parent.title}" class="draggable" th:class="${parent.id eq article.id? 'draggable selected':'draggable' }" onmousedown="titleLiDrag(event)"></span>
+            <li th:fragment="tree(treeL)" th:unless="${#lists.isEmpty(treeL)}" th:each="parent:${treeL}"
+                th:attr="data-article-info=${parent.id}">
+                <span th:attr="data-deploy-status=${parent.status}" th:text="${parent.title}" class="draggable"
+                      th:class="${parent.id eq article.id? 'draggable selected':'draggable' }"
+                      onmousedown="titleLiDrag(event)"></span>
                 <ul th:unless="${#lists.isEmpty(parent.children)}" th:insert="~{this::tree(${parent.children})}"></ul>
             </li>
         </ul>
     </div>
     <div class="articleEdit">
+        <div class="deployStatus">
+            <div class="deployed"><span class="statusFlag">●</span><span>已发布</span></div>
+            <div class="unDeployed"><span class="statusFlag">●</span><span>未发布</span></div>
+            <div class="hasNoContent"><span class="statusFlag">●</span><span>无内容</span></div>
+        </div>
+        <div>
+            <label name="enName">英文名:</label><input type="text" id="enName" name="enName"
+                                                       th:value="${article.enName}" required>
+        </div>
         <div id='editArea'>
             <textarea id="editor"><th:block th:if="${article!=null}" th:text="${article.content}"></th:block></textarea>
         </div>
@@ -89,15 +103,16 @@
         let updated = false;
         //失去焦点时要提示保存
         elemLi.firstElementChild.onblur = function (e) {
-            if(!updated)
+            if (!updated)
                 save(e);
         }
         elemLi.firstElementChild.onkeyup = function (e) {
-            if(e.key === 'Enter'){
+            if (e.key === 'Enter') {
                 save(e);
-                updated=true;
+                updated = true;
             }
         }
+
         async function save(e) {
             let newValue = e.currentTarget.value;
             if (newValue !== oldValue) {
@@ -105,7 +120,7 @@
                 if (save) {
                     //此处调用后端服务保存
                     if (!newValue || newValue.trim().length < 2 || newValue.trim().length > 100) {
-                        alert("title字符在2~100之间");
+                        alert("字符在2~100之间");
                         return;
                     }
                     let articleId = elemLi.dataset.articleInfo;
@@ -122,13 +137,14 @@
             elemLi.prepend(oldSpan); //改为span
         }
     }
-    async function updateTitle(id,title){
+
+    async function updateTitle(id, title) {
         let formData = new FormData();
-        formData.set("id",id);
-        formData.set("title",title);
-        let response = await fetch("/article/updateTitle",{
-            method:"POST",
-            body:formData,
+        formData.set("id", id);
+        formData.set("title", title);
+        let response = await fetch("/article/updateTitle", {
+            method: "POST",
+            body: formData,
         });
         return await response.json();
     }
@@ -139,33 +155,35 @@
         let li = contextmenuDiv.selectedLi;
         if (contextmenuDiv.selectedLi) {
             let del = confirm(`删除节点 <${contextmenuDiv.selectedLi.firstElementChild.textContent}>?`);
-            if (del){
-                fetch(`/article/${li.dataset.articleInfo}`,{
-                    method:'DELETE'
-                }).then(async response=>{
+            if (del) {
+                fetch(`/article/${li.dataset.articleInfo}`, {
+                    method: 'DELETE'
+                }).then(async response => {
                     let result = await response.json();
-                    if(result.statusText === 'ok'){
+                    if (result.statusText === 'ok') {
                         li.remove();
-                    }else{
-                        alert("删除失败:"+result.msg);
+                    } else {
+                        alert("删除失败:" + result.msg);
                     }
                 })
 
             }
         }
     }
-    async function saveArticle(url,title,sid,pid){
+
+    async function saveArticle(url, title, sid, pid) {
         //服务器保存
         let formData = new FormData();
-        formData.set("title",title);
-        formData.set("sid",sid);
-        formData.set("pid",pid);
-        let response = await fetch(url,{
+        formData.set("title", title);
+        formData.set("sid", sid);
+        formData.set("pid", pid);
+        let response = await fetch(url, {
             method: 'POST',
-            body:formData,
+            body: formData,
         });
-        return await  response.json();
+        return await response.json();
     }
+
     //添加新文章
     async function addSubArticle() {
         contextmenuDiv.style.display = 'none'; //关闭右键菜单
@@ -182,7 +200,7 @@
         let updated = null;
         //失去焦点时要提示保存
         input.onblur = function (e) {
-            if(!updated){
+            if (!updated) {
                 saveAction();
             }
         };
@@ -193,23 +211,25 @@
                 saveAction();
             }
         };
+
         async function saveAction() { //失去焦点时,立刻处理
             let newValue = input.value ? input.value : '新建节点';
-            li.innerHTML = `<span class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
+            li.innerHTML = `<span data-deploy-status="0" class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
 
             let title = newValue.trim();
             let sid = document.getElementById("subjectDiv").dataset.subjectId;
             let pid = elem.dataset.articleInfo;
-            let result = await saveArticle("/article/addSubArticle",title,sid,pid);
-            if(result.statusText==='ok'){
+            let result = await saveArticle("/article/addSubArticle", title, sid, pid);
+            if (result.statusText === 'ok') {
                 addListenerForLiSpan(li.firstElementChild);
                 li.dataset.articleInfo = result.data.id;
-            }else{
-                alert("插入失败:"+result.msg);
+            } else {
+                alert("插入失败:" + result.msg);
                 li.remove();
             }
         }
     }
+
     //添加最外层节点
     async function addParentArticle(type) {
         if (type === 1) contextmenuDiv.style.display = 'none';
@@ -226,7 +246,7 @@
         let updated = null;
         //失去焦点时要提示保存
         input.onblur = function (e) {
-            if(!updated){
+            if (!updated) {
                 saveTop(e);
             }
         };
@@ -240,16 +260,16 @@
 
         async function saveTop(e) {
             let newValue = e.target.value ? e.target.value : '新建节点';
-            li.innerHTML = `<span class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
+            li.innerHTML = `<span data-deploy-status="0" class="draggable" onmousedown="titleLiDrag(event)">${newValue}</span>`;
 
             let title = newValue.trim();
             let sid = document.getElementById("subjectDiv").dataset.subjectId;
-            let result = await saveArticle("/article/addTopArticle",title,sid,'');
-            if(result.statusText==='ok'){
+            let result = await saveArticle("/article/addTopArticle", title, sid, '');
+            if (result.statusText === 'ok') {
                 addListenerForLiSpan(li.firstElementChild);
                 li.dataset.articleInfo = result.data.id;
-            }else{
-                alert("插入失败:"+result.msg);
+            } else {
+                alert("插入失败:" + result.msg);
                 li.remove();
             }
         }
@@ -269,17 +289,20 @@
             contextmenuDiv.style.display = 'none';
         }
     });
-    function previewArticle(){
+
+    function previewArticle() {
         alert("待完善");
     }
+
     //保存文章内容
-    async function updateContent(){
+    async function updateContent() {
         let id = document.body.querySelector(".selected").parentElement.dataset.articleInfo;
-        let result =await saveContent(id);
-        if(result.statusText === 'ok'){
+        let result = await saveContent(id);
+        if (result.statusText === 'ok') {
             alert('保存成功');
+            document.body.querySelector(".selected").dataset.deployStatus = 1;
             editorOldValue = editorObj.value;
-        }else{
+        } else {
             alert(`保存失败:${result.msg}`);
         }
     }
@@ -315,21 +338,33 @@
         let span = e.target;
         selected(span);
     }
-    async function saveContent(id){
+
+    async function saveContent(id) {
         let formData = new FormData();
-        formData.set("id",id);
-        formData.set("content",editorObj.value);
-        let response = await fetch("/article/saveContent",{method:"POST",body:formData});
+        formData.set("id", id);
+        let enName = document.getElementById("enName").value;
+        if (editorObj.value.length < 20) {
+            alert("不能少于20个字符");
+            return;
+        }
+        if (enName.length === 0 || enName.length > 100) {
+            alert("字符在1~100之间");
+            return;
+        }
+        formData.set("enName", enName);
+        formData.set("content", editorObj.value);
+        let response = await fetch("/article/saveContent", {method: "POST", body: formData});
         return await response.json();
     }
+
     async function selected(span) {
         let currentLiSpan = document.body.querySelector(".selected"); //当前选中的li的span元素
         if (currentLiSpan !== span) {
-            if(editorOldValue!==editorObj.value && confirm("保存本次修改么?")){
+            if (editorOldValue && editorOldValue !== editorObj.value && confirm("保存本次修改么?")) {
                 //保存
                 let oldId = currentLiSpan.parentElement.dataset.articleInfo;
                 let result = await saveContent(oldId);
-                if(result.statusText!=='ok'){
+                if (result.statusText !== 'ok') {
                     alert(`保存失败!${result.msg}`);
                 }
             }
@@ -337,16 +372,18 @@
             span.classList.add('selected');
             //从服务器加载数据
             let newId = span.parentElement.dataset.articleInfo;
-            let response = await fetch(`/article/getArticle/${newId}`,{method:'POST'})
+            let response = await fetch(`/article/getArticle/${newId}`, {method: 'POST'})
             let result = await response.json();
-            if(result.statusText==='ok'){
-                editorObj.value=result.data.content===null?'':result.data.content;
+            if (result.statusText === 'ok') {
+                document.getElementById("enName").value = result.data.enName;
+                editorObj.value = result.data.content === null ? '' : result.data.content;
                 editorOldValue = editorObj.value;
-            }else{
+            } else {
                 alert(`加载文章内容失败:${result.msg}`);
             }
         }
     }
+
     /*span单击事件----------end-----------*/
     /*
         拖拽文章标题:算法逻辑如下
@@ -407,15 +444,15 @@
             //获取可以放置的元素
             let droppableBelow = elemBelow.closest('li[data-article-info]');
             //判断是不是原来的位置1
-            if(droppableBelow){
+            if (droppableBelow) {
                 let closestUl = droppableBelow.querySelector("ul");
-                if(closestUl){
-                    if(elem===closestUl.firstElementChild) return;
+                if (closestUl) {
+                    if (elem === closestUl.firstElementChild) return;
                 }
             }
             //判断是不是原来的位置2
             let previous = elem.previousElementSibling;
-            if(previous && droppableBelow &&(previous === droppableBelow)) return;
+            if (previous && droppableBelow && (previous === droppableBelow)) return;
 
             //如何放置?
             /*
@@ -445,8 +482,8 @@
                     //调用服务器
                     let currentId = elem.dataset.articleInfo;
                     let targetId = currentDroppable.dataset.articleInfo;
-                    let result = await moveToInServer(currentId,targetId);
-                    if(result.statusText==='ok'){
+                    let result = await moveToInServer(currentId, targetId);
+                    if (result.statusText === 'ok') {
                         let parent = elem.parentElement;
                         let ul = currentDroppable.querySelector('ul');
                         if (ul) {
@@ -456,7 +493,7 @@
                         }
                         //如果最后移动的li外层的ul没有子元素,则干掉
                         if (!parent.querySelector('li')) parent.remove();
-                    }else{
+                    } else {
                         alert(`移动失败:${result.msg}`);
                     }
                 }
@@ -484,12 +521,14 @@
     function leaveDroppable(elem) {
         currentDroppable.querySelector('span').classList.remove('droppable');
     }
-    async function moveToInServer(currentId,targetId){
-        let response = await fetch(`/article/moveTo/${currentId}/${targetId}`,{
+
+    async function moveToInServer(currentId, targetId) {
+        let response = await fetch(`/article/moveTo/${currentId}/${targetId}`, {
             method: 'POST'
         });
         return await response.json();
     }
+
 </script>
 </body>
 

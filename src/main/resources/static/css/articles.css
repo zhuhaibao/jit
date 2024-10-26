@@ -5,48 +5,29 @@ table {
 }
 
 tr:nth-child(even) {
-    background-color: #efefef;
-}
-
-tr>td:nth-child(2),
-tr>td:nth-child(3),
-tr>td:nth-child(4) {
-    text-align: center;
+    background-color: #EFEFEF;
 }
 
 td {
     border: 1px dotted green;
     padding: 5px 10px;
 }
-
-td:nth-child(1):hover,
-td:nth-child(3):hover {
-    background-color: white;
-    cursor: copy;
+td.uploadTd {
+    width: 150px;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+td.tdCenter {
+    text-align: center;
+}
+td.updateTd:hover{
+    cursor: pointer;
     font-style: italic;
     font-weight: bolder;
 }
 
 .edit {
     cursor: pointer;
-    width: 25px;
-    height: 25px;
-    vertical-align: middle;
-}
-
-.editOver {
-    width: 29px;
-    height: 29px;
-    vertical-align: middle;
-}
-
-td .edit:hover {
-    width: 29px;
-    height: 29px;
-    vertical-align: middle;
-}
-
-td .editOver:hover {
     width: 25px;
     height: 25px;
     vertical-align: middle;
@@ -76,10 +57,16 @@ td .editOver:hover {
 }
 
 /*搜索按钮与图标的位置*/
+#searchForm select{
+    display: inline-block;
+    width: 100px;
+    padding: 5px;
+    border: 1px solid grey;
+    border-radius: 2px;
+}
 .searchInput {
     background: none;
 }
-
 .searchButton {
     left: 10px;
     top: 10px;
@@ -91,4 +78,12 @@ td .editOver:hover {
 .folder{
     font-size: 18px;
     margin-left: 5px;
+}
+.deployButton {
+    cursor: pointer;
+    width: 50px;
+    height: 20px;
+    border: none;
+    background-color: #03AA6D;
+    border-radius: 4px;
 }

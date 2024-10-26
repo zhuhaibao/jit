@@ -48,6 +48,7 @@ public class ArticleServiceImpl implements ArticleService {
     public void setSubjectRepository(SubjectRepository subjectRepository) {
         this.subjectRepository = subjectRepository;
     }
+
     @Autowired
     public void setArticleAndParentRepository(ArticleAndParentRepository articleAndParentRepository) {
         this.articleAndParentRepository = articleAndParentRepository;
@@ -121,15 +122,18 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public Article updateSingle(Article article) {
         Integer id = article.getId();
-        Article dbArticle = repository.findById(article.getId()).orElseThrow(()->new DbException("id="+id));
+        Article dbArticle = repository.findById(article.getId()).orElseThrow(() -> new DbException("id=" + id));
         dbArticle.setTitle(article.getTitle());
+        dbArticle.setEnName(article.getEnName());
         dbArticle.setContent(article.getContent());
         dbArticle.setStatus(Article.Status.SAVE_CONTENT.getCode());
         repository.save(dbArticle);
-        if(article.getPid()==null){
-            this.insertNodeAsChild(id,article.getSid(),true);
-        }else{
-            this.insertNodeAsChild(id,article.getPid(),false);
+        if (article.getSid() == null && article.getPid() == null) {//单体文章
+            repository.save(dbArticle);
+        } else if (article.getPid() == null) {//把文章插入到主题下
+            this.insertNodeAsChild(id, article.getSid(), true);
+        } else {//把文章插入到主题的子节点下
+            this.insertNodeAsChild(id, article.getPid(), false);
         }
         return dbArticle;
     }
@@ -179,11 +183,17 @@ public class ArticleServiceImpl implements ArticleService {
         repository.updateArticleTitle(id, title);
     }
 
+    @Override
+    public void updateEnName(Integer id, String enName) {
+        repository.updateArticleEnName(id, enName);
+    }
+
 
     @Override
     public Article updateContent(Article article) {
         Article dbResult = repository.findById(article.getId()).orElseThrow(() -> new DbException("article id=" + article.getId()));
         dbResult.setContent(article.getContent());
+        dbResult.setEnName(article.getEnName());
         dbResult.setStatus(Article.Status.SAVE_CONTENT.getCode());
         repository.save(dbResult);
         return dbResult;
@@ -262,16 +272,16 @@ public class ArticleServiceImpl implements ArticleService {
 
             //修改子孙节点sid,同时返回计数
             AtomicInteger counter = new AtomicInteger(1);
-            if(current.getSid()!= null && !current.getSid().equals(targetId)){
-                updateDescendantRecursionById(currentId,targetId,counter);
+            if (current.getSid() != null && !current.getSid().equals(targetId)) {
+                updateDescendantRecursionById(currentId, targetId, counter);
             }
 
             //修改自身主题的文章数量-1,排除单体文章,排除相同主题
-            if(current.getSid()!= null && !current.getSid().equals(targetId)){
+            if (current.getSid() != null && !current.getSid().equals(targetId)) {
                 subjectRepository.setSubjectArticleSum(current.getSid(), -counter.get());
             }
             //修改目标主题文章数量+1,只要不是一个主题
-            if(!targetId.equals(current.getSid())){
+            if (!targetId.equals(current.getSid())) {
                 subjectRepository.setSubjectArticleSum(targetId, counter.get());
             }
         } else {
@@ -282,16 +292,16 @@ public class ArticleServiceImpl implements ArticleService {
 
             //修改子孙节点sid,同时返回计数
             AtomicInteger counter = new AtomicInteger(1);
-            if(current.getSid()!= null && !current.getSid().equals(target.getSid())){
-                updateDescendantRecursionById(currentId,target.getSid(),counter);
+            if (current.getSid() != null && !current.getSid().equals(target.getSid())) {
+                updateDescendantRecursionById(currentId, target.getSid(), counter);
             }
 
             //修改自身主题的文章数量-1,排除单体文章,排除相同主题
-            if(current.getSid()!= null && !current.getSid().equals(target.getSid())){
+            if (current.getSid() != null && !current.getSid().equals(target.getSid())) {
                 subjectRepository.setSubjectArticleSum(current.getSid(), -counter.get());
             }
             //修改目标主题文章数量+1,只要不是一个主题
-            if(!target.getSid().equals(current.getSid())){
+            if (!target.getSid().equals(current.getSid())) {
                 subjectRepository.setSubjectArticleSum(targetId, counter.get());
             }
         }
@@ -306,20 +316,22 @@ public class ArticleServiceImpl implements ArticleService {
 
     /**
      * 父节点改变sid后,子节点跟随
-     * @param id 父节点
-     * @param sid 主题id
+     *
+     * @param id      父节点
+     * @param sid     主题id
      * @param counter 计数器
      */
-    public void updateDescendantRecursionById(Integer id,final Integer sid, AtomicInteger counter) {
+    public void updateDescendantRecursionById(Integer id, final Integer sid, AtomicInteger counter) {
         if (repository.existsByPid(id)) {
             List<SimpleArticleWithoutContentDTO> children = repository.findArticlesWithoutContentByPid(id);
-            repository.updateSidByPid(id,sid);//批量修改sid
+            repository.updateSidByPid(id, sid);//批量修改sid
             children.forEach(a -> {
                 counter.getAndAdd(1);
-                updateDescendantRecursionById(a.getId(),sid,counter);
+                updateDescendantRecursionById(a.getId(), sid, counter);
             });
         }
     }
+
     @Override
     public Page<ArticleDTO> findArticles(ArticleDTO dto) {
         Specification<ArticleDTO> spec = ((root, q, cb) -> {
@@ -327,9 +339,10 @@ public class ArticleServiceImpl implements ArticleService {
             if (dto.getKeyword() != null && !dto.getKeyword().isEmpty()) {
                 predicates.add(cb.like(root.get("title"), "%" + dto.getKeyword() + "%"));
             }
+            if (dto.getStatus() != null) {
+                predicates.add(cb.equal(root.get("status"), dto.getStatus()));
+            }
             assert q != null;
-            q.multiselect(root.get("id"), root.get("title"), root.get("pid"), root.get("createdAt")
-                    , root.get("updatedAt"), root.get("subject"));
             List<Order> orders = new ArrayList<>();
             orders.add(cb.desc(root.get("createdAt")));
             orders.add(cb.desc(root.get("updatedAt")));
@@ -358,9 +371,9 @@ public class ArticleServiceImpl implements ArticleService {
     public FileDTO saveFile(FileDTO fileDTO) throws IOException {
         MultipartFile[] files = fileDTO.getFiles();
         String[] names = new String[files.length];
-        for(int i = 0;i < files.length;i+=1){
-            File file = new File(savePath+files[i].getOriginalFilename());
-            FileCopyUtils.copy(files[i].getBytes(),file);
+        for (int i = 0; i < files.length; i += 1) {
+            File file = new File(savePath + files[i].getOriginalFilename());
+            FileCopyUtils.copy(files[i].getBytes(), file);
             names[i] = files[i].getOriginalFilename();
         }
         fileDTO.setBaseurl(baseUrl);
