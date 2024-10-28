@@ -141,9 +141,10 @@ div.sticky {
 /*搜索框样式-end*/
 
 /*分页样式-start*/
-.pageModule *{
+.pageModule * {
     box-sizing: border-box;
 }
+
 .pageModule {
     width: 100%;
     margin-top: 20px;
@@ -275,7 +276,7 @@ td .editButton {
 
 /*通用的操作按钮的样式---start*/
 .doButton {
-    width: 80px;
+    width: 120px;
     display: block;
     padding: 10px 20px;
     margin: auto;
@@ -358,10 +359,12 @@ td .editButton {
 .formContainer * {
     box-sizing: border-box;
 }
-.feildErr{/*表单字段错误提示*/
+
+.feildErr { /*表单字段错误提示*/
     font-size: 12px;
     color: #EB2904;
 }
+
 .formContainer input,
 .formContainer textarea {
     width: 100%;
@@ -386,6 +389,7 @@ td .editButton {
     clear: both;
     display: block;
 }
+
 /*错误页面定义*/
 .error-name {
     text-align: center;
@@ -393,7 +397,8 @@ td .editButton {
     font-size: 200%;
     padding: 100px 0 0 0;
 }
-.error-code{
+
+.error-code {
     text-align: center;
     color: #272221;
     font-size: 800%;

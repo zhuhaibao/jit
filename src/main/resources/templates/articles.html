@@ -57,7 +57,7 @@
                 <td data-type-enName class="updateTd" ondblclick="updateTitle(event,2)" th:attr="data-td-id=${sub.id}"
                     th:text="${sub.enName}"></td>
                 <td th:text="${sub.createdAt}"></td>
-                <td class="tdCenter" ondblclick="clickSubject(event)"
+                <td class="tdCenter updateTd" ondblclick="clickSubject(event)"
                     th:text="${sub.subject!=null}? ${sub.subject.subjectTitle}:'无主题'"></td>
                 <td>
                     <img alt="edit subject" th:onclick="'edit('+${sub.id}+','+${sub.sid}+')'" title='edit subject'
@@ -68,10 +68,12 @@
                 <td class="tdCenter">
                     <th:block th:if="${sub.status eq 0}">无内容</th:block>
                     <th:block th:if="${sub.status eq 1}">未发布
-                        <button class="deployButton" onclick="alert('待完善')">发布</button>
+                        <button class="deployButton" onclick="deploy(this)">发布</button>
                     </th:block>
                     <th:block th:if="${sub.status eq 2}">已发布</th:block>
-                    <th:block th:if="${sub.status eq 3}">修改未发布</th:block>
+                    <th:block th:if="${sub.status eq 3}">修改未发布
+                        <button class="deployButton" onclick="deploy(this)">发布</button>
+                    </th:block>
                 </td>
             </tr>
         </table>
@@ -299,12 +301,13 @@
         Array.from(table.querySelectorAll("tr[data-tr-gen]")).forEach(tr => tr.remove());
         json.data.content.forEach(trData => {
             let subjectTitle = trData.subject ? trData.subject.subjectTitle : "无主题";
-            let status = trData.status === 0 ? '无内容' : (trData.status === 1 ? '未发布<button class="deployButton" onclick="alert(\'待完善\')">发布</button>' : (trData.status === 2 ? '已发布' : '修改未发布'));
+            let enName = trData.enName ? trData.enName : '';
+            let status = trData.status === 0 ? '无内容' : (trData.status === 1 ? '未发布<button class="deployButton" onclick="deploy(this)">发布</button>' : (trData.status === 2 ? '已发布' : '修改未发布<button class="deployButton" onclick="deploy(this)">发布</button>'));
             let trHtml = `<tr data-tr-gen=${trData.id} data-parent-id=${trData.pid}>
                             <td class="updateTd" ondblclick="updateTitle(event)" data-td-id=${trData.id}>${trData.title}</td>
-                            <td data-type-enName class="updateTd" ondblclick="updateTitle(event)" data-td-id=${trData.id}>${trData.enName}</td>
+                            <td data-type-enName class="updateTd" ondblclick="updateTitle(event)" data-td-id=${trData.id}>${enName}</td>
                             <td class="tdCenter">${trData.createdAt}</td>
-                            <td class="tdCenter" ondblclick="clickSubject(event)">${subjectTitle}</td>
+                            <td class="tdCenter updateTd" ondblclick="clickSubject(event)">${subjectTitle}</td>
                             <td>
                                 <a><img alt="edit subject" title='edit subject' onclick="edit(${trData.id},${trData.sid})" class="edit" src="/img/edit.svg"></a>/
                                 <a href="#"><img alt="edit subject" title='edit subject' class="edit" src="/img/delete.svg" onclick="delArticle(event);"></a>
@@ -313,6 +316,34 @@
                         </tr>`;
             table.tBodies[0].insertAdjacentHTML("beforeend", trHtml);
         });
+    }
+
+    //直接发布
+    function deploy(target) {
+        let id = target.closest("tr").dataset.trGen;
+        fetch(`/deploy/${id}`, {method: 'POST'})
+            .then(resp => resp.json())
+            .then(result => {
+                if (result.statusText === 'ok') {
+                    let msg = `发布成功,`;
+                    //获取sid并更新导航列表
+                    let url;
+                    if (result.data.subject) {
+                        url = `/deploy/deploySubjectTree/${result.data.subject.id}`;
+                    } else {
+                        url = `/deploy/deployArticleTree`;
+                    }
+                    fetch(url, {method: 'POST'})
+                        .then(resp => resp.json())
+                        .then(result => {
+                            alert(msg + `更新文章左侧列表:${result.msg}`);
+                        })
+                    //更新页面状态
+                    target.parentElement.innerHTML = '已发布';
+                } else {
+                    alert(`发布失败:${result.msg}`);
+                }
+            })
     }
 
     function edit(id, sid) {

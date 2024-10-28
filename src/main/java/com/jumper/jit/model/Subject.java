@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @Builder
-public class Subject implements Comparable<Subject>{
+public class Subject implements Comparable<Subject> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Length(min = 5,max = 50,message = "字符数介于5与50之间")
+    @Length(min = 2, max = 50, message = "字符数介于5与50之间")
     private String subjectTitle;
     private int articleSum;
     private String remark;
@@ -28,7 +28,7 @@ public class Subject implements Comparable<Subject>{
     private LocalDateTime updatedAt;
     private Boolean navigation = false;
     private Integer orderNum;
-    @Length(min=1,max=100,message = "英文名长度在1~100之间")
+    @Length(min = 1, max = 100, message = "英文名长度在1~100之间")
     private String enName;//英文名,主要作为目录使用
     private String pic;//图标
 
@@ -45,7 +45,7 @@ public class Subject implements Comparable<Subject>{
     }
 
     @PrePersist
-    public void beforeSave(){
+    public void beforeSave() {
         createdAt = LocalDateTime.now();
     }
 }

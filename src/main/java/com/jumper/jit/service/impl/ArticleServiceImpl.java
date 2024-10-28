@@ -1,5 +1,6 @@
 package com.jumper.jit.service.impl;
 
+import com.jumper.jit.aspect.AutoDeploy;
 import com.jumper.jit.aspect.DbException;
 import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
@@ -65,8 +66,23 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public List<SimpleArticleWithContentDTO> findAllWithContentBySidAndStatus(Integer sid, Integer status) {
+        return repository.findAllBySidAndStatus(sid, status);
+    }
+
+    @Override
     public List<SimpleArticleWithoutContentDTO> findArticleTree(Integer sid) {
         List<SimpleArticleWithoutContentDTO> list = repository.findArticlesWithoutContent(sid);
+        return processSortList(list);
+    }
+
+    @Override
+    public List<SimpleArticleWithoutContentDTO> findArticleTree(Integer sid, Integer status) {
+        List<SimpleArticleWithoutContentDTO> list = repository.findArticlesWithoutContent(sid, status);
+        return processSortList(list);
+    }
+
+    private List<SimpleArticleWithoutContentDTO> processSortList(List<SimpleArticleWithoutContentDTO> list) {
         List<SimpleArticleWithoutContentDTO> sorted = new ArrayList<>();
         Map<Integer, SimpleArticleWithoutContentDTO> index = new HashMap<>();
         list.forEach(a -> index.put(a.getId(), a));
@@ -110,8 +126,11 @@ public class ArticleServiceImpl implements ArticleService {
             subjectRepository.setSubjectArticleSum(article.getSid(), 1);
         }
 
+        //因为关联的是Subject,sid不会自动更新
         if (article.getSid() != null) article.setSubject(Subject.builder().id(article.getSid()).build());
+        //因为因为关联的是parent,pid不会自动更新
         if (article.getPid() != null) article.setArticle(Article.builder().id(article.getPid()).build());
+
         if (article.getContent() != null && !article.getContent().isEmpty()) {
             article.setStatus(Article.Status.SAVE_CONTENT.getCode());
         }
@@ -126,7 +145,12 @@ public class ArticleServiceImpl implements ArticleService {
         dbArticle.setTitle(article.getTitle());
         dbArticle.setEnName(article.getEnName());
         dbArticle.setContent(article.getContent());
-        dbArticle.setStatus(Article.Status.SAVE_CONTENT.getCode());
+        //如果已经发布
+        if (dbArticle.getStatus().equals(Article.Status.PUBLISHED.getCode())) {
+            dbArticle.setStatus(Article.Status.MODIFIED_UNPUBLISHED.getCode());
+        } else if (dbArticle.getStatus() < 2) {
+            dbArticle.setStatus(Article.Status.SAVE_CONTENT.getCode());
+        }
         repository.save(dbArticle);
         if (article.getSid() == null && article.getPid() == null) {//单体文章
             repository.save(dbArticle);
@@ -189,12 +213,18 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
 
+    @AutoDeploy(desc = "检查文章是否已经发布,如果是发布过的文章,内容修改后自动发布")
     @Override
     public Article updateContent(Article article) {
         Article dbResult = repository.findById(article.getId()).orElseThrow(() -> new DbException("article id=" + article.getId()));
         dbResult.setContent(article.getContent());
         dbResult.setEnName(article.getEnName());
-        dbResult.setStatus(Article.Status.SAVE_CONTENT.getCode());
+        if (dbResult.getStatus().equals(Article.Status.NO_CONTENT.getCode())) {
+            dbResult.setStatus(Article.Status.SAVE_CONTENT.getCode());
+        }
+        if (dbResult.getStatus().equals(Article.Status.PUBLISHED.getCode())) {
+            dbResult.setStatus(Article.Status.MODIFIED_UNPUBLISHED.getCode());
+        }
         repository.save(dbResult);
         return dbResult;
     }
@@ -366,13 +396,15 @@ public class ArticleServiceImpl implements ArticleService {
     private String baseUrl;
     @Value("${upload.relative-path}")
     private String relativePath;
+    @Value("${upload.article-pic}")
+    private String articlePath;
 
     @Override
     public FileDTO saveFile(FileDTO fileDTO) throws IOException {
         MultipartFile[] files = fileDTO.getFiles();
         String[] names = new String[files.length];
         for (int i = 0; i < files.length; i += 1) {
-            File file = new File(savePath + files[i].getOriginalFilename());
+            File file = new File(savePath + articlePath + files[i].getOriginalFilename());
             FileCopyUtils.copy(files[i].getBytes(), file);
             names[i] = files[i].getOriginalFilename();
         }
@@ -381,5 +413,20 @@ public class ArticleServiceImpl implements ArticleService {
         fileDTO.setFileNames(Arrays.asList(names));
         fileDTO.setFiles(null);
         return fileDTO;
+    }
+
+    @Override
+    public void updateStatus(Integer id, Integer status) {
+        repository.updateStatus(id, status);
+    }
+
+    @Override
+    public List<SimpleArticleWithoutContentDTO> findAllSingleArticleByStatus(Integer status) {
+        return repository.getArticleAllSingleWithoutContentByStatus(status);
+    }
+
+    @Override
+    public List<Integer> filterSidsNotExistsDeployedTopNode(List<Integer> sids, Integer status) {
+        return repository.findSidsWithDeployedTopNode(sids, status);
     }
 }

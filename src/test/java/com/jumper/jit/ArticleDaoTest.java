@@ -1,6 +1,7 @@
 package com.jumper.jit;
 
 import com.jumper.jit.dto.ArticleAndParentDTO;
+import com.jumper.jit.model.Article;
 import com.jumper.jit.repository.ArticleAndParentRepository;
 import com.jumper.jit.repository.ArticleRepository;
 import com.jumper.jit.repository.ArticleRepositoryPage;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -22,8 +24,9 @@ public class ArticleDaoTest {
     private ArticleAndParentRepository articleAndParentRepository;
     @Autowired
     ArticleService articleService;
+
     @Test
-    void articleDaoTest(){
+    void articleDaoTest() {
 //        Article article = articleRepository.findById(6).orElseThrow();
 //        System.out.println(article.getTitle());
 //
@@ -55,22 +58,25 @@ public class ArticleDaoTest {
 
 //        articleRepository.updateSidByPid(65,124);
 
-        List<ArticleAndParentDTO> l = articleAndParentRepository.findByTitleContainingIgnoreCase("Java");
-        l.forEach(e->{
-            System.out.println(printArticle(e)+"->(主题)"+e.getSubject().getSubjectTitle());
-        });
-
+//        List<ArticleAndParentDTO> l = articleAndParentRepository.findByTitleContainingIgnoreCase("Java");
+//        l.forEach(e->{
+//            System.out.println(printArticle(e)+"->(主题)"+e.getSubject().getSubjectTitle());
+//        });
+        List<Integer> l = articleRepository.findSidsWithDeployedTopNode(Arrays.asList(128, 129, 130, 131), Article.Status.SAVE_CONTENT.getCode());
+        System.out.println(l);
     }
-    static String printArticle(ArticleAndParentDTO article){
+
+    static String printArticle(ArticleAndParentDTO article) {
         String str = "";
-        str+= article.getTitle();
-        if(article.getParent()!=null){
-            str+="->"+printArticle(article.getParent());
+        str += article.getTitle();
+        if (article.getParent() != null) {
+            str += "->" + printArticle(article.getParent());
         }
         return str;
     }
+
     @BeforeEach
-    public void prepare(){
+    public void prepare() {
 
     }
 }

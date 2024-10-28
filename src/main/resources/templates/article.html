@@ -28,6 +28,7 @@
                 </div>
                 <div class="colValue">
                     <input type="hidden" name="id" th:value="*{id}">
+                    <input type="hidden" name="status" th:value="*{status}">
                     <input type="text" name="title" id="title" th:value="*{title}" minlength="2" maxlength="100"
                            required>
                 </div>
@@ -64,7 +65,7 @@
             </div>
             <div style="text-align: center; margin-top: 10px;">
                 <a class="doButton" style="display: inline-block;" onclick="addArticle()">保存</a>
-                <a class="doButton" style="display: inline-block;margin-left: 100px;" onclick="alert('待完善')">预览</a>
+                <a class="doButton" style="display: inline-block;margin-left: 100px;" onclick="addAndDeployArticle()">保存并发布</a>
             </div>
         </form>
     </div>
@@ -173,6 +174,30 @@
             }
         }
     }
+
+    async function addAndDeployArticle() {
+        let formData = new FormData(document.forms[0]);
+        formData.set("content", editorObj.value);
+        let response = await fetch("/deploy/addAndDeploySingle", {method: 'POST', body: formData});
+        let result = await response.json();
+        if (result.statusText === 'ok') {
+            let msg = `发布成功`;
+            fetch("/deploy/deployArticleTree", {method: 'POST', body: formData})
+                .then(resp => resp.json())
+                .then(result => {
+                    msg += `,更新文章列表:${result.msg}`;
+                    alert(msg);
+                    location.assign("/article/find")
+                })
+        } else {
+            //渲染错误
+            if (result.data) renderFormFieldErrors(document.forms[0], result.data);
+            else {
+                alert(`保存失败:${result.msg}`);
+            }
+        }
+    }
+
 </script>
 </body>
 

@@ -62,7 +62,7 @@ public class ArticleController {
     }
 
     @ResponseBody
-    @PostMapping("add")
+    @PostMapping("add")//添加单体文章
     public Article postAdd(@Validated(Article.AddSingleArticle.class) Article article) {
         if (article.getId() != null) {
             return service.updateSingle(article);

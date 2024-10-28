@@ -1,4 +1,3 @@
-
 spring:
   application:
     name: jit
@@ -25,3 +24,11 @@ upload:
   relative-path: img/upload/
   relative-subject-path: img/upload/subject/
   subject-pic: upload/subject/
+  article-pic: upload/
+deploy:
+  save-path: /Users/apple/workplace/studyproject/springstudy/spring6/jit/frontend/
+  subject: subject/
+  article: articles/
+
+
+

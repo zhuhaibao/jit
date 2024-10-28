@@ -34,6 +34,7 @@
                 <img th:src="@{/img/tips.svg}" style="vertical-align: middle;"
                      onmouseover="tipDiv.style.display = 'inline-flex';"
                      onmouseout="tipDiv.style.display = 'none';">
+                <button class="deployButton" onclick="deployTopNav(this)">发布导航</button>
                 <div class="tipDiv" id="tipDiv">
                     <div class='tipLeft'></div>
                     <div class="tipRight">
@@ -56,240 +57,254 @@
         </div>
     </section>
 </div>
-    <!--提示框-->
-    <div class="publicConfirmTip" id="publicConfirmTip"
-         onclick="if(event.target===publicConfirmTip) publicConfirmTip.style.display = 'none'">
-        <div class="publicConfirmTipContent" id="publicConfirmTipContent">
-            <div class="publicConfirmTipHeader">
-                <span class="publicConfirmCloseTip" onclick="publicConfirmTip.style.display='none'">&times;</span>
-            </div>
-            <div class="publicConfirmTipBody">
-                <p><span class="publicConfirmTooltip" id="publicConfirmTooltip"></span></p>
-            </div>
-            <div class="publicConfirmTipFooter">
-                <button class="publicConfirmTipButton" id="publicConfirmTipButtonCancel">取消</button>
-                <button class="publicConfirmTipButton" id="publicConfirmTipButtonConfirm">确定</button>
-            </div>
+<!--提示框-->
+<div class="publicConfirmTip" id="publicConfirmTip"
+     onclick="if(event.target===publicConfirmTip) publicConfirmTip.style.display = 'none'">
+    <div class="publicConfirmTipContent" id="publicConfirmTipContent">
+        <div class="publicConfirmTipHeader">
+            <span class="publicConfirmCloseTip" onclick="publicConfirmTip.style.display='none'">&times;</span>
+        </div>
+        <div class="publicConfirmTipBody">
+            <p><span class="publicConfirmTooltip" id="publicConfirmTooltip"></span></p>
+        </div>
+        <div class="publicConfirmTipFooter">
+            <button class="publicConfirmTipButton" id="publicConfirmTipButtonCancel">取消</button>
+            <button class="publicConfirmTipButton" id="publicConfirmTipButtonConfirm">确定</button>
         </div>
     </div>
-    <script type="text/javascript">
-        //输入框变化,改变下拉框信息
-        let decorator = debounce(changePullDownInfo, 500);
+</div>
+<script type="text/javascript">
+    //输入框变化,改变下拉框信息
+    let decorator = debounce(changePullDownInfo, 500);
 
-        function changePullDown(searchKey) {
-            if (searchKey && searchKey.length>0) {
-                decorator(searchKey);
-            } else {
-                clearPullDownInfo();
-            }
-        }
-
-        //改变下拉框
-        async function changePullDownInfo(searchKey) {
-            let formData = new FormData();
-            formData.set("keyword", searchKey.trim());
-            let response = await fetch("/navigation/query", {method: 'POST', body: formData});
-            let result = await response.json();
+    function changePullDown(searchKey) {
+        if (searchKey && searchKey.length > 0) {
+            decorator(searchKey);
+        } else {
             clearPullDownInfo();
-            showPullDownInfo(result.data);
         }
+    }
 
-        //清除下拉内容
-        function clearPullDownInfo() {
-            searchResult.innerHTML = null;
-            pullDownDiv.style.display = "none";
-        }
+    //改变下拉框
+    async function changePullDownInfo(searchKey) {
+        let formData = new FormData();
+        formData.set("keyword", searchKey.trim());
+        let response = await fetch("/navigation/query", {method: 'POST', body: formData});
+        let result = await response.json();
+        clearPullDownInfo();
+        showPullDownInfo(result.data);
+    }
 
-        //显示下拉内容
-        function showPullDownInfo(data) {
-            let innerHtml = ``;
-            data.forEach(a => {
-                innerHtml += `<li data-subject-id=${a.id}>${a.subjectTitle}
+    //清除下拉内容
+    function clearPullDownInfo() {
+        searchResult.innerHTML = null;
+        pullDownDiv.style.display = "none";
+    }
+
+    //显示下拉内容
+    function showPullDownInfo(data) {
+        let innerHtml = ``;
+        data.forEach(a => {
+            innerHtml += `<li data-subject-id=${a.id}>${a.subjectTitle}
                                 <button type="button" class="pullDownButton" onclick="addLabel(this)">添加</button>
                             </li>`;
+        });
+        if (!innerHtml) innerHtml = "<p>暂无结果</p>";
+        searchResult.insertAdjacentHTML('beforeend', innerHtml);
+        pullDownDiv.style.display = "block";
+    }
+
+    //下拉提示框,鼠标单击文档其它地方,会隐藏
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest('.pullDownDiv') && pullDownDiv.style.display === "block") {
+            pullDownDiv.style.display = "none";
+        }
+    });
+
+    //下拉框按钮单击,添加标签
+    async function addLabel(elem) {
+        if (!confirm(`确定要添加【${elem.previousSibling.textContent.trim()}】为导航么?`)) return;
+        let url = "/navigation/addNavigation"
+        let formData = new FormData();
+        formData.append("id", elem.closest(".buttonDiv").dataset.subjectId);
+        let response = await fetch(url, {method: 'POST', body: formData});
+        let result = await response.json();
+        if (result.statusText !== 'ok') {
+            alert(`添加失败:${result.msg}`);
+            return;
+        }
+        let subjectTitle = result.data.subjectTitle;
+        //添加标签
+        let div = document.createElement('div');
+        div.className = 'buttonDiv';
+        div.innerHTML = subjectTitle + '<button type="button" class="delButton">[X]</button>';
+        divContent.append(div);
+        alert("添加成功");
+    }
+
+    function delLabel(e) {
+        let id = e.target.closest(".buttonDiv").dataset.subjectId;
+        fetch(`/navigation/del/${id}`)
+            .then(response => response.json())
+            .then(result => {
+                if (result.statusText === 'ok') {
+                    e.target.parentElement.remove();
+                } else {
+                    alert(`删除失败:${result.msg}`);
+                }
             });
-            if (!innerHtml) innerHtml = "<p>暂无结果</p>";
-            searchResult.insertAdjacentHTML('beforeend', innerHtml);
-            pullDownDiv.style.display = "block";
-        }
 
-        //下拉提示框,鼠标单击文档其它地方,会隐藏
-        document.addEventListener("click", function (e) {
-            if (!e.target.closest('.pullDownDiv') && pullDownDiv.style.display === "block") {
-                pullDownDiv.style.display = "none";
-            }
-        });
+    }
 
-        //下拉框按钮单击,添加标签
-        async function addLabel(elem) {
-            if (!confirm(`确定要添加【${elem.previousSibling.textContent.trim()}】为导航么?`)) return;
-            let url = "/navigation/addNavigation"
-            let formData = new FormData();
-            formData.append("id", elem.parentElement.dataset.subjectId);
-            let response = await fetch(url, {method: 'POST', body: formData});
-            let result = await response.json();
-            if (result.statusText !== 'ok') {
-                alert(`添加失败:${result.msg}`);
-                return;
-            }
-            let subjectTitle = result.data.subjectTitle;
-            //添加标签
-            let div = document.createElement('div');
-            div.className = 'buttonDiv';
-            div.innerHTML = subjectTitle + '<button type="button" class="delButton">[X]</button>';
-            divContent.append(div);
-            alert("添加成功");
-        }
-
-        function delLabel(e) {
-            let id = e.target.parentElement.dataset.subjectId;
-            fetch(`/navigation/del/${id}`)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.statusText === 'ok') {
-                        e.target.parentElement.remove();
-                    } else {
-                        alert(`删除失败:${result.msg}`);
-                    }
-                });
-
-        }
-
-        //为标签绑定系列函数,此处采用delegation
-        document.getElementById("divContent").addEventListener('mousedown',evt => {
-            if(!evt.target.closest(".buttonDiv")) return;
-            buttonDivDrag(evt);
-        });
-        document.getElementById("divContent").addEventListener('contextmenu',evt =>{
-            if(evt.target.closest(".buttonDiv")) evt.preventDefault();
-        });
-        document.getElementById("divContent").addEventListener('click',evt =>{
-            if(!evt.target.closest(".delButton")) return;
-            showPublicConfirm(evt, delLabel, "确认删除标签?");
-        });
-
-        //标签拖拽函数,要求如下
-        /*
-            1 标签注册拖拽函数
-            2 拖拽时遇到可放置区域(class=buttonDiv)时,后面增加样式(.drippable),离开时(.drippable消失)
-            3 鼠标松开时,拖拽元素放置到(class=buttonDiv)元素后面.
-        */
-        //移动函数入口
-        function buttonDivDrag(e) {
-            if (e.target.className === 'buttonDiv')
-                drag(e);
-        }
-        //是否有元素移动
-        let currentDroppable;
-        //移动函数主题
-        function drag(e) {
-            let elem = e.target.closest('.buttonDiv');
-
-            let startDragTime = Date.now(); //拖拽开始时间
-            let movedPx = 0,
-                startPageY = e.pageY,
-                moved = false; //记录移动的像素量和有效移动标志
-            //把拖拽物变成绝对定位
-            function changePosition(){
-                elem.style.position = 'absolute';
-                elem.style.zIndex = 1000;
-                elem.style.margin = 0;
-            }
-            //计算鼠标和button的相对位置
-            let elemCoords = elem.getBoundingClientRect();
-            let shiftX = e.clientX - elemCoords.left;
-            let shiftY = e.clientY - elemCoords.top;
-
-            changePosition();
-
-            moveTo(e.pageX, e.pageY); //先移动一下,防止位置突然跳跃
-            //移动函数
-            function moveTo(pageX, pageY) {
-                elem.style.left = pageX - shiftX + 'px';
-                elem.style.top = pageY - shiftY + 'px';
-                movedPx += Math.abs(pageY - startPageY); //累计移动
-            }
-
-            //移动中的位置判断以及处理函数,e是注册监听器的第一个参数
-            function onMouseMove(e) {
-                moveTo(e.pageX, e.pageY);
-                if (movedPx < 20) return; //上下移动小于10像素视为无效移动.
-
-                //有效移动
-                moved = true;
-                //先隐藏elem,不然下面看不到;同时判断下面的元素是否可放置
-                elem.hidden = true;
-                let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-                //获取下面的元素后,再显示
-                elem.hidden = false;
-                //如果获取不到元素,说明不在document内,忽略
-                if (!elemBelow) return;
-                //获取可以放置的元素
-                let droppableBelow = elemBelow.closest('.buttonDiv');
-                //无效位置
-                if(elem.previousElementSibling === droppableBelow) return;
-                //如何放置?
-                /*
-                    1 如果droppableBelow!=null,并且之前没有进入该对象(记为currentDroppable)则设置进入该对象的操作
-                    2 如果之前进入过该对象,则不用改变什么
-                    3 如果droppableBelow==null,并且currentDroppable已经存在,这说明正在或者已经离开可放置对象currentDroppable,那么设置离开该对象的操作.
-                */
-                if (droppableBelow !== currentDroppable) {
-                    if (currentDroppable) {
-                        leaveDroppable(currentDroppable);
-                    }
-                    currentDroppable = droppableBelow;
-                    if (currentDroppable) {
-                        enterDroppable(currentDroppable);
-                    }
+    function deployTopNav() {
+        fetch("/deploy/topNavList", {method: 'POST'}).then(resp => resp.json())
+            .then(result => {
+                if (result.statusText === 'ok') {
+                    alert("发布成功");
+                } else {
+                    alert(`发布失败:${result.msg}`);
                 }
-            }
+            })
+    }
 
-            //注册鼠标移动监听函数,一般在document上注册,防止移动过快时事件丢失
-            document.addEventListener("mousemove", onMouseMove);
-            //注册松开鼠标事件
-            elem.onmouseup = async function (e) {
-                document.removeEventListener('mousemove', onMouseMove);
-                //在目标元素后插入移动元素,没有移动或者按下和松开鼠标小于200ms则视为无效移动
-                if (currentDroppable && moved && startDragTime > 200) {
-                    if (confirm(`确定要在标签【${currentDroppable.firstChild.nodeValue.trim()}】后插入标签【${elem.firstChild.nodeValue.trim()}】么?`)) {
-                        let id = elem.dataset.subjectId;
-                        let targetId = currentDroppable.dataset.subjectId;
-                        await fetch(`navigation/moveTo/${id}/${targetId}`)
-                            .then(async response=>await response.json())
-                            .then(result=>{
-                                if(result.statusText==='ok'){
-                                    currentDroppable.after(elem);
-                                }else{
-                                    alert(`移动失败:${result.msg}`);
-                                }
-                            });
+    //为标签绑定系列函数,此处采用delegation
+    document.getElementById("divContent").addEventListener('mousedown', evt => {
+        if (!evt.target.closest(".buttonDiv")) return;
+        buttonDivDrag(evt);
+    });
+    document.getElementById("divContent").addEventListener('contextmenu', evt => {
+        if (evt.target.closest(".buttonDiv")) evt.preventDefault();
+    });
+    document.getElementById("divContent").addEventListener('click', evt => {
+        if (!evt.target.closest(".delButton")) return;
+        showPublicConfirm(evt, delLabel, "确认删除标签?");
+    });
 
-                    }
-                }
-                elem.removeAttribute('style');
-                //去除鼠标释放事件
-                elem.onmouseup = null;
-                //清空当前可放置变量
+    //标签拖拽函数,要求如下
+    /*
+        1 标签注册拖拽函数
+        2 拖拽时遇到可放置区域(class=buttonDiv)时,后面增加样式(.drippable),离开时(.drippable消失)
+        3 鼠标松开时,拖拽元素放置到(class=buttonDiv)元素后面.
+    */
+    //移动函数入口
+    function buttonDivDrag(e) {
+        if (e.target.className === 'buttonDiv')
+            drag(e);
+    }
+
+    //是否有元素移动
+    let currentDroppable;
+
+    //移动函数主题
+    function drag(e) {
+        let elem = e.target.closest('.buttonDiv');
+
+        let startDragTime = Date.now(); //拖拽开始时间
+        let movedPx = 0,
+            startPageY = e.pageY,
+            moved = false; //记录移动的像素量和有效移动标志
+        //把拖拽物变成绝对定位
+        function changePosition() {
+            elem.style.position = 'absolute';
+            elem.style.zIndex = 1000;
+            elem.style.margin = 0;
+        }
+
+        //计算鼠标和button的相对位置
+        let elemCoords = elem.getBoundingClientRect();
+        let shiftX = e.clientX - elemCoords.left;
+        let shiftY = e.clientY - elemCoords.top;
+
+        changePosition();
+
+        moveTo(e.pageX, e.pageY); //先移动一下,防止位置突然跳跃
+        //移动函数
+        function moveTo(pageX, pageY) {
+            elem.style.left = pageX - shiftX + 'px';
+            elem.style.top = pageY - shiftY + 'px';
+            movedPx += Math.abs(pageY - startPageY); //累计移动
+        }
+
+        //移动中的位置判断以及处理函数,e是注册监听器的第一个参数
+        function onMouseMove(e) {
+            moveTo(e.pageX, e.pageY);
+            if (movedPx < 20) return; //上下移动小于10像素视为无效移动.
+
+            //有效移动
+            moved = true;
+            //先隐藏elem,不然下面看不到;同时判断下面的元素是否可放置
+            elem.hidden = true;
+            let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            //获取下面的元素后,再显示
+            elem.hidden = false;
+            //如果获取不到元素,说明不在document内,忽略
+            if (!elemBelow) return;
+            //获取可以放置的元素
+            let droppableBelow = elemBelow.closest('.buttonDiv');
+            //无效位置
+            if (elem.previousElementSibling === droppableBelow) return;
+            //如何放置?
+            /*
+                1 如果droppableBelow!=null,并且之前没有进入该对象(记为currentDroppable)则设置进入该对象的操作
+                2 如果之前进入过该对象,则不用改变什么
+                3 如果droppableBelow==null,并且currentDroppable已经存在,这说明正在或者已经离开可放置对象currentDroppable,那么设置离开该对象的操作.
+            */
+            if (droppableBelow !== currentDroppable) {
                 if (currentDroppable) {
-                    currentDroppable.classList.remove('droppable');
-                    currentDroppable = null;
+                    leaveDroppable(currentDroppable);
                 }
-            };
-            //取消浏览器默认拖拽行为
-            elem.ondragstart = () => false;
+                currentDroppable = droppableBelow;
+                if (currentDroppable) {
+                    enterDroppable(currentDroppable);
+                }
+            }
         }
 
-        //进入放置拽元素时处理
-        function enterDroppable(elem) {
-            currentDroppable.classList.add('droppable');
-        }
+        //注册鼠标移动监听函数,一般在document上注册,防止移动过快时事件丢失
+        document.addEventListener("mousemove", onMouseMove);
+        //注册松开鼠标事件
+        elem.onmouseup = async function (e) {
+            document.removeEventListener('mousemove', onMouseMove);
+            //在目标元素后插入移动元素,没有移动或者按下和松开鼠标小于200ms则视为无效移动
+            if (currentDroppable && moved && startDragTime > 200) {
+                if (confirm(`确定要在标签【${currentDroppable.firstChild.nodeValue.trim()}】后插入标签【${elem.firstChild.nodeValue.trim()}】么?`)) {
+                    let id = elem.dataset.subjectId;
+                    let targetId = currentDroppable.dataset.subjectId;
+                    await fetch(`navigation/moveTo/${id}/${targetId}`)
+                        .then(async response => await response.json())
+                        .then(result => {
+                            if (result.statusText === 'ok') {
+                                currentDroppable.after(elem);
+                            } else {
+                                alert(`移动失败:${result.msg}`);
+                            }
+                        });
 
-        //离开可放置元素时处理
-        function leaveDroppable(elem) {
-            currentDroppable.classList.remove('droppable');
-        }
-    </script>
+                }
+            }
+            elem.removeAttribute('style');
+            //去除鼠标释放事件
+            elem.onmouseup = null;
+            //清空当前可放置变量
+            if (currentDroppable) {
+                currentDroppable.classList.remove('droppable');
+                currentDroppable = null;
+            }
+        };
+        //取消浏览器默认拖拽行为
+        elem.ondragstart = () => false;
+    }
+
+    //进入放置拽元素时处理
+    function enterDroppable(elem) {
+        currentDroppable.classList.add('droppable');
+    }
+
+    //离开可放置元素时处理
+    function leaveDroppable(elem) {
+        currentDroppable.classList.remove('droppable');
+    }
+</script>
 </body>
 
 </html>

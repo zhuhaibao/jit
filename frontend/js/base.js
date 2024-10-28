@@ -219,15 +219,12 @@ document.addEventListener('click', e => {
 
 //加载导航数据
 async function loadNavData() {
-    let response = await fetch("common/nav.json");
+    let response = await fetch("/nav.json");
     return await response.json();
 }
 
 //加载article
 async function loadArticle(url) {
-    let tree = document.getElementById("#titleTree");
-    tree.querySelector('a.selected').classList.remove('selected');
-    this.classList.add('selected');
     alert('请完成 loadArticle函数');
 }
 
@@ -235,20 +232,18 @@ async function loadArticle(url) {
 async function loadNavAndSubject() {
     let result = await loadNavData();
     let ul = document.getElementById("topNav");
-    let subjectArea = document.body.getElementById(".subjectArea");
+    let subjectArea = document.getElementById("subjectArea");
     let innerHtml = ``, subjectHtml = ``;
 
-    result.data.content.forEach(sub => {
-        if (sub.enName) {
-            innerHtml += `<li><a href="${sub.enName}.html">${sub.subjectTitle}</a></li>`;
-            subjectHtml += `<div class="subjectHeader">
-                                    <a href="${sub.enName}.html">
-                                        <img src="${sub.pic}">
-                                        <h3>${sub.subjectTitle}</h3>
-                                        <p>${sub.remark}</p>
-                                    </a>
-                                </div>`;
-        }
+    result.forEach(sub => {
+        innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
+        subjectHtml += `<div class="subjectHeader">
+                                <a href="subject/${sub.dir}/index.html">
+                                    <img alt="subject-pic" src="${sub.pic}">
+                                    <h3>${sub.subName}</h3>
+                                    <p>${sub.remark.substring(0, 70) + "..."}</p>
+                                </a>
+                            </div>`;
     });
     ul.insertAdjacentHTML("beforeend", innerHtml);
     subjectArea.insertAdjacentHTML("beforeend", subjectHtml);
@@ -258,14 +253,14 @@ async function loadNavAndSubject() {
 //首页加载10条文章列表
 async function loadSomeArticles() {
     let div = document.getElementById("articleList");
-    let response = await fetch("articles/articles.json");
+    let response = await fetch("/articles/index.json");
     let result = await response.json();
     let len = result.length < 10 ? result.length : 10;
     let innerHtml = ``;
     for (let i = 0; i < len; i++) {
         innerHtml += `<div class="articleHeader">
-                        <h4>${data[i].createdAt}</h4>
-                        <span><a href="articles/${data[i].id}.html">${data[i].title}</a></span>
+                        <h4>${result[i].createdAt}</h4>
+                        <span><a href="${result[i].articleUrl}">${result[i].title}</a></span>
                     </div>`;
     }
     div.insertAdjacentHTML("afterbegin", innerHtml);
@@ -276,10 +271,8 @@ async function loadNav() {
     let result = await loadNavData();
     let ul = document.getElementById("topNav");
     let innerHtml = ``;
-    result.data.content.forEach(sub => {
-        if (sub.enName) {
-            innerHtml += `<li><a href="${sub.enName}.html">${sub.subjectTitle}</a></li>`;
-        }
+    result.forEach(sub => {
+        innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
     });
     ul.insertAdjacentHTML("beforeend", innerHtml);
     showNavBar(); //显示导航条
@@ -289,18 +282,25 @@ async function loadNav() {
 async function loadSubjectArticleTree() {
     let nav = document.getElementById("titleTree");
     let dir = nav.previousElementSibling.dataset.subDir;
-    let response = await fetch(`subject/${dir}/${dir}.json`);
+    let response = await fetch(`/subject/${dir}/index.json`);
     let data = await response.json();
     let innerHtml = ``;
+    let selected;
     treeRecursion(data);
     nav.insertAdjacentHTML("afterbegin", innerHtml);
+    nav.firstElementChild.classList.add("selected");
 
     function treeRecursion(list) {
-        list.forEach(a => {
-            innerHtml += `<a href="javascript:void(0)" onClick='loadArticle("subject/${dir}/${a.id}.html")'>Java简介</a>`;
-            if (a.children) {
+        list.forEach(sub => {
+            if (!selected) {
+                innerHtml += `<a class="selected" href="javascript:void(0)" onClick='loadArticle("/${sub.articleUrl}")'>${sub.title}</a>`;
+                selected = true;
+            } else {
+                innerHtml += `<a href="javascript:void(0)" onClick='loadArticle("/${sub.articleUrl}")'>${sub.title}</a>`;
+            }
+            if (sub.children && sub.children.length > 0) {
                 innerHtml += `<div>`;
-                treeRecursion(a.children);
+                treeRecursion(sub.children);
                 innerHtml += `</div>`;
             }
         });
@@ -310,13 +310,13 @@ async function loadSubjectArticleTree() {
 //加载文章列表
 async function loadSingleArticleTree() {
     let nav = document.getElementById("titleTree");
-    let response = await fetch(`article/articles.json`);
+    let response = await fetch(`/articles/index.json`);
     let data = await response.json();
     let innerHtml = ``;
     data.forEach(a => {
         innerHtml += `
-            <span class='publishTime'>${a.updatedAt}</span><br>
-            <a href="javascript:void(0)" onclick='loadArticle("articles/${a.id}.html")'>${a.title}</a>`;
+            <span class='publishTime'>${a.createdAt}</span><br>
+            <a href="javascript:void(0)" onclick='loadArticle("/${a.articleUrl}")'>${a.title}</a>`;
     });
     nav.insertAdjacentHTML("afterbegin", innerHtml);
 }

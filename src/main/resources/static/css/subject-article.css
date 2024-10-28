@@ -227,6 +227,10 @@ input {
     color: #494040;
 }
 
+.modifiedUnPublish {
+    color: #2155ca;
+}
+
 .statusFlag {
     font-size: 25px;
 
@@ -242,4 +246,8 @@ input {
 
 #titleTree span[data-deploy-status='2'] {
     color: #03AA6D;
+}
+
+#titleTree span[data-deploy-status='3'] {
+    color: #2155ca;
 }

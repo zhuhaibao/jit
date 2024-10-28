@@ -15,8 +15,9 @@ public class TestConfigTester {
     private Student testBean;
 
     @Test
-    public void test1(){
-        System.out.println(testBean);
+    public void test1() {
+
+        ;
     }
 
 }

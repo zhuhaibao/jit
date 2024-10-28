@@ -32,6 +32,7 @@ public class Article {
     private String enName;
 
     private Integer status = Status.NO_CONTENT.code;//文章状态 0 无内容,1 已保存,2 已发布,3修改未发布
+    
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -78,7 +79,7 @@ public class Article {
     ;
 
     public static enum Status {
-        NO_CONTENT(0), SAVE_CONTENT(1), PUBLISHED(2), UNPUBLISHED(3);
+        NO_CONTENT(0), SAVE_CONTENT(1), PUBLISHED(2), MODIFIED_UNPUBLISHED(3);
         private final int code;
 
         private Status(int code) {

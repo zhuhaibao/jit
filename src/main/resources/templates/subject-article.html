@@ -38,9 +38,10 @@
     </div>
     <div class="articleEdit">
         <div class="deployStatus">
-            <div class="deployed"><span class="statusFlag">●</span><span>已发布</span></div>
-            <div class="unDeployed"><span class="statusFlag">●</span><span>未发布</span></div>
             <div class="hasNoContent"><span class="statusFlag">●</span><span>无内容</span></div>
+            <div class="unDeployed"><span class="statusFlag">●</span><span>未发布</span></div>
+            <div class="deployed"><span class="statusFlag">●</span><span>已发布</span></div>
+            <div class="modifiedUnPublish"><span class="statusFlag">●</span><span>修改未发布</span></div>
         </div>
         <div>
             <label name="enName">英文名:</label><input type="text" id="enName" name="enName"
@@ -51,7 +52,8 @@
         </div>
         <div style="text-align: center; margin-top: 10px;">
             <a class="doButton" style="display: inline-block;" onclick="updateContent()">保存</a>
-            <a class="doButton" style="display: inline-block;margin-left: 100px;" onclick="previewArticle()">预览</a>
+            <a class="doButton" style="display: inline-block;margin-left: 100px;"
+               onclick="saveAndDeploy()">保存并发布</a>
         </div>
     </div>
     <!--隐藏的下拉菜单-->
@@ -120,7 +122,7 @@
                 if (save) {
                     //此处调用后端服务保存
                     if (!newValue || newValue.trim().length < 2 || newValue.trim().length > 100) {
-                        alert("字符在2~100之间");
+                        alert("标题字符在2~100之间");
                         return;
                     }
                     let articleId = elemLi.dataset.articleInfo;
@@ -290,35 +292,77 @@
         }
     });
 
-    function previewArticle() {
-        alert("待完善");
-    }
-
     //保存文章内容
     async function updateContent() {
-        let id = document.body.querySelector(".selected").parentElement.dataset.articleInfo;
+        let liNode = document.body.querySelector(".selected").parentElement;
+        let id = liNode.dataset.articleInfo;
+        let status = parseInt(liNode.firstElementChild.dataset.deployStatus);
         let result = await saveContent(id);
         if (result.statusText === 'ok') {
             alert('保存成功');
-            document.body.querySelector(".selected").dataset.deployStatus = 1;
+            if (status < 2) {
+                document.body.querySelector(".selected").dataset.deployStatus = 1;
+            } else if (status === 2) {
+                document.body.querySelector(".selected").dataset.deployStatus = 3;
+            }
             editorOldValue = editorObj.value;
         } else {
             alert(`保存失败:${result.msg}`);
         }
     }
 
-    //注册单击窗口事件
-    document.body.addEventListener('click', function (e) {
-        //隐藏右键菜单
-        if (e.target.closest('#contextmenuDiv') != contextmenuDiv && contextmenuDiv.style.display == 'flex') {
-            contextmenuDiv.style.display = 'none';
+    //保存并发布
+    async function saveAndDeploy() {
+        if (!validateField()) return;
+        let liNode = document.body.querySelector(".selected").parentElement;
+        //验证父节点状态是否适合发布
+        if (!validateStatus(liNode)) {
+            alert("存在未发布的父节点");
+            return;
         }
-        if (e.target.closest('#contextmenuDiv2') != contextmenuDiv2 && contextmenuDiv2.style.display == 'flex') {
-            contextmenuDiv2.style.display = 'none';
+        let id = liNode.dataset.articleInfo;
+        let status = parseInt(liNode.firstElementChild.dataset.deployStatus);
+        let formData = new FormData();
+        formData.set("id", id);
+        let enName = document.getElementById("enName").value;
+        formData.set("enName", enName);
+        formData.set("content", editorObj.value);
+        fetch("/deploy/saveAndDeploy", {method: 'POST', body: formData})
+            .then(async resp => resp.json())
+            .then(async result => {
+                if (result.statusText === 'ok') {
+                    let msg = `该页面发布成功,`;
+                    //更新树状菜单列表
+                    let rt = await deploySubjectTree(document.getElementById("subjectDiv").dataset.subjectId);
+                    msg += `新文章列表:` + rt.msg;
+                    alert(msg);
+                    document.body.querySelector(".selected").dataset.deployStatus = 2;
+                    editorOldValue = editorObj.value;
+
+                } else alert("发布失败");
+            });
+    }
+
+    //发布更新树状菜单
+    async function deploySubjectTree(sid) {
+        let resp = await fetch(`/deploy/deploySubjectTree/${sid}`, {method: 'POST'});
+        return await resp.json();
+    }
+
+    //validate 发布状态
+    function validateStatus(li) {
+        //排除顶级节点
+        if (li.closest("ul").id === 'titleTree') return true;
+        let parent = li.closest("ul").parentElement;
+        console.log(parent.firstElementChild.dataset.deployStatus)
+        if (parseInt(parent.firstElementChild.dataset.deployStatus) < 2) {
+            return false;
         }
-    });
+        return true;
+    }
 
     /*手工为li的span元素添加所有监听器*/
+
     function addListenerForLiSpan(liSpan) {
         liSpan.addEventListener('click', selectedLi);
         liSpan.addEventListener('contextmenu', function (e) {
@@ -339,18 +383,24 @@
         selected(span);
     }
 
+    function validateField() {
+        if (editorObj.value.length < 20) {
+            alert("内容不能少于20个字符");
+            return false;
+        }
+        let enName = document.getElementById("enName").value;
+        if (enName.length === 0 || enName.length > 100) {
+            alert("标题字符在1~100之间");
+            return false;
+        }
+        return true;
+    }
+
     async function saveContent(id) {
+        if (!validateField()) return;
         let formData = new FormData();
         formData.set("id", id);
         let enName = document.getElementById("enName").value;
-        if (editorObj.value.length < 20) {
-            alert("不能少于20个字符");
-            return;
-        }
-        if (enName.length === 0 || enName.length > 100) {
-            alert("字符在1~100之间");
-            return;
-        }
         formData.set("enName", enName);
         formData.set("content", editorObj.value);
         let response = await fetch("/article/saveContent", {method: "POST", body: formData});
@@ -384,6 +434,16 @@
         }
     }
 
+    //注册单击窗口事件
+    document.body.addEventListener('click', function (e) {
+        //隐藏右键菜单
+        if (e.target.closest('#contextmenuDiv') !== contextmenuDiv && contextmenuDiv.style.display === 'flex') {
+            contextmenuDiv.style.display = 'none';
+        }
+        if (e.target.closest('#contextmenuDiv2') !== contextmenuDiv2 && contextmenuDiv2.style.display === 'flex') {
+            contextmenuDiv2.style.display = 'none';
+        }
+    });
     /*span单击事件----------end-----------*/
     /*
         拖拽文章标题:算法逻辑如下

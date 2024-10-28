@@ -18,6 +18,15 @@ public interface ArticleService {
     List<SimpleArticleWithoutContentDTO> findArticleTree(Integer sid);
 
     /**
+     * 查询树状文章标题列表(排除内容)根据主题sid
+     *
+     * @param sid    主题
+     * @param status 发布状态
+     * @return 文章列表
+     */
+    List<SimpleArticleWithoutContentDTO> findArticleTree(Integer sid, Integer status);
+
+    /**
      * 查询全部字段并进行级联查询
      *
      * @param id id
@@ -34,7 +43,16 @@ public interface ArticleService {
     SimpleArticleWithContentDTO getSimpleWithContentById(Integer id);
 
     /**
-     * 保存文章(添加顶级节点/子节点/单体文章)
+     * 查询主题下所有已发布状态的文章
+     *
+     * @param sid    主题id
+     * @param status 状态
+     * @return 文章列表
+     */
+    List<SimpleArticleWithContentDTO> findAllWithContentBySidAndStatus(Integer sid, Integer status);
+
+    /**
+     * 仅限添加文章(添加顶级节点/子节点/单体文章)
      *
      * @return 文章
      */
@@ -101,4 +119,22 @@ public interface ArticleService {
      */
     FileDTO saveFile(FileDTO fileDTO) throws IOException;
 
+    void updateStatus(Integer id, Integer status);
+
+    /**
+     * 查询所有单体文章
+     *
+     * @param status 状态
+     * @return 发布的单体文章列表
+     */
+    List<SimpleArticleWithoutContentDTO> findAllSingleArticleByStatus(Integer status);
+
+    /**
+     * 过滤主题sid列表中"不存在已经发布的顶级文章节点的sid"
+     *
+     * @param sids   主题id列表
+     * @param status 目前只有已发布状态的需求,status=2
+     * @return boolean
+     */
+    List<Integer> filterSidsNotExistsDeployedTopNode(List<Integer> sids, Integer status);
 }

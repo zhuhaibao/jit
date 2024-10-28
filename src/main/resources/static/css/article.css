@@ -62,10 +62,6 @@
     padding: 10px 15px;
 }
 
-/*.pullDownDivTipBody ul li:hover {*/
-/*    background-color: #e1d5d5;*/
-/*}*/
-
 .pulldownButton {
     border: none;
     float: right;
@@ -77,14 +73,16 @@
 .pulldownButton:hover {
     background-color: #5DB85D;
 }
+
 /*下拉框a标签样式*/
-#searchResult a{
+#searchResult a {
     cursor: pointer;
 }
-#searchResult a:hover{
+
+#searchResult a:hover {
     text-decoration: underline;
     text-decoration-color: #5DE85D;
-    font-weight:bold;
+    font-weight: bold;
 }
 
 /*下拉框提示div----end*/

@@ -16,6 +16,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     void addOrderNumByOne(Integer id, Integer num);
 
     @Modifying
+    @Query("update Article set status = :status where id=:id")
+    void updateStatus(Integer id, Integer status);
+
+    @Modifying
     @Query("update Article set orderNum = :orderNum where id=:id")
     void setOrderNum(Integer id, Integer orderNum);
 
@@ -106,13 +110,25 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     SimpleArticleWithContentDTO getArticleById(Integer id);
 
-    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status) from article where sid=:sid")
+    List<SimpleArticleWithContentDTO> findAllBySidAndStatus(Integer sid, Integer status);
+
+    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where sid=:sid")
     List<SimpleArticleWithoutContentDTO> findArticlesWithoutContent(Integer sid);
 
-    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status) from article where pid=:pid")
+    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where sid=:sid and status=:status")
+    List<SimpleArticleWithoutContentDTO> findArticlesWithoutContent(Integer sid, Integer status);
+
+    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where pid=:pid")
     List<SimpleArticleWithoutContentDTO> findArticlesWithoutContentByPid(Integer pid);
 
-    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status) from article where id=:id")
+    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where id=:id")
     SimpleArticleWithoutContentDTO getArticleWithoutContentById(Integer id);
+
+    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where status=:status and sid is null order by createdAt DESC ")
+    List<SimpleArticleWithoutContentDTO> getArticleAllSingleWithoutContentByStatus(Integer status);
+
+    //查询所有存在'顶级已发布节点'的主题id列表
+    @Query("select distinct sid from article WHERE sid IN :sids AND pid is NULL AND status =:status ")
+    List<Integer> findSidsWithDeployedTopNode(List<Integer> sids, Integer status);
 
 }
