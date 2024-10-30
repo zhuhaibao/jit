@@ -167,3 +167,15 @@
     box-shadow: 0 3px 3px 1px rgba(0, 0, 0, 0.2);
     background-color: #0b8759;
 }
+
+/*表单组件*/
+.colLabel, .colValue {
+    margin-top: 20px;
+}
+
+/*缩略图显示*/
+.thumbImg {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}

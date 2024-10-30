@@ -178,17 +178,18 @@
     async function addAndDeployArticle() {
         let formData = new FormData(document.forms[0]);
         formData.set("content", editorObj.value);
-        let response = await fetch("/deploy/addAndDeploySingle", {method: 'POST', body: formData});
+        let response = await fetch("/deploy/addAndUpdateSingleStatus", {method: 'POST', body: formData});
         let result = await response.json();
         if (result.statusText === 'ok') {
-            let msg = `发布成功`;
-            fetch("/deploy/deployArticleTree", {method: 'POST', body: formData})
-                .then(resp => resp.json())
-                .then(result => {
-                    msg += `,更新文章列表:${result.msg}`;
-                    alert(msg);
-                    location.assign("/article/find")
-                })
+            // let msg = `保存成功,`;
+            // fetch(`/deploy/deployCurrentSingle/${formData.get("id")}`, {method: 'POST'})
+            //     .then(resp => resp.json())
+            //     .then(result => {
+            //         msg += `发布:${result.msg}`;
+            //         alert(msg);
+            //         location.assign("/article/find")
+            //     })
+            alert("保存成功");
         } else {
             //渲染错误
             if (result.data) renderFormFieldErrors(document.forms[0], result.data);

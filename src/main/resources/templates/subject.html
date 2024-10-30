@@ -264,30 +264,6 @@
             });
     }
 
-    function previewBigImg(target) {
-        let img = document.getElementById("previewBigImg");
-        let coords = target.getBoundingClientRect();
-        img.src = target.src;
-        img.style.display = "block";
-        img.style.top = coords.top - img.offsetWidth + "px";
-        img.style.left = coords.left + target.offsetHeight + "px";
-    }
-
-    function previewImg(target) {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(target.files[0]);
-        fileReader.onload = function (e) {
-            if (target.nextElementSibling) target.nextElementSibling.remove();
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.style.width = '40px';
-            img.style.height = '40px';
-            img.style.backgroundColor = '#F2F2F2';
-            img.style.verticalAlign = "middle";
-            target.insertAdjacentElement("afterend", img);
-        }
-    }
-
 
     //修改Subject
     function updateSubject(url, formData) {

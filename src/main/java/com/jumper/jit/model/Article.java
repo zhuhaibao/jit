@@ -32,9 +32,10 @@ public class Article {
     private String enName;
 
     private Integer status = Status.NO_CONTENT.code;//文章状态 0 无内容,1 已保存,2 已发布,3修改未发布
-    
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime publishedAt;
 
     @NotNull(groups = {AddSub.class})
     @Column(insertable = false, updatable = false)

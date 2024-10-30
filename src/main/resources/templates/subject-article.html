@@ -321,33 +321,36 @@
             return;
         }
         let id = liNode.dataset.articleInfo;
-        let status = parseInt(liNode.firstElementChild.dataset.deployStatus);
         let formData = new FormData();
         formData.set("id", id);
         let enName = document.getElementById("enName").value;
         formData.set("enName", enName);
         formData.set("content", editorObj.value);
-        fetch("/deploy/saveAndDeploy", {method: 'POST', body: formData})
+        fetch("/deploy/saveAndUpdateStatus", {method: 'POST', body: formData})
             .then(async resp => resp.json())
             .then(async result => {
                 if (result.statusText === 'ok') {
-                    let msg = `该页面发布成功,`;
-                    //更新树状菜单列表
-                    let rt = await deploySubjectTree(document.getElementById("subjectDiv").dataset.subjectId);
-                    msg += `新文章列表:` + rt.msg;
-                    alert(msg);
-                    document.body.querySelector(".selected").dataset.deployStatus = 2;
-                    editorOldValue = editorObj.value;
+                    // let msg = `保存成功,`;
+                    // //更新树状菜单列表
+                    // let rt = await deployCurrentSubjectArticle(id);
+                    // msg += `发布状态:` + rt.msg;
+                    // alert(msg);
+                    // document.body.querySelector(".selected").dataset.deployStatus = 2;
+                    // editorOldValue = editorObj.value;
+                    alert("保存成功");
+                } else {
+                    alert("保存失败");
+                }
 
-                } else alert("发布失败");
             });
     }
 
-    //发布更新树状菜单
-    async function deploySubjectTree(sid) {
-        let resp = await fetch(`/deploy/deploySubjectTree/${sid}`, {method: 'POST'});
-        return await resp.json();
-    }
+    //
+    // //发布更新树状菜单
+    // async function deployCurrentSubjectArticle(id) {
+    //     let resp = await fetch(`/deploy/deployCurrentSubjectArticle/${id}`, {method: 'POST'});
+    //     return await resp.json();
+    // }
 
     //validate 发布状态
     function validateStatus(li) {

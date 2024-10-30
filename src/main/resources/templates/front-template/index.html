@@ -4,8 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content=''>
+    <meta name='keywords' content=''>
     <title>网站首页</title>
     <script src="/js/base.js"></script>
+    <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/css/base.css"/>
     <link rel="stylesheet" href="/css/index.css"/>
 
@@ -15,7 +18,7 @@
 <div class="topDiv">
     <div class="topBar">
         <div class="logoDiv">
-            <a href="index.html">
+            <a href="/index.html">
                 <img src="/img/logo.svg">
             </a>
         </div>
@@ -25,7 +28,7 @@
             <img class="searchImg" src="/img/searchicon.svg" onclick="gSearchByKey(event)">
         </div>
         <div class="userInfoDiv">
-            <span>朱海保</span>
+            <span></span>
         </div>
     </div>
     <div class="navBar">
@@ -35,6 +38,7 @@
             <ul id="topNav">
                 <!--第一个文章标签,固定显示-->
                 <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li id=topNav_placeholders></li>
             </ul>
         </nav>
         <div class="arrow" id="rightArrow"></div>
@@ -42,18 +46,17 @@
 </div>
 <div class="mainDiv">
     <div class="subjectArea" id="subjectArea">
-
+        <a id='subject_replaceHolder'></a>
     </div>
     <div class="articleArea">
         <h4>最近发表的文章</h4>
         <div class="articleList" id="articleList">
-
+            <a id='someArticle_replaceHolder'></a>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    loadNavAndSubject();
-    loadSomeArticles();
+    showNavBar();
 </script>
 </body>
 

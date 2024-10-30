@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class SimpleArticleWithoutContentDTO implements Comparable<SimpleArticleWithoutContentDTO> {
+
     public SimpleArticleWithoutContentDTO(Integer id, String title, Integer pid, Integer sid, Integer orderNum, Integer status, String enName, LocalDateTime createdAt) {
         this.id = id;
         this.pid = pid;
@@ -17,6 +18,7 @@ public class SimpleArticleWithoutContentDTO implements Comparable<SimpleArticleW
         this.enName = enName;
         this.createdAt = createdAt;
     }
+
 
     private Integer id;
     private Integer pid;

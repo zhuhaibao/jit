@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -90,6 +91,11 @@ public class ArticleServiceImpl implements ArticleService {
             if (a.getPid() == null) {
                 sorted.add(a);//顶级
             } else {//非顶级
+                SimpleArticleWithoutContentDTO parent = index.get(a.getPid());
+                /*
+                 * 一般来说父节点一定存在,但是如果节点移动了,并且是发布的节点移动到非发布的节点下,然后按照发布状态提取列表时就可能出现父节点为空的情况,可以直接忽略
+                 */
+                if (parent == null) return;
                 List<SimpleArticleWithoutContentDTO> children = index.get(a.getPid()).getChildren();
                 if (children != null) children.add(a);
                 else {
@@ -416,13 +422,18 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void updateStatus(Integer id, Integer status) {
-        repository.updateStatus(id, status);
+    public void updateStatus(Integer id, Integer status, LocalDateTime publishedAt) {
+        repository.updateStatus(id, status, publishedAt);
     }
 
     @Override
     public List<SimpleArticleWithoutContentDTO> findAllSingleArticleByStatus(Integer status) {
         return repository.getArticleAllSingleWithoutContentByStatus(status);
+    }
+
+    @Override
+    public List<SimpleArticleWithContentDTO> findAllSingleArticleWithContentByStatus(Integer status) {
+        return repository.findAllByStatusAndSidIsNullOrderByCreatedAtDesc(status);
     }
 
     @Override

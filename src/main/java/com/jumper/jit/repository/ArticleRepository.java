@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
@@ -16,8 +17,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     void addOrderNumByOne(Integer id, Integer num);
 
     @Modifying
-    @Query("update Article set status = :status where id=:id")
-    void updateStatus(Integer id, Integer status);
+    @Query("update Article set status = :status,publishedAt=:publishedAt where id=:id")
+    void updateStatus(Integer id, Integer status, LocalDateTime publishedAt);
 
     @Modifying
     @Query("update Article set orderNum = :orderNum where id=:id")
@@ -111,6 +112,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     SimpleArticleWithContentDTO getArticleById(Integer id);
 
     List<SimpleArticleWithContentDTO> findAllBySidAndStatus(Integer sid, Integer status);
+
+    List<SimpleArticleWithContentDTO> findAllByStatusAndSidIsNullOrderByCreatedAtDesc(Integer status);
 
     @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where sid=:sid")
     List<SimpleArticleWithoutContentDTO> findArticlesWithoutContent(Integer sid);

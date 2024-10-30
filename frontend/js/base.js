@@ -217,106 +217,103 @@ document.addEventListener('click', e => {
     }
 });
 
-//加载导航数据
-async function loadNavData() {
-    let response = await fetch("/nav.json");
-    return await response.json();
-}
+// //加载导航数据
+// async function loadNavData() {
+//     let response = await fetch("/nav.json");
+//     return await response.json();
+// }
 
-//加载article
-async function loadArticle(url) {
-    alert('请完成 loadArticle函数');
-}
 
-//首页加载导航和下面的专题
-async function loadNavAndSubject() {
-    let result = await loadNavData();
-    let ul = document.getElementById("topNav");
-    let subjectArea = document.getElementById("subjectArea");
-    let innerHtml = ``, subjectHtml = ``;
-
-    result.forEach(sub => {
-        innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
-        subjectHtml += `<div class="subjectHeader">
-                                <a href="subject/${sub.dir}/index.html">
-                                    <img alt="subject-pic" src="${sub.pic}">
-                                    <h3>${sub.subName}</h3>
-                                    <p>${sub.remark.substring(0, 70) + "..."}</p>
-                                </a>
-                            </div>`;
-    });
-    ul.insertAdjacentHTML("beforeend", innerHtml);
-    subjectArea.insertAdjacentHTML("beforeend", subjectHtml);
-    showNavBar(); //显示导航条
-}
-
-//首页加载10条文章列表
-async function loadSomeArticles() {
-    let div = document.getElementById("articleList");
-    let response = await fetch("/articles/index.json");
-    let result = await response.json();
-    let len = result.length < 10 ? result.length : 10;
-    let innerHtml = ``;
-    for (let i = 0; i < len; i++) {
-        innerHtml += `<div class="articleHeader">
-                        <h4>${result[i].createdAt}</h4>
-                        <span><a href="${result[i].articleUrl}">${result[i].title}</a></span>
-                    </div>`;
-    }
-    div.insertAdjacentHTML("afterbegin", innerHtml);
-}
-
-//每个页面顶部要加载的导航
-async function loadNav() {
-    let result = await loadNavData();
-    let ul = document.getElementById("topNav");
-    let innerHtml = ``;
-    result.forEach(sub => {
-        innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
-    });
-    ul.insertAdjacentHTML("beforeend", innerHtml);
-    showNavBar(); //显示导航条
-}
-
-//加载专题文章树状列表
-async function loadSubjectArticleTree() {
-    let nav = document.getElementById("titleTree");
-    let dir = nav.previousElementSibling.dataset.subDir;
-    let response = await fetch(`/subject/${dir}/index.json`);
-    let data = await response.json();
-    let innerHtml = ``;
-    let selected;
-    treeRecursion(data);
-    nav.insertAdjacentHTML("afterbegin", innerHtml);
-    nav.firstElementChild.classList.add("selected");
-
-    function treeRecursion(list) {
-        list.forEach(sub => {
-            if (!selected) {
-                innerHtml += `<a class="selected" href="javascript:void(0)" onClick='loadArticle("/${sub.articleUrl}")'>${sub.title}</a>`;
-                selected = true;
-            } else {
-                innerHtml += `<a href="javascript:void(0)" onClick='loadArticle("/${sub.articleUrl}")'>${sub.title}</a>`;
-            }
-            if (sub.children && sub.children.length > 0) {
-                innerHtml += `<div>`;
-                treeRecursion(sub.children);
-                innerHtml += `</div>`;
-            }
-        });
-    }
-}
-
-//加载文章列表
-async function loadSingleArticleTree() {
-    let nav = document.getElementById("titleTree");
-    let response = await fetch(`/articles/index.json`);
-    let data = await response.json();
-    let innerHtml = ``;
-    data.forEach(a => {
-        innerHtml += `
-            <span class='publishTime'>${a.createdAt}</span><br>
-            <a href="javascript:void(0)" onclick='loadArticle("/${a.articleUrl}")'>${a.title}</a>`;
-    });
-    nav.insertAdjacentHTML("afterbegin", innerHtml);
-}
+//
+// //首页加载导航和下面的专题
+// async function loadNavAndSubject() {
+//     let result = await loadNavData();
+//     let ul = document.getElementById("topNav");
+//     let subjectArea = document.getElementById("subjectArea");
+//     let innerHtml = ``, subjectHtml = ``;
+//
+//     result.forEach(sub => {
+//         innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
+//         subjectHtml += `<div class="subjectHeader">
+//                                 <a href="subject/${sub.dir}/index.html">
+//                                     <img alt="subject-pic" src="${sub.pic}">
+//                                     <h3>${sub.subName}</h3>
+//                                     <p>${sub.remark.substring(0, 70) + "..."}</p>
+//                                 </a>
+//                             </div>`;
+//     });
+//     ul.insertAdjacentHTML("beforeend", innerHtml);
+//     subjectArea.insertAdjacentHTML("beforeend", subjectHtml);
+//     showNavBar(); //显示导航条
+// }
+//
+// //首页加载10条文章列表
+// async function loadSomeArticles() {
+//     let div = document.getElementById("articleList");
+//     let response = await fetch("/articles/index.json");
+//     let result = await response.json();
+//     let len = result.length < 10 ? result.length : 10;
+//     let innerHtml = ``;
+//     for (let i = 0; i < len; i++) {
+//         innerHtml += `<div class="articleHeader">
+//                         <h4>${result[i].createdAt}</h4>
+//                         <span><a href="${result[i].articleUrl}">${result[i].title}</a></span>
+//                     </div>`;
+//     }
+//     div.insertAdjacentHTML("afterbegin", innerHtml);
+// }
+//
+// //每个页面顶部要加载的导航
+// async function loadNav() {
+//     let result = await loadNavData();
+//     let ul = document.getElementById("topNav");
+//     let innerHtml = ``;
+//     result.forEach(sub => {
+//         innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
+//     });
+//     ul.insertAdjacentHTML("beforeend", innerHtml);
+//     showNavBar(); //显示导航条
+// }
+//
+// //加载专题文章树状列表
+// async function loadSubjectArticleTree() {
+//     let nav = document.getElementById("titleTree");
+//     let dir = nav.previousElementSibling.dataset.subDir;
+//     let response = await fetch(`/subject/${dir}/index.json`);
+//     let data = await response.json();
+//     let innerHtml = ``;
+//     let selected;
+//     treeRecursion(data);
+//     nav.insertAdjacentHTML("afterbegin", innerHtml);
+//     nav.firstElementChild.classList.add("selected");
+//
+//     function treeRecursion(list) {
+//         list.forEach(sub => {
+//             if (!selected) {
+//                 innerHtml += `<a class="selected" href="javascript:void(0)" onClick='loadArticle("/${sub.articleUrl}")'>${sub.title}</a>`;
+//                 selected = true;
+//             } else {
+//                 innerHtml += `<a href="javascript:void(0)" onClick='loadArticle("/${sub.articleUrl}")'>${sub.title}</a>`;
+//             }
+//             if (sub.children && sub.children.length > 0) {
+//                 innerHtml += `<div>`;
+//                 treeRecursion(sub.children);
+//                 innerHtml += `</div>`;
+//             }
+//         });
+//     }
+// }
+//
+// //加载文章列表
+// async function loadSingleArticleTree() {
+//     let nav = document.getElementById("titleTree");
+//     let response = await fetch(`/articles/index.json`);
+//     let data = await response.json();
+//     let innerHtml = ``;
+//     data.forEach(a => {
+//         innerHtml += `
+//             <span class='publishTime'>${a.createdAt}</span><br>
+//             <a href="javascript:void(0)" onclick='loadArticle("/${a.articleUrl}")'>${a.title}</a>`;
+//     });
+//     nav.insertAdjacentHTML("afterbegin", innerHtml);
+// }

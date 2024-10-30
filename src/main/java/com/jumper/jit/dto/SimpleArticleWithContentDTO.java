@@ -1,5 +1,7 @@
 package com.jumper.jit.dto;
 
+import java.time.LocalDateTime;
+
 public interface SimpleArticleWithContentDTO {
     Integer getId();
 
@@ -8,4 +10,8 @@ public interface SimpleArticleWithContentDTO {
     String getEnName();
 
     String getContent();
+
+    LocalDateTime getCreatedAt();
+
+    LocalDateTime getPublishedAt();
 }

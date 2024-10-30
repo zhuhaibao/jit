@@ -19,27 +19,27 @@ public class DeployController {
     }
 
     @ResponseBody
-    @PostMapping("saveAndDeploy")
-    public void saveArticleContent(@Validated(Article.SaveContent.class) Article article) throws IOException {
-        service.saveAndDeploySubjectArticle(article);
+    @PostMapping("saveAndUpdateStatus")
+    public void saveAndUpdateStatus(@Validated(Article.SaveContent.class) Article article) throws IOException {
+        service.saveAndUpdateSubjectArticleStatus(article);
     }
 
     @ResponseBody
-    @PostMapping("addAndDeploySingle")//添加单体文章
-    public void addAndDeploySingle(@Validated(Article.AddSingleArticle.class) Article article) throws IOException {
-        service.deployAndSaveSingle(article);
+    @PostMapping("addAndUpdateSingleStatus")//添加单体文章
+    public void addAndUpdateSingleStatus(@Validated(Article.AddSingleArticle.class) Article article) throws IOException {
+        service.saveAndUpdateSingleStatus(article);
     }
 
     @ResponseBody
-    @PostMapping("deploySubjectTree/{sid}")
-    public void deploySubjectTree(@PathVariable Integer sid) throws IOException {
-        service.deploySubjectTree(sid);
+    @PostMapping("deployCurrentSubjectArticle/{id}")
+    public void deployCurrentSubjectArticle(@PathVariable Integer id) throws IOException {
+        service.deployCurrentSubjectArticle(id);
     }
 
     @ResponseBody
-    @PostMapping("deployArticleTree")
-    public void deployArticleTree() throws IOException {
-        service.deployArticleTree();
+    @PostMapping("deployCurrentSingle/{id}")
+    public void deployCurrentSingle(@PathVariable Integer id) throws IOException {
+        service.deployCurrentSingle(id);
     }
 
     @ResponseBody
@@ -49,9 +49,9 @@ public class DeployController {
     }
 
     @ResponseBody
-    @PostMapping("topNavList")
-    public void deployTopNav() throws IOException {
-        service.deployNavList();
+    @PostMapping("deployIndex")
+    public void deployIndex() throws IOException {
+        service.deployIndex();
     }
 
     @ResponseBody

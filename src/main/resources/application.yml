@@ -19,12 +19,12 @@ spring:
 server:
   port: 8080
 upload:
-  save-path: /Users/apple/workplace/studyproject/springstudy/spring6/jit/frontend/img/
+  save-path: /Users/apple/workplace/studyproject/springstudy/spring6/jit/frontend/
   base-url: http://localhost:8081/
   relative-path: img/upload/
   relative-subject-path: img/upload/subject/
-  subject-pic: upload/subject/
-  article-pic: upload/
+  subject-pic: img/upload/subject/
+  article-pic: img/upload/
 deploy:
   save-path: /Users/apple/workplace/studyproject/springstudy/spring6/jit/frontend/
   subject: subject/

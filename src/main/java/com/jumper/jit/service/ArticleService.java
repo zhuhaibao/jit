@@ -5,6 +5,7 @@ import com.jumper.jit.model.Article;
 import org.springframework.data.domain.Page;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ArticleService {
@@ -119,7 +120,7 @@ public interface ArticleService {
      */
     FileDTO saveFile(FileDTO fileDTO) throws IOException;
 
-    void updateStatus(Integer id, Integer status);
+    void updateStatus(Integer id, Integer status, LocalDateTime publishedAt);
 
     /**
      * 查询所有单体文章
@@ -128,6 +129,9 @@ public interface ArticleService {
      * @return 发布的单体文章列表
      */
     List<SimpleArticleWithoutContentDTO> findAllSingleArticleByStatus(Integer status);
+
+    List<SimpleArticleWithContentDTO> findAllSingleArticleWithContentByStatus(Integer status);
+
 
     /**
      * 过滤主题sid列表中"不存在已经发布的顶级文章节点的sid"

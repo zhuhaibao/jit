@@ -56,7 +56,57 @@
             </div>
         </div>
     </section>
+    <section>
+        <form id="siteConfigForm" th:object="${siteConfig}"
+              class="formContainer"
+              onsubmit="return false">
+            <fieldset style="border: 1px dotted darkgrey">
+                <legend>网站设置</legend>
+                <input type="hidden" name="id" th:value="*{id}">
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="siteKeywords">网站关键词<span style="color:red;">*</span>:</label>
+                    </div>
+                    <div class="colValue">
+                        <input type="input" id="siteKeywords" name="siteKeywords" th:value="*{siteKeywords}"
+                               minlength="10" maxlength="500"
+                               placeholder="关键词"
+                               required>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="picFile">网站ICO:</label>
+                    </div>
+                    <div class="colValue">
+                        <div class="upload-div" style="width: 200px">
+                            <a style="padding: 10px">上传图片</a>
+                            <input type="hidden" name="siteIco" th:value="*{siteIco}">
+                            <input type="file" id="picFile" name="picFile" accept="image/vnd.microsoft.icon"
+                                   onchange="previewImg(this)">
+                            <img onmouseover="previewBigImg(this)"
+                                 onmouseleave="document.getElementById('previewBigImg').style.display='none';"
+                                 th:unless="*{siteIco eq null}" th:src="*{siteIco}" class="thumbImg">
+                        </div>
+                    </div>
+                </div>
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="siteDesc">网站描述: </label>
+                    </div>
+                    <div class="colValue">
+                        <textarea id="siteDesc" name="siteDesc" th:text="*{siteDesc}" minlength="10" maxlength="500"
+                                  style="height: 150px;"></textarea>
+                    </div>
+                </div>
+                <a class="doButton" onclick="updateSiteConfig()">保存设置</a>
+            </fieldset>
+
+        </form>
+    </section>
 </div>
+<!-- 隐藏的图片位-->
+<img style="display: none;width: 100px;height: 100px;position: absolute" id="previewBigImg">
 <!--提示框-->
 <div class="publicConfirmTip" id="publicConfirmTip"
      onclick="if(event.target===publicConfirmTip) publicConfirmTip.style.display = 'none'">
@@ -126,7 +176,7 @@
         if (!confirm(`确定要添加【${elem.previousSibling.textContent.trim()}】为导航么?`)) return;
         let url = "/navigation/addNavigation"
         let formData = new FormData();
-        formData.append("id", elem.closest(".buttonDiv").dataset.subjectId);
+        formData.append("id", elem.closest("li").dataset.subjectId);
         let response = await fetch(url, {method: 'POST', body: formData});
         let result = await response.json();
         if (result.statusText !== 'ok') {
@@ -157,7 +207,7 @@
     }
 
     function deployTopNav() {
-        fetch("/deploy/topNavList", {method: 'POST'}).then(resp => resp.json())
+        fetch("/deploy/deployIndex", {method: 'POST'}).then(resp => resp.json())
             .then(result => {
                 if (result.statusText === 'ok') {
                     alert("发布成功");
@@ -166,6 +216,23 @@
                 }
             })
     }
+
+    //保存网站设置
+    function updateSiteConfig() {
+        fetch("navigation/updateSiteConfig", {
+            method: 'POST',
+            body: new FormData(document.getElementById("siteConfigForm"))
+        }).then(resp => resp.json())
+            .then(result => {
+                if (result.statusText === 'ok') alert("保存成功")
+                else {
+                    alert("保存失败:" + result.msg);
+                    //渲染错误
+                    renderFormFieldErrors(document.forms.siteConfigForm, result.data);
+                }
+            })
+    }
+
 
     //为标签绑定系列函数,此处采用delegation
     document.getElementById("divContent").addEventListener('mousedown', evt => {
