@@ -45,7 +45,8 @@
         </div>
         <div>
             <label name="enName">英文名:</label><input type="text" id="enName" name="enName"
-                                                       th:value="${article.enName}" required>
+                                                       th:value="${article.enName}"
+                                                       required>
         </div>
         <div id='editArea'>
             <textarea id="editor"><th:block th:if="${article!=null}" th:text="${article.content}"></th:block></textarea>
@@ -85,7 +86,7 @@
     /*当前文章是否保存*/
     let saved = false;
     /*初次editor的值*/
-    let editorOldValue = document.getElementById("editor").value;
+    let editorOldValue = document.getElementById("editor").value.trim();
 
     //编辑文章标题
     function updateArticleTitle() {
@@ -335,8 +336,8 @@
                     // let rt = await deployCurrentSubjectArticle(id);
                     // msg += `发布状态:` + rt.msg;
                     // alert(msg);
-                    // document.body.querySelector(".selected").dataset.deployStatus = 2;
-                    // editorOldValue = editorObj.value;
+                    document.body.querySelector(".selected").dataset.deployStatus = 2;
+                    editorOldValue = editorObj.value;
                     alert("保存成功");
                 } else {
                     alert("保存失败");
@@ -428,8 +429,8 @@
             let response = await fetch(`/article/getArticle/${newId}`, {method: 'POST'})
             let result = await response.json();
             if (result.statusText === 'ok') {
-                document.getElementById("enName").value = result.data.enName;
-                editorObj.value = result.data.content === null ? '' : result.data.content;
+                document.getElementById("enName").value = result.data.enName ? result.data.enName : '';
+                editorObj.value = result.data.content ? result.data.content : '';
                 editorOldValue = editorObj.value;
             } else {
                 alert(`加载文章内容失败:${result.msg}`);

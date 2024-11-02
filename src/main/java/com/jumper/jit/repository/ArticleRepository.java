@@ -21,6 +21,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     void updateStatus(Integer id, Integer status, LocalDateTime publishedAt);
 
     @Modifying
+    @Query("update Article set status = :status,publishedAt=:publishedAt where id in :ids")
+    void updateBatchStatus(Integer status, LocalDateTime publishedAt, List<Integer> ids);
+
+    @Modifying
     @Query("update Article set orderNum = :orderNum where id=:id")
     void setOrderNum(Integer id, Integer orderNum);
 
@@ -113,6 +117,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     List<SimpleArticleWithContentDTO> findAllBySidAndStatus(Integer sid, Integer status);
 
+    List<SimpleArticleWithContentDTO> findAllBySidAndStatusGreaterThan(Integer sid, Integer status);
+
     List<SimpleArticleWithContentDTO> findAllByStatusAndSidIsNullOrderByCreatedAtDesc(Integer status);
 
     @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where sid=:sid")
@@ -120,6 +126,9 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where sid=:sid and status=:status")
     List<SimpleArticleWithoutContentDTO> findArticlesWithoutContent(Integer sid, Integer status);
+
+    @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where sid=:sid and status>:status")
+    List<SimpleArticleWithoutContentDTO> findArticlesWithoutContentAndStatusGreaterThan(Integer sid, Integer status);
 
     @Query("select new com.jumper.jit.dto.SimpleArticleWithoutContentDTO(id,title,pid,sid,orderNum,status,enName,createdAt) from article where pid=:pid")
     List<SimpleArticleWithoutContentDTO> findArticlesWithoutContentByPid(Integer pid);

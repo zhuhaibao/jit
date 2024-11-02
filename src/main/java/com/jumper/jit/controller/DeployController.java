@@ -1,6 +1,7 @@
 package com.jumper.jit.controller;
 
 import com.jumper.jit.model.Article;
+import com.jumper.jit.service.ArticleService;
 import com.jumper.jit.service.DeployService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -12,22 +13,28 @@ import java.io.IOException;
 @RequestMapping("deploy")
 public class DeployController {
     private DeployService service;
+    private ArticleService articleService;
 
     @Autowired
     public void setService(DeployService service) {
         this.service = service;
     }
 
+    @Autowired
+    public void setArticleService(ArticleService articleService) {
+        this.articleService = articleService;
+    }
+
     @ResponseBody
     @PostMapping("saveAndUpdateStatus")
     public void saveAndUpdateStatus(@Validated(Article.SaveContent.class) Article article) throws IOException {
-        service.saveAndUpdateSubjectArticleStatus(article);
+        articleService.saveAndUpdateSubjectArticleStatus(article);
     }
 
     @ResponseBody
     @PostMapping("addAndUpdateSingleStatus")//添加单体文章
     public void addAndUpdateSingleStatus(@Validated(Article.AddSingleArticle.class) Article article) throws IOException {
-        service.saveAndUpdateSingleStatus(article);
+        articleService.saveAndUpdateSingleStatus(article);
     }
 
     @ResponseBody

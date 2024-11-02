@@ -28,6 +28,14 @@ public interface ArticleService {
     List<SimpleArticleWithoutContentDTO> findArticleTree(Integer sid, Integer status);
 
     /**
+     * 查询所有可发布(status>0)的树状文章标题列表(排除内容)根据主题sid
+     *
+     * @param sid 主题
+     * @return 文章列表
+     */
+    List<SimpleArticleWithoutContentDTO> findAllPublishableArticleTree(Integer sid);
+
+    /**
      * 查询全部字段并进行级联查询
      *
      * @param id id
@@ -53,6 +61,15 @@ public interface ArticleService {
     List<SimpleArticleWithContentDTO> findAllWithContentBySidAndStatus(Integer sid, Integer status);
 
     /**
+     * 查询主题下所有可以发布的文章(status>0)
+     *
+     * @param sid 主题id
+     * @return 文章列表
+     */
+    List<SimpleArticleWithContentDTO> findAllPublishableWithContentBySid(Integer sid);
+
+
+    /**
      * 仅限添加文章(添加顶级节点/子节点/单体文章)
      *
      * @return 文章
@@ -67,7 +84,7 @@ public interface ArticleService {
     /**
      * 删除文章
      */
-    void delete(Integer id);
+    Article delete(Integer id);
 
     /**
      * 修改文章标题
@@ -122,6 +139,8 @@ public interface ArticleService {
 
     void updateStatus(Integer id, Integer status, LocalDateTime publishedAt);
 
+    void updateBatchStatus(Integer status, LocalDateTime publishedAt, List<Integer> ids);
+
     /**
      * 查询所有单体文章
      *
@@ -141,4 +160,11 @@ public interface ArticleService {
      * @return boolean
      */
     List<Integer> filterSidsNotExistsDeployedTopNode(List<Integer> sids, Integer status);
+
+
+    //保存单体文章只修改发布状态
+    void saveAndUpdateSingleStatus(Article article) throws IOException;
+
+    //保存专题文章,只修改发布状态
+    void saveAndUpdateSubjectArticleStatus(Article article) throws IOException;
 }

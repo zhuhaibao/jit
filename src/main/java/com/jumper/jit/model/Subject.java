@@ -1,5 +1,6 @@
 package com.jumper.jit.model;
 
+import com.jumper.jit.aspect.validator.ValidFile;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class Subject implements Comparable<Subject> {
     @Length(min = 2, max = 50, message = "字符数介于5与50之间")
     private String subjectTitle;
     private int articleSum;
+    @Length(min = 2, max = 250, message = "简介名长度在2~250之间")
     private String remark;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -32,8 +34,9 @@ public class Subject implements Comparable<Subject> {
     private String enName;//英文名,主要作为目录使用
     private String pic;//图标
 
-    @Transient
-    private MultipartFile picFile;
+
+    @ValidFile(message = "上传图片不能为空")
+    private @Transient MultipartFile picFile;
 
     public Subject() {
 

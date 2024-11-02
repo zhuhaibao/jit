@@ -10,13 +10,13 @@ import com.jumper.jit.repository.SubjectRepository;
 import com.jumper.jit.service.SubjectService;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +58,7 @@ public class SubjectServiceImpl implements SubjectService {
     public Subject add(Subject subject) throws IOException {
         //首先处理图片
         MultipartFile file = subject.getPicFile();
-        if (file != null) {
+        if (file != null && !file.isEmpty()) {
             subject.setPic(savePicFile(file));
             subject.setPicFile(null);
         }
@@ -78,7 +78,7 @@ public class SubjectServiceImpl implements SubjectService {
         if (subject.getRemark() != null) returnO.setRemark(subject.getRemark());
         if (subject.getSubjectTitle() != null) returnO.setSubjectTitle(subject.getSubjectTitle());
         if (subject.getEnName() != null) returnO.setEnName(subject.getEnName());
-        if (subject.getPicFile() != null) {
+        if (subject.getPicFile() != null && !subject.getPicFile().isEmpty()) {
             returnO.setPic(savePicFile(subject.getPicFile()));
         }
         return dao.save(returnO);
@@ -86,8 +86,11 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public void delete(Integer id) {
-        if (dao.existsById(id)) dao.deleteById(id);
-        else throw new DbException("subject[id]=" + id);
+        if (dao.existsById(id)) {
+            dao.deleteById(id);
+        } else {
+            throw new DbException("subject[id]=" + id);
+        }
     }
 
     @Override

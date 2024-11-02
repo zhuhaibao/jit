@@ -10,11 +10,13 @@ import com.jumper.jit.model.SiteConfig;
 import com.jumper.jit.model.Subject;
 import com.jumper.jit.service.ArticleService;
 import com.jumper.jit.service.DeployService;
+import com.jumper.jit.service.IndexService;
 import com.jumper.jit.service.SubjectService;
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,9 +30,11 @@ import java.util.Map;
 
 @Service
 @Transactional
+@Slf4j
 public class DeployServiceImpl implements DeployService {
     private ArticleService articleService;
     private SubjectService subjectService;
+    private IndexService indexService;
     @Value("${deploy.save-path}")
     private String savePath;
     @Value("${deploy.subject}")
@@ -51,11 +55,9 @@ public class DeployServiceImpl implements DeployService {
         this.articleService = articleService;
     }
 
-    @Override
-    public void saveAndUpdateSubjectArticleStatus(Article article) throws IOException {
-        articleService.updateContent(article);
-        //更新发布状态
-        articleService.updateStatus(article.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
+    @Autowired
+    public void setIndexService(IndexService indexService) {
+        this.indexService = indexService;
     }
 
 
@@ -67,6 +69,8 @@ public class DeployServiceImpl implements DeployService {
         List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
         SiteConfig siteConfig = subjectService.findSiteConfig();
         deployCurrentAndSubjectTreeProcess(dbArticle, dbList, navigations, siteConfig);
+        //写入索引
+        indexService.addOrUpdateIndex(dbArticle);
     }
 
     private void deployCurrentAndSubjectTreeProcess(Article currentArticle, List<SimpleArticleWithoutContentDTO> dbList, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
@@ -171,19 +175,6 @@ public class DeployServiceImpl implements DeployService {
 
 
     @Override
-    public void saveAndUpdateSingleStatus(Article article) throws IOException {
-        Article saved;
-        if (article.getId() != null) {
-            saved = articleService.updateSingle(article);
-        } else {
-            saved = articleService.add(article);
-        }
-        //更新发布状态
-        articleService.updateStatus(saved.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
-    }
-
-
-    @Override
     public void deployCurrentSingle(Integer id) throws IOException {
         List<SimpleArticleWithoutContentDTO> singleList = articleService.findAllSingleArticleByStatus(Article.Status.PUBLISHED.getCode());
         List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
@@ -196,6 +187,9 @@ public class DeployServiceImpl implements DeployService {
         //发布当前
         SimpleArticleWithContentDTO article = articleService.getSimpleWithContentById(id);
         deploySingleProcess(article, singleList, navigations, siteConfig);
+
+        //写入索引
+        indexService.addOrUpdateIndex(id, null, article.getEnName(), article.getTitle(), article.getContent());
 
     }
 
@@ -272,6 +266,8 @@ public class DeployServiceImpl implements DeployService {
         }
         //更新发布状态
         articleService.updateStatus(saved.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
+        //写入索引
+        indexService.addOrUpdateIndex(saved);
         return saved;
     }
 
@@ -279,8 +275,10 @@ public class DeployServiceImpl implements DeployService {
     public void deployAllSubjectArticle(Integer sid) throws IOException {
         Subject subject = subjectService.findById(sid);
         if (!subject.getNavigation()) return;
-        //左侧不带内容的文章列表
-        List<SimpleArticleWithoutContentDTO> leftNavs = articleService.findArticleTree(sid, Article.Status.PUBLISHED.getCode());
+        //读取所有可发布的的文章列表
+        List<SimpleArticleWithoutContentDTO> leftNavs = articleService.findAllPublishableArticleTree(sid);
+        if (leftNavs.isEmpty()) return;
+        List<Integer> ids = leftNavs.stream().map(SimpleArticleWithoutContentDTO::getId).toList();
         //顶部导航信息
         List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
         if (navigations.isEmpty()) return;
@@ -289,9 +287,8 @@ public class DeployServiceImpl implements DeployService {
         Article index = articleService.findById(leftNavs.getFirst().getId());
         SiteConfig siteConfig = subjectService.findSiteConfig();
         deploySubjectIndexProcess(index, leftNavs, navigations, siteConfig);
-        //循环发布文章内容
-        List<SimpleArticleWithContentDTO> articleWithContentDTOS = articleService.findAllWithContentBySidAndStatus(subject.getId(),
-                Article.Status.PUBLISHED.getCode());
+        //循环发布所有可发布的文章内容
+        List<SimpleArticleWithContentDTO> articleWithContentDTOS = articleService.findAllPublishableWithContentBySid(subject.getId());
         articleWithContentDTOS.forEach(article -> {
             //替换
             String result = replaceSubjectArticleTemplate(subject, article.getPublishedAt(), article.getTitle(), article.getContent(),
@@ -304,9 +301,15 @@ public class DeployServiceImpl implements DeployService {
                 //json
                 deploySubjectArticleJson(path, article.getTitle(), subject.getSubjectTitle(), article.getContent());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException();
             }
+            //更新索引
+            indexService.addOrUpdateIndex(article.getId(), subject.getEnName(), article.getEnName(), article.getTitle(), article.getContent());
         });
+        //批量修改状态
+        articleService.updateBatchStatus(Article.Status.PUBLISHED.getCode(), LocalDateTime.now(), ids);
+        //发布索引
+        indexService.deployIndexList();
     }
 
     @Override
@@ -322,10 +325,14 @@ public class DeployServiceImpl implements DeployService {
         //替换主题区域
         StringBuilder subjectContent = new StringBuilder();
         navigations.forEach(s -> {
+            String remark = s.getRemark();
+            if (remark != null && remark.length() > 70) {
+                remark = remark.substring(0, 70);
+            }
             subjectContent.append("<div class='subjectHeader'>").append("    <a href='/subject/").append(s.getEnName()).append("/index.html'>")
                     .append("        <img src='/img/subject-logo1.svg'>")
                     .append("        <h3>").append(s.getSubjectTitle()).append("</h3>")
-                    .append("        <p>").append(s.getRemark(), 0, 70).append("...</p>")
+                    .append("        <p>").append(remark).append("...</p>")
                     .append("</a>")
                     .append("</div>");
         });
@@ -371,6 +378,10 @@ public class DeployServiceImpl implements DeployService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            //更新索引
+            indexService.addOrUpdateIndex(a.getId(), null, a.getEnName(), a.getTitle(), a.getContent());
         });
+        //发布索引
+        indexService.deployIndexList();
     }
 }

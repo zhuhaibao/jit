@@ -1,10 +1,11 @@
 package com.jumper.jit.aspect;
 
+import com.jumper.jit.config.redis.RedisTopics;
+import com.jumper.jit.config.redis.RedisUtil;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.Article;
 import com.jumper.jit.model.Subject;
 import com.jumper.jit.service.ArticleService;
-import com.jumper.jit.service.DeployService;
 import com.jumper.jit.service.SubjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -20,17 +21,17 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-@Order(1)
+@Order(2)
 @Slf4j
 public class AutoDeployProcessor {
 
-    private DeployService deployService;
     private ArticleService articleService;
     private SubjectService subjectService;
+    private RedisUtil redisUtil;
 
     @Autowired
-    public void setDeployService(DeployService deployService) {
-        this.deployService = deployService;
+    public void setRedisUtil(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
     }
 
     @Autowired
@@ -43,8 +44,9 @@ public class AutoDeployProcessor {
         this.subjectService = subjectService;
     }
 
-    @Pointcut("execution(* com.jumper.jit.service.impl.DeployServiceImpl.saveAndUpdateSubjectArticleStatus(..))||" +
-            "execution(* com.jumper.jit.service.impl.DeployServiceImpl.saveAndUpdateSingleStatus(..))")
+
+    @Pointcut("execution(* com.jumper.jit.service.impl.ArticleServiceImpl.saveAndUpdateSubjectArticleStatus(..))||" +
+            "execution(* com.jumper.jit.service.impl.ArticleServiceImpl.saveAndUpdateSingleStatus(..))")
     private void saveAndUpdateArticleStatus() {
     }
 
@@ -69,61 +71,79 @@ public class AutoDeployProcessor {
     private void insertNodeAsChild() {
     }
 
+    @Pointcut("execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployById(..))||" +
+            "execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployCurrentSubjectArticle(..))||" +
+            "execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployCurrentSingle(..))")
+    private void deployAndCauseUpdateIndexData() {
+    }
+
+    @After("deployAndCauseUpdateIndexData()")
+    public void deployByIdAndDeployIndexList(JoinPoint point) throws Exception {
+        MethodSignature signature = (MethodSignature) point.getSignature();
+        log.info("{} ->auto deployIndexDataList..", signature.getName());
+        //发布索引
+        redisUtil.sendMessage(RedisTopics.GenIndexData, "");
+    }
 
     @After("saveAndUpdateArticleStatus()")
     public void deployAfterSaveAndUpdateArticleStatus(JoinPoint point) throws Exception {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Article param = (Article) point.getArgs()[0];
         Article dbArticle = articleService.findById(param.getId());
-        log.info("{} ->auto deploy current Article[id={},title={}]... ", signature.getName(), param.getId(), param.getTitle());
+        log.info("{} ->auto deploy current Article[id={},title={}]... ", signature.getName(), dbArticle.getId(), dbArticle.getTitle());
         if (dbArticle.getSid() != null) {
-            deployService.deployCurrentSubjectArticle(param.getId());
+            redisUtil.sendMessage(RedisTopics.SubjectArticle, String.valueOf(param.getId()));
         } else {
-            deployService.deployCurrentSingle(param.getId());
+            redisUtil.sendMessage(RedisTopics.SingleArticle, String.valueOf(param.getId()));
         }
     }
-
 
     @After("updateNavigation()")
     public void autoDeployTopNav(JoinPoint point) throws Exception {
         MethodSignature signature = (MethodSignature) point.getSignature();
         //发布主页index
         log.info("{} -> auto deploy index.html... ", signature.getName());
-        deployService.deployIndex();
+        redisUtil.sendMessage(RedisTopics.IndexPage, "");
     }
-
 
     @After("updateSubject()")
     public void autoDeploySubject(JoinPoint point) throws Exception {
         MethodSignature signature = (MethodSignature) point.getSignature();
         //发布主页index
         log.info("{} -> auto deploy index.html...  ", signature.getName());
-        deployService.deployIndex();
+        redisUtil.sendMessage(RedisTopics.IndexPage, "");
         //如果修改了enName,也就是主题存放目录,那么整个主题要重发一遍
         SubjectDTO subject = (SubjectDTO) point.getArgs()[0];
         Subject dbSubject = subjectService.findById(subject.getId());
         if (subject.getEnName() != null) {
             log.info("{}: enName changed[{}] -> auto deploy AllSubject[{}]... ", signature.getName(), subject.getEnName(), dbSubject.getSubjectTitle());
-            deployService.deployAllSubjectArticle(subject.getId());
+            redisUtil.sendMessage(RedisTopics.AllSubjectArticle, String.valueOf(subject.getId()));
         }
     }
 
-
-    @After("updateArticle()")
-    public void autoDeploySubjectCauseOfArticleModified(JoinPoint point) throws Exception {
+    @Around("updateArticle()")
+    public Object autoDeploySubjectCauseOfArticleModified(ProceedingJoinPoint point) throws Throwable {
         MethodSignature signature = (MethodSignature) point.getSignature();
         //获取第一个参数id,检查文章状态
         Integer id = (Integer) point.getArgs()[0];
         Article article = articleService.findById(id);
+        Object returnValue = point.proceed();
         if (article.getStatus().equals(Article.Status.PUBLISHED.getCode())) {
+
+            //判断是否是删除,删除索引
+            if (signature.getMethod().getName().contains("delete")) {
+                log.info("{}: ->Article[{}]  auto delete index key... ", id, signature.getName());
+                redisUtil.sendMessage(RedisTopics.DelIndex, String.valueOf(id));
+            }
             if (article.getSid() != null) {
                 log.info("{}: ->Article[{}] auto deploy AllSubject[{}]... ", id, signature.getName(), article.getSubject().getSubjectTitle());
-                deployService.deployAllSubjectArticle(article.getSubject().getId());
+                redisUtil.sendMessage(RedisTopics.AllSubjectArticle, String.valueOf(article.getSubject().getId()));
             } else {
                 log.info("{}: ->Article[{}]  auto deploy deployAllSingleArticle... ", id, signature.getName());
-                deployService.deployAllSingleArticle();
+                redisUtil.sendMessage(RedisTopics.AllSingleArticle, "");
             }
         }
+        return returnValue;
     }
 
 
@@ -138,9 +158,9 @@ public class AutoDeployProcessor {
         if (article.getStatus().compareTo(Article.Status.PUBLISHED.getCode()) < 0) return object;
         //有所属主题则重新发布该主题,否则重新发布单体文章列表
         if (article.getSid() != null) {
-            deployService.deployAllSubjectArticle(article.getSid());
+            redisUtil.sendMessage(RedisTopics.AllSubjectArticle, String.valueOf(article.getSid()));
         } else {
-            deployService.deployAllSingleArticle();
+            redisUtil.sendMessage(RedisTopics.AllSingleArticle, "");
         }
         //获取移动目标的主题
         Integer targetSid;
@@ -152,7 +172,7 @@ public class AutoDeployProcessor {
         }
         //如果主题不同,则重发布目标主题
         if (!targetSid.equals(article.getSid())) {
-            deployService.deployAllSubjectArticle(targetSid);
+            redisUtil.sendMessage(RedisTopics.AllSubjectArticle, String.valueOf(targetSid));
         }
         return object;
     }

@@ -12,13 +12,13 @@ import com.jumper.jit.repository.SubjectRepository;
 import com.jumper.jit.service.ArticleService;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,8 +28,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Transactional
 @Service
-@Transactional()
 public class ArticleServiceImpl implements ArticleService {
     private SubjectRepository subjectRepository;
     private ArticleRepository repository;
@@ -81,6 +81,17 @@ public class ArticleServiceImpl implements ArticleService {
     public List<SimpleArticleWithoutContentDTO> findArticleTree(Integer sid, Integer status) {
         List<SimpleArticleWithoutContentDTO> list = repository.findArticlesWithoutContent(sid, status);
         return processSortList(list);
+    }
+
+    @Override
+    public List<SimpleArticleWithoutContentDTO> findAllPublishableArticleTree(Integer sid) {
+        List<SimpleArticleWithoutContentDTO> list = repository.findArticlesWithoutContentAndStatusGreaterThan(sid, Article.Status.NO_CONTENT.getCode());
+        return processSortList(list);
+    }
+
+    @Override
+    public List<SimpleArticleWithContentDTO> findAllPublishableWithContentBySid(Integer sid) {
+        return repository.findAllBySidAndStatusGreaterThan(sid, Article.Status.NO_CONTENT.getCode());
     }
 
     private List<SimpleArticleWithoutContentDTO> processSortList(List<SimpleArticleWithoutContentDTO> list) {
@@ -169,9 +180,8 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void delete(Integer id) {
-        SimpleArticleWithoutContentDTO dto = repository.getArticleWithoutContentById(id);
-        if (dto == null) throw new DbException("article id = " + id);
+    public Article delete(Integer id) {
+        Article dbArticle = repository.findById(id).orElseThrow(() -> new DbException("id=" + id));
         repository.delById(id);
         AtomicInteger counter = new AtomicInteger(1);
         if (repository.existsByPid(id)) {//如果存在子元素
@@ -183,17 +193,17 @@ public class ArticleServiceImpl implements ArticleService {
             });
         }
         //修改orderNum,同级别大于它的orderNum-1;
-        if (dto.getPid() == null && dto.getSid() != null) {
-            repository.setAllOrderNumAfterCurrentNodeBySid(dto.getSid(), dto.getOrderNum(), -1);
+        if (dbArticle.getPid() == null && dbArticle.getSid() != null) {
+            repository.setAllOrderNumAfterCurrentNodeBySid(dbArticle.getSid(), dbArticle.getOrderNum(), -1);
         }
-        if (dto.getPid() != null && dto.getSid() != null) {
-            repository.setAllOrderNumAfterCurrentNodeByPid(dto.getPid(), dto.getOrderNum(), -1);
+        if (dbArticle.getPid() != null && dbArticle.getSid() != null) {
+            repository.setAllOrderNumAfterCurrentNodeByPid(dbArticle.getPid(), dbArticle.getOrderNum(), -1);
         }
         //最后修改总文章数量
-        if (dto.getSid() != null) {
-            subjectRepository.setSubjectArticleSum(dto.getSid(), -(counter.get()));
+        if (dbArticle.getSid() != null) {
+            subjectRepository.setSubjectArticleSum(dbArticle.getSid(), -(counter.get()));
         }
-
+        return dbArticle;
     }
 
     public void deleteRecursion(Integer id, AtomicInteger counter) {
@@ -427,6 +437,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public void updateBatchStatus(Integer status, LocalDateTime publishedAt, List<Integer> ids) {
+        repository.updateBatchStatus(status, publishedAt, ids);
+    }
+
+    @Override
     public List<SimpleArticleWithoutContentDTO> findAllSingleArticleByStatus(Integer status) {
         return repository.getArticleAllSingleWithoutContentByStatus(status);
     }
@@ -439,5 +454,25 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<Integer> filterSidsNotExistsDeployedTopNode(List<Integer> sids, Integer status) {
         return repository.findSidsWithDeployedTopNode(sids, status);
+    }
+
+    @Override
+    public void saveAndUpdateSubjectArticleStatus(Article article) throws IOException {
+        this.updateContent(article);
+        //更新发布状态
+        this.updateStatus(article.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
+    }
+
+
+    @Override
+    public void saveAndUpdateSingleStatus(Article article) throws IOException {
+        Article saved;
+        if (article.getId() != null) {
+            saved = this.updateSingle(article);
+        } else {
+            saved = this.add(article);
+        }
+        //更新发布状态
+        this.updateStatus(saved.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
     }
 }

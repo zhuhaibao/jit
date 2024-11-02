@@ -56,7 +56,7 @@
                     th:text="${sub.title}"></td>
                 <td data-type-enName class="updateTd" ondblclick="updateTitle(event,2)" th:attr="data-td-id=${sub.id}"
                     th:text="${sub.enName}"></td>
-                <td th:text="${sub.createdAt}"></td>
+                <td th:text="${#temporals.format(sub.createdAt,'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td class="tdCenter updateTd" ondblclick="clickSubject(event)"
                     th:text="${sub.subject!=null}? ${sub.subject.subjectTitle}:'无主题'"></td>
                 <td>
@@ -270,6 +270,7 @@
                 selectLi = null;
                 //隐藏
                 modal.style.display = "none";
+                window.location.reload();
             } else {
                 alert("插入失败:" + result.msg);
             }

@@ -48,7 +48,7 @@
                 <td ondblclick="editSubject(event,1)" th:attr="data-td-id=${sub.id}" class="updateTd">
                     [[${sub.subjectTitle}]]
                 </td>
-                <td>[[${sub.createdAt}]]</td>
+                <td th:text="${#temporals.format(sub.createdAt,'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td>[[${sub.articleSum}]]</td>
                 <td ondblclick="editSubject(event,3)" th:attr="data-td-id=${sub.id}" class="updateTd">
                     [[${sub.enName}]]
@@ -79,7 +79,7 @@
                 </td>
                 <td th:attr="data-td-id=${sub.id}">
                     <th:block th:if="${sub.navigation==true}">
-                        <button class="deployButton" th:onclick="|reDeploySubject(${sub.id})|">重发布</button>
+                        <button class="deployButton" th:onclick="|reDeploySubject(${sub.id})|">发布所有</button>
                     </th:block>
                     <th:block th:if="${sub.navigation==false}">否</th:block>
                 </td>
@@ -156,7 +156,7 @@
             let imgPlace = trData.pic ? `<img onmouseover="previewBigImg(this)" onmouseleave="document.getElementById('previewBigImg').style.display='none';" src="${trData.pic}" >` : `<span>无图片</span>`;
             let navTdHtml;
             if (trData.navigation) {
-                navTdHtml = `<button class="deployButton" onclick="reDeploySubject(${trData.id})">重发布</button>`;
+                navTdHtml = `<button class="deployButton" onclick="reDeploySubject(${trData.id})">发布所有</button>`;
             } else {
                 navTdHtml = '否';
             }
@@ -311,7 +311,7 @@
         let tr = e.target.closest('tr');
         let id = tr.dataset.trGen;
         if (!confirm('del subject?')) return;
-        fetch("subject/" + id, {method: 'DELETE'}).then(async result => {
+        fetch("/subject/" + id, {method: 'DELETE'}).then(async result => {
             let json = await result.json();
             if (json.statusText !== 'ok') {
                 alert("删除失败:" + json);
