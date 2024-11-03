@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content='朱海保的个人网站'>
+    <meta name='keywords' content='java, spring, javascript, html, css, mariadb, jpa'>
+    <title>Ask - 搜索引擎</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/js/lib/prism/prism.css">
+    <script src="/js/lib/prism/prism.js"></script>
+    <script src="/js/base.js"></script>
+    <link rel="stylesheet" href="/css/base.css"/>
+    <link rel="stylesheet" href="/css/articles.css"/>
+    <link rel="stylesheet" href="/css/devices.css"/>
+
+</head>
+
+<body>
+<div class="topDiv">
+    <div class="topBar">
+        <div class="logoDiv">
+            <a href="/index.html">
+                <img src="/img/logo.svg">
+            </a>
+        </div>
+        <div class="searchDiv">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章..." onfocus="searchByKey(event)"
+                   oninput="searchByKey(event)" onblur="onFocusLose(event);">
+            <img class="searchImg" src="/img/searchicon.svg" onclick="gSearchByKey(event)">
+        </div>
+        <div class="userInfoDiv">
+            <span></span>
+        </div>
+    </div>
+    <div class="navBar">
+        <div class="arrow" id="leftArrow"></div>
+        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <nav>
+            <ul id="topNav">
+                <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
+<li><a href='/subject/java/index.html'>Java</a></li>
+<li><a href='/subject/html/index.html'>html</a></li>
+<li><a href='/subject/css/index.html'>CSS</a></li>
+<li><a href='/subject/search-engine/index.html'>搜索引擎</a></li>
+
+            </ul>
+        </nav>
+        <div class="arrow" id="rightArrow"></div>
+    </div>
+</div>
+<div class="mainDiv">
+    <div class="titleTreeDiv700 titleTreeDiv" id="titleTreeDiv">
+        <p class='subjectTitle' data-sub-dir='search-engine'>搜索引擎</p>
+        <hr>
+        <nav class="titleTree" id="titleTree"><a href='/subject/search-engine/google/index.html'>谷歌</a>
+<a href='/subject/search-engine/bing/index.html'>必应 Bing</a>
+<a href='/subject/search-engine/yahoo/index.html'>雅虎搜索</a>
+<a href='/subject/search-engine/ask/index.html'>Ask</a>
+</nav>
+    </div>
+    <div class="contentDiv">
+        <section>
+            <header>
+                <span class='articleTitle' id='articleTitle'>Ask</span>
+                <span class='publishTime'>lastUpdated : 2024-11-03 03:57:10</span>
+            </header>
+            <section title="author" class="author">
+                <img id="authorLogo" src="/img/subject-logo4.svg">
+                <a class="authorName zcool-xiaowei-regular" href="https://twitter.com/jumperoverfgw">朱海保</a>
+                <a href="https://github.com/zhuhaibao"><img class="siteImg" src="/img/github.svg"></a>
+                <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
+                <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
+            </section>
+            <article id='articleContent'><p><span style="color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;"><img src="http://localhost:8081/img/upload/b985c6fe0ed8564dfe24a3ccfc4ca0ba.jpg" style="display: block; margin-left: auto; margin-right: auto;">Ask是一个以问答为核心的搜索引擎网站。网站于1996年由加州大学伯克利分校的Garrett Gruener和David Warthen在加利福尼亚伯克利创办的。起初，它被称为Ask Jeeves。</span><br style="margin: 0px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><br style="margin: 0px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><span style="color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">起初，Ask是由Gary Chevsky设计。Warthen、Chevsky、Justin Grant和其他人围绕搜索引擎核心建立AskJeeves.com网站。2010年底，Ask遇到个强大的竞争对手谷歌公司，它开设采取外包其网站搜索技术，并返回其问题和答案。</span><br style="margin: 0px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><br style="margin: 0px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><span style="color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">在2010年，道格拉斯·利兹是Ask首席执行官。公司资金主要来源于三个风险投资公司：高原资本合伙人、Institutional Venture Partners和RODA集团早期投资者。</span><br style="margin: 0px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><br style="margin: 0px; padding: 0px; color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><span style="color: rgb(51, 51, 51); font-family: &quot;PingFang SC&quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">Ask最初被称为Ask Jeeves公司，Ask Jeeves最初想法是让用户在日常生活中获得提出的问题答案，以及传统的关键字搜索。目前，网站还增加数学、字典、和转换问题支持</span></p></article>
+        </section>
+    </div>
+</div>
+<script type="text/javascript">
+    showNavBar();
+</script>
+<script src="/js/articleTree.js"></script>
+</body>
+
+</html>

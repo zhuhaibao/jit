@@ -1,0 +1,58 @@
+/*分页样式-start*/
+.pageModule * {
+    box-sizing: border-box;
+}
+
+.pageModule {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.pageParam {
+    margin-top: 10px;
+}
+
+.pageParam input {
+    width: 50px;
+    margin: 5px 15px;
+    padding: 2px 5px;
+}
+
+.page {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.page a {
+    display: inline-block;
+    width: 40px;
+    text-align: center;
+}
+
+.page a:hover {
+    cursor: pointer;
+}
+
+.pageButton {
+    width: 70px;
+    height: 30px;
+    border: none;
+    background-color: #03AA6D;
+    border-radius: 4px;
+}
+
+.pageButton:hover {
+    cursor: pointer;
+    background-color: #0DB175;
+}
+
+.page .pageSelected {
+    background-color: #cccccc;
+}
+
+.page .pageSelected:hover {
+    cursor: auto;
+}
+
+/*分页样式-end*/

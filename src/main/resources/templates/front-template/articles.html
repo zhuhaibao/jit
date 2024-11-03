@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/js/lib/prism/prism.css">
     <script src="/js/lib/prism/prism.js"></script>
     <script src="/js/base.js"></script>
+    <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/base.css"/>
     <link rel="stylesheet" href="/css/articles.css"/>
     <link rel="stylesheet" href="/css/devices.css"/>
@@ -26,9 +27,8 @@
             </a>
         </div>
         <div class="searchDiv">
-            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章..." onfocus="searchByKey(event)"
-                   oninput="searchByKey(event)" onblur="onFocusLose(event);">
-            <img class="searchImg" src="/img/searchicon.svg" onclick="gSearchByKey(event)">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章...">
+            <img class="searchImg" src="/img/searchicon.svg" id="searchButton">
         </div>
         <div class="userInfoDiv">
             <span></span>
@@ -69,10 +69,35 @@
         </section>
     </div>
 </div>
+<!--显示搜索结果-->
+<div id="searchResultDiv">
+    <div id="searchResult"></div>
+    <hr>
+    <a class="siteSearch" href="javascript:void(0);" id="showSearchAll">显示全部</a>
+</div>
+<!--模态窗口div,显示google结果-->
+<div class="modal" id="modalResult" onclick="if(event.target==modalResult)modalResult.style.display='none'">
+    <div class="modalContent">
+        <div class="modalBody">
+            <div class="searchTitle">
+                <span class="close" id='close' onclick="modalResult.style.display='none'">&times;</span>
+                <span class="resultAnalysis" id="resultAnalysis"></span><br>
+                <hr class="hrsplit">
+            </div>
+            <div id="searchResultAll"></div>
+            <div class="page">
+                <button class="pageButton" id="pagePrev">上一页</button>
+                <div class="pageIndex"></div>
+                <button class="pageButton" id="pageNext">下一页</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     showNavBar();
 </script>
 <script src="/js/articleTree.js"></script>
+<script type="module" src="/js/indexSearch.js"></script>
 </body>
 
 </html>

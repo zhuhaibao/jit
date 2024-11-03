@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content='朱海保的个人网站'>
+    <meta name='keywords' content='java, spring, javascript, html, css, mariadb, jpa'>
+    <title>js如何修改html的title标题</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/js/lib/prism/prism.css">
+    <script src="/js/lib/prism/prism.js"></script>
+    <script src="/js/base.js"></script>
+    <link rel="stylesheet" href="/css/base.css"/>
+    <link rel="stylesheet" href="/css/article.css"/>
+    <link rel="stylesheet" href="/css/devices.css"/>
+
+</head>
+
+<body>
+<div class="topDiv">
+    <div class="topBar">
+        <div class="logoDiv">
+            <a href="/index.html">
+                <img src="/img/logo.svg">
+            </a>
+        </div>
+        <div class="searchDiv">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章..." onfocus="searchByKey(event)"
+                   oninput="searchByKey(event)" onblur="onFocusLose(event);">
+            <img class="searchImg" src="/img/searchicon.svg" onclick="gSearchByKey(event)">
+        </div>
+        <div class="userInfoDiv">
+            <span></span>
+        </div>
+    </div>
+    <div class="navBar">
+        <div class="arrow" id="leftArrow"></div>
+        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <nav>
+            <ul id="topNav">
+                <!--第一个文章标签,固定显示-->
+                <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
+<li><a href='/subject/css-x/index.html'>CSS</a></li>
+<li><a href='/subject/java/index.html'>Java</a></li>
+<li><a href='/subject/html/index.html'>html</a></li>
+
+            </ul>
+        </nav>
+        <div class="arrow" id="rightArrow"></div>
+    </div>
+</div>
+<div class="mainDiv">
+    <div class="titleTreeDiv700 titleTreeDiv" id="titleTreeDiv">
+        <p style="margin-left: 10px; font-size:16px">文章列表</p>
+        <nav class="titleTree" id="titleTree"><span class='publishTime'>2024-10-30 19:54:49</span><br>
+<a href='/articles/updattitle/index.html'>js如何修改html的title标题</a>
+<span class='publishTime'>2024-10-26 15:31:58</span><br>
+<a href='/articles/gwqt/index.html'>单位来了一位美国访问学者</a>
+<span class='publishTime'>2024-10-26 15:29:12</span><br>
+<a href='/articles/qiwen1/index.html'>厦门文化执法支队正科级干部钟劭臻婚内出轨11年</a>
+</nav>
+    </div>
+    <div class="contentDiv">
+        <section>
+            <header><span class='articleTitle' id='articleTitle'>js如何修改html的title标题</span></header>
+            <section title="author" class="author">
+                <img id="authorLogo" src="/img/subject-logo4.svg">
+                <a class="authorName zcool-xiaowei-regular" href="https://twitter.com/jumperoverfgw">朱海保</a>
+                <a href="https://github.com/zhuhaibao"><img class="siteImg" src="/img/github.svg"></a>
+                <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
+                <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
+            </section>
+            <article id='articleContent'><p><br></p><pre class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+    &lt;meta name='description' content=''&gt;
+    &lt;meta name='keywords' content=''&gt;
+    &lt;title&gt;单体文章&lt;/title&gt;
+    &lt;link rel="icon" href="/favicon.ico"&gt;
+    &lt;link rel="stylesheet" href="/js/lib/prism/prism.css"&gt;
+    &lt;script src="/js/lib/prism/prism.js"&gt;&lt;/script&gt;
+    &lt;script src="/js/base.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="/css/base.css"/&gt;
+    &lt;link rel="stylesheet" href="/css/article.css"/&gt;
+    &lt;link rel="stylesheet" href="/css/devices.css"/&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+&lt;div class="topDiv"&gt;
+    &lt;div class="topBar"&gt;
+        &lt;div class="logoDiv"&gt;
+            &lt;a href="/index.html"&gt;
+                &lt;img src="/img/logo.svg"&gt;
+            &lt;/a&gt;
+        &lt;/div&gt;
+        &lt;div class="searchDiv"&gt;
+            &lt;input type="text" name="searchKey" id="searchInput" placeholder="搜索文章..." onfocus="searchByKey(event)"
+                   oninput="searchByKey(event)" onblur="onFocusLose(event);"&gt;
+            &lt;img class="searchImg" src="/img/searchicon.svg" onclick="gSearchByKey(event)"&gt;
+        &lt;/div&gt;
+        &lt;div class="userInfoDiv"&gt;
+            &lt;span&gt;&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="navBar"&gt;
+        &lt;div class="arrow" id="leftArrow"&gt;&lt;/div&gt;
+        &lt;i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"&gt;&lt;/i&gt;
+        &lt;nav&gt;
+            &lt;ul id="topNav"&gt;
+                &lt;!--第一个文章标签,固定显示--&gt;
+                &lt;li id="articleLabel"&gt;&lt;a href="/articles/index.html"&gt;点滴文章&lt;/a&gt;&lt;/li&gt;
+                &lt;li id=topNav_placeholders&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+        &lt;div class="arrow" id="rightArrow"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="mainDiv"&gt;
+    &lt;div class="titleTreeDiv700 titleTreeDiv" id="titleTreeDiv"&gt;
+        &lt;p style="margin-left: 10px; font-size:16px"&gt;文章列表&lt;/p&gt;
+        &lt;nav class="titleTree" id="titleTree"&gt;&lt;a id=article_placeholders&gt;&lt;/a&gt;&lt;/nav&gt;
+    &lt;/div&gt;
+    &lt;div class="contentDiv"&gt;
+        &lt;section&gt;
+            &lt;header&gt;&lt;span class='articleTitle' id='articleTitle'&gt;&lt;/span&gt;&lt;/header&gt;
+            &lt;section title="author" class="author"&gt;
+                &lt;img id="authorLogo" src="/img/subject-logo4.svg"&gt;
+                &lt;a class="authorName zcool-xiaowei-regular" href="https://twitter.com/jumperoverfgw"&gt;朱海保&lt;/a&gt;
+                &lt;a href="https://github.com/zhuhaibao"&gt;&lt;img class="siteImg" src="/img/github.svg"&gt;&lt;/a&gt;
+                &lt;a href="https://twitter.com/jumperoverfgw"&gt;&lt;img class="siteImg" src="/img/X.svg"&gt;&lt;/a&gt;
+                &lt;span class='zcool-xiaowei-regular'&gt;自由职业 专业开发 10年it魔域经验&lt;/span&gt;
+            &lt;/section&gt;
+            &lt;article id='articleContent'&gt;&lt;/article&gt;
+        &lt;/section&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+    showNavBar();
+&lt;/script&gt;
+&lt;script src="/js/articleTree.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;</pre></article>
+        </section>
+    </div>
+</div>
+<script type="text/javascript">
+    showNavBar();
+</script>
+<script src="/js/articleTree.js"></script>
+</body>
+
+</html>

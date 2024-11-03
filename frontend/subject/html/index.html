@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content='朱海保的个人网站'>
+    <meta name='keywords' content='java, spring, javascript, html, css, mariadb, jpa'>
+    <title>HTML Tutorial - html</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/js/lib/prism/prism.css">
+    <script src="/js/lib/prism/prism.js"></script>
+    <script src="/js/base.js"></script>
+    <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/base.css"/>
+    <link rel="stylesheet" href="/css/articles.css"/>
+    <link rel="stylesheet" href="/css/devices.css"/>
+
+</head>
+
+<body>
+<div class="topDiv">
+    <div class="topBar">
+        <div class="logoDiv">
+            <a href="/index.html">
+                <img src="/img/logo.svg">
+            </a>
+        </div>
+        <div class="searchDiv">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章...">
+            <img class="searchImg" src="/img/searchicon.svg" id="searchButton">
+        </div>
+        <div class="userInfoDiv">
+            <span></span>
+        </div>
+    </div>
+    <div class="navBar">
+        <div class="arrow" id="leftArrow"></div>
+        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <nav>
+            <ul id="topNav">
+                <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
+<li><a href='/subject/java/index.html'>Java</a></li>
+<li><a href='/subject/html/index.html'>html</a></li>
+<li><a href='/subject/search-engine/index.html'>搜索引擎</a></li>
+<li><a href='/subject/css/index.html'>CSS</a></li>
+
+            </ul>
+        </nav>
+        <div class="arrow" id="rightArrow"></div>
+    </div>
+</div>
+<div class="mainDiv">
+    <div class="titleTreeDiv700 titleTreeDiv" id="titleTreeDiv">
+        <p class='subjectTitle' data-sub-dir='html'>html</p>
+        <hr>
+        <nav class="titleTree" id="titleTree"><a href='/subject/html/htmltutorial/index.html'>HTML Tutorial</a>
+<div><a href='/subject/html/introduction/index.html'>HTML Introduction</a>
+<a href='/subject/html/htmleditors/index.html'>HTML Editors</a>
+</div>
+<a href='/subject/html/updattitle/index.html'>js如何修改html的title标题</a>
+</nav>
+    </div>
+    <div class="contentDiv">
+        <section>
+            <header>
+                <span class='articleTitle' id='articleTitle'>HTML Tutorial</span>
+                <span class='publishTime'>lastUpdated : 2024-11-04 03:51:00</span>
+            </header>
+            <section title="author" class="author">
+                <img id="authorLogo" src="/img/subject-logo4.svg">
+                <a class="authorName zcool-xiaowei-regular" href="https://twitter.com/jumperoverfgw">朱海保</a>
+                <a href="https://github.com/zhuhaibao"><img class="siteImg" src="/img/github.svg"></a>
+                <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
+                <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
+            </section>
+            <article id='articleContent'><p>HTML is the standard markup language for Web pages.
+
+With HTML you can create your own Website.
+
+HTML is easy to learn - You will enjoy it!
+
+
+Easy Learning with HTML "Try it Yourself"
+With our "Try it Yourself" editor, you can edit the HTML code and view the result:
+
+Example
+
+
+
+<title>Page Title</title>
+
+
+
+</p><h1>This is a Heading</h1>
+<p>This is a paragraph.</p><p>
+
+
+
+Click on the "Try it Yourself" button to see how it works.
+
+HTML Examples
+In this HTML tutorial, you will find more than 200 examples. With our online "Try it Yourself" editor, you can edit and test each example yourself!
+
+
+</p><p><br></p></article>
+        </section>
+    </div>
+</div>
+<!--显示搜索结果-->
+<div id="searchResultDiv">
+    <div id="searchResult"></div>
+    <hr>
+    <a class="siteSearch" href="javascript:void(0);" id="showSearchAll">显示全部</a>
+</div>
+<!--模态窗口div,显示google结果-->
+<div class="modal" id="modalResult" onclick="if(event.target==modalResult)modalResult.style.display='none'">
+    <div class="modalContent">
+        <div class="modalBody">
+            <div class="searchTitle">
+                <span class="close" id='close' onclick="modalResult.style.display='none'">&times;</span>
+                <span class="resultAnalysis" id="resultAnalysis"></span><br>
+                <hr class="hrsplit">
+            </div>
+            <div id="searchResultAll"></div>
+            <div class="page">
+                <button class="pageButton" id="pagePrev">上一页</button>
+                <div class="pageIndex"></div>
+                <button class="pageButton" id="pageNext">下一页</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    showNavBar();
+</script>
+<script src="/js/articleTree.js"></script>
+<script type="module" src="/js/indexSearch.js"></script>
+</body>
+
+</html>

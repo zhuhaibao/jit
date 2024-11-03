@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content='朱海保的个人网站'>
+    <meta name='keywords' content='java, spring, javascript, html, css, mariadb, jpa'>
+    <title>伪类选择器 - CSS</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/js/lib/prism/prism.css">
+    <script src="/js/lib/prism/prism.js"></script>
+    <script src="/js/base.js"></script>
+    <link rel="stylesheet" href="/css/base.css"/>
+    <link rel="stylesheet" href="/css/articles.css"/>
+    <link rel="stylesheet" href="/css/devices.css"/>
+
+</head>
+
+<body>
+<div class="topDiv">
+    <div class="topBar">
+        <div class="logoDiv">
+            <a href="/index.html">
+                <img src="/img/logo.svg">
+            </a>
+        </div>
+        <div class="searchDiv">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章..." onfocus="searchByKey(event)"
+                   oninput="searchByKey(event)" onblur="onFocusLose(event);">
+            <img class="searchImg" src="/img/searchicon.svg" onclick="gSearchByKey(event)">
+        </div>
+        <div class="userInfoDiv">
+            <span></span>
+        </div>
+    </div>
+    <div class="navBar">
+        <div class="arrow" id="leftArrow"></div>
+        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <nav>
+            <ul id="topNav">
+                <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
+<li><a href='/subject/java/index.html'>Java</a></li>
+<li><a href='/subject/html/index.html'>html</a></li>
+<li><a href='/subject/css123/index.html'>CSS</a></li>
+
+            </ul>
+        </nav>
+        <div class="arrow" id="rightArrow"></div>
+    </div>
+</div>
+<div class="mainDiv">
+    <div class="titleTreeDiv700 titleTreeDiv" id="titleTreeDiv">
+        <p class='subjectTitle' data-sub-dir='css123'>CSS</p>
+        <hr>
+        <nav class="titleTree" id="titleTree"><a href='/subject/css123/cssselectors/index.html'>css选择器</a>
+<div><a href='/subject/css123/pssuedo/index.html'>伪类选择器</a>
+</div>
+</nav>
+    </div>
+    <div class="contentDiv">
+        <section>
+            <header>
+                <span class='articleTitle' id='articleTitle'>伪类选择器</span>
+                <span class='publishTime'>lastUpdated : 2024-10-31 18:05:19</span>
+            </header>
+            <section title="author" class="author">
+                <img id="authorLogo" src="/img/subject-logo4.svg">
+                <a class="authorName zcool-xiaowei-regular" href="https://twitter.com/jumperoverfgw">朱海保</a>
+                <a href="https://github.com/zhuhaibao"><img class="siteImg" src="/img/github.svg"></a>
+                <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
+                <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
+            </section>
+            <article id='articleContent'><h2 style="box-sizing: inherit; font-size: 32px; font-family: &quot;Segoe UI&quot;, Arial, sans-serif; font-weight: 400; margin: 10px 0px; color: rgb(0, 0, 0); font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">The CSS class Selector</h2><p style="box-sizing: inherit; margin-top: 1.2em; margin-bottom: 1.2em; font-size: 15px; color: rgb(0, 0, 0); font-family: Verdana, sans-serif; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">The class selector selects HTML elements with a specific class attribute.</p><p style="box-sizing: inherit; margin-top: 1.2em; margin-bottom: 1.2em; font-size: 15px; color: rgb(0, 0, 0); font-family: Verdana, sans-serif; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">To select elements with a specific class, write a period (.) character, followed by the class name.</p><div class="w3-example" style="box-sizing: inherit; background-color: rgb(231, 233, 235); border-radius: 5px; padding: 8px 20px; margin: 24px -20px; box-shadow: none !important; color: rgb(0, 0, 0); font-family: Verdana, sans-serif; font-size: 15px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><h3 style="box-sizing: inherit; font-size: 24px; font-family: &quot;Segoe UI&quot;, Arial, sans-serif; font-weight: 400; margin: 10px 0px;">Example</h3><p style="box-sizing: inherit; margin-top: 1em; margin-bottom: 1em; font-size: 15px;">In this example all HTML elements with class="center" will be red and center-aligned:&nbsp;</p><div class="w3-code notranslate cssHigh" style="box-sizing: inherit; font-family: Consolas, Menlo, &quot;courier new&quot;, monospace; font-size: 15px; width: auto; background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); padding: 8px 12px; border-left: 4px solid rgb(4, 170, 109); overflow-wrap: break-word; margin-top: 16px !important; margin-bottom: 16px !important;"><span class="cssselectorcolor" style="box-sizing: inherit; color: brown;">.center<span>&nbsp;</span><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">{</span><span class="csspropertycolor" style="box-sizing: inherit; color: red;"><br style="box-sizing: inherit;">&nbsp; text-align<span class="csspropertyvaluecolor" style="box-sizing: inherit; color: mediumblue;"><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">:</span><span>&nbsp;</span>center<span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">;</span></span><br style="box-sizing: inherit;">&nbsp;&nbsp;color<span class="csspropertyvaluecolor" style="box-sizing: inherit; color: mediumblue;"><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">:</span><span>&nbsp;</span>red<span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">;</span></span><br style="box-sizing: inherit;"></span><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">}</span></span></div><a target="_blank" href="https://www.w3schools.com/css/tryit.asp?filename=trycss_syntax_class" class="w3-btn w3-margin-bottom" style="box-sizing: inherit; background-color: rgb(76, 175, 80); color: rgb(255, 255, 255); border: none; display: inline-block; padding: 6px 18px; vertical-align: middle; overflow: hidden; text-decoration: none; text-align: center; cursor: pointer; white-space: nowrap; user-select: none; margin-bottom: 16px !important; border-radius: 5px; font-size: 17px; font-family: &quot;Source Sans Pro&quot;, sans-serif;">Try it Yourself »</a></div><p style="box-sizing: inherit; margin-top: 1.2em; margin-bottom: 1.2em; font-size: 15px; color: rgb(0, 0, 0); font-family: Verdana, sans-serif; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">You can also specify that only specific HTML elements should be affected by a class.</p><div class="w3-example" style="box-sizing: inherit; background-color: rgb(231, 233, 235); border-radius: 5px; padding: 8px 20px; margin: 24px -20px; box-shadow: none !important; color: rgb(0, 0, 0); font-family: Verdana, sans-serif; font-size: 15px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;"><h3 style="box-sizing: inherit; font-size: 24px; font-family: &quot;Segoe UI&quot;, Arial, sans-serif; font-weight: 400; margin: 10px 0px;">Example</h3><p style="box-sizing: inherit; margin-top: 1em; margin-bottom: 1em; font-size: 15px;">In this example only &lt;p&gt; elements with class="center" will be red and center-aligned:&nbsp;</p><div class="w3-code notranslate cssHigh" style="box-sizing: inherit; font-family: Consolas, Menlo, &quot;courier new&quot;, monospace; font-size: 15px; width: auto; background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); padding: 8px 12px; border-left: 4px solid rgb(4, 170, 109); overflow-wrap: break-word; margin-top: 16px !important; margin-bottom: 16px !important;"><span class="cssselectorcolor" style="box-sizing: inherit; color: brown;">p.center<span>&nbsp;</span><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">{</span><span class="csspropertycolor" style="box-sizing: inherit; color: red;"><br style="box-sizing: inherit;">&nbsp; text-align<span class="csspropertyvaluecolor" style="box-sizing: inherit; color: mediumblue;"><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">:</span><span>&nbsp;</span>center<span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">;</span></span><br style="box-sizing: inherit;">&nbsp;&nbsp;color<span class="csspropertyvaluecolor" style="box-sizing: inherit; color: mediumblue;"><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">:</span><span>&nbsp;</span>red<span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">;</span></span><br style="box-sizing: inherit;"></span><span class="cssdelimitercolor" style="box-sizing: inherit; color: black;">}</span></span></div><a target="_blank" href="https://www.w3schools.com/css/tryit.asp?filename=trycss_syntax_element_class" class="w3-btn w3-margin-bottom" style="box-sizing: inherit; background-color: rgb(76, 175, 80); color: rgb(255, 255, 255); border: none; display: inline-block; padding: 6px 18px; vertical-align: middle; overflow: hidden; text-decoration: none; text-align: center; cursor: pointer; white-space: nowrap; user-select: none; margin-bottom: 16px !important; border-radius: 5px; font-size: 17px; font-family: &quot;Source Sans Pro&quot;, sans-serif;">Try it Yourself »</a></div><p style="box-sizing: inherit; margin-top: 1.2em; margin-bottom: 1.2em; font-size: 15px; color: rgb(0, 0, 0); font-family: Verdana, sans-serif; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;">HTML elements can also refer to more than one class.</p></article>
+        </section>
+    </div>
+</div>
+<script type="text/javascript">
+    showNavBar();
+</script>
+<script src="/js/articleTree.js"></script>
+</body>
+
+</html>

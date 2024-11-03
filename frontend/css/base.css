@@ -1,3 +1,5 @@
+/*引入分页*/
+@import "page.css";
 /*引入fontawesome*/
 @import url('../js/lib/fontawesome-free-5.15.4-web/css/all.min.css');
 /*引入google字体*/
@@ -252,7 +254,7 @@ body {
     padding: 20px 40px 20px 40px;
 }
 
-.googleSearchTitle {
+.searchTitle {
     padding: 20px 0px 0px 0px;
 }
 
@@ -273,6 +275,10 @@ body {
     color: #1657CA;
     font-size: 16px;
     text-decoration: none;
+}
+
+.gTitle:hover {
+    text-decoration: underline;
 }
 
 .gPath {
@@ -316,10 +322,9 @@ body {
     position: fixed;
     z-index: 1000;
     width: 350px;
-    height: 450px;
+    height: auto;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
     background-color: #FDFCFC;
-    /*    transition: .5s allow-discrete;*/
 }
 
 #searchResultDiv a {
@@ -335,7 +340,7 @@ body {
     background-color: #efefef;
 }
 
-#searchResultDiv .keyword {
+#searchResultDiv .keyword, .gInfo .keyword {
     color: #E17E87;
 }
 
@@ -369,7 +374,8 @@ body {
     font-size: 200%;
     padding: 100px 0 0 0;
 }
-.error-code{
+
+.error-code {
     text-align: center;
     color: #272221;
     font-size: 800%;

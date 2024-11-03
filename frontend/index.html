@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content='朱海保的个人网站'>
+    <meta name='keywords' content='java, spring, javascript, html, css, mariadb, jpa'>
+    <title>网站首页</title>
+    <script src="/js/base.js"></script>
+    <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/base.css"/>
+    <link rel="stylesheet" href="/css/index.css"/>
+
+</head>
+
+<body>
+<div class="topDiv">
+    <div class="topBar">
+        <div class="logoDiv">
+            <a href="/index.html">
+                <img src="/img/logo.svg">
+            </a>
+        </div>
+        <div class="searchDiv">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章...">
+            <img class="searchImg" src="/img/searchicon.svg" id="searchButton">
+        </div>
+        <div class="userInfoDiv">
+            <span></span>
+        </div>
+    </div>
+    <div class="navBar">
+        <div class="arrow" id="leftArrow"></div>
+        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <nav>
+            <ul id="topNav">
+                <!--第一个文章标签,固定显示-->
+                <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
+<li><a href='/subject/java/index.html'>Java</a></li>
+<li><a href='/subject/html/index.html'>html</a></li>
+<li><a href='/subject/search-engine/index.html'>搜索引擎</a></li>
+<li><a href='/subject/css/index.html'>CSS</a></li>
+
+            </ul>
+        </nav>
+        <div class="arrow" id="rightArrow"></div>
+    </div>
+</div>
+<div class="mainDiv">
+    <div class="subjectArea" id="subjectArea">
+        <div class='subjectHeader'>    <a href='/subject/springboot/index.html'>        <img src='/img/subject-logo1.svg'>        <h3>SpringBoot</h3>        <p>xxxSpring Boot makes it easy to create stand-alone, production-grade S...</p></a></div><div class='subjectHeader'>    <a href='/subject/java/index.html'>        <img src='/img/subject-logo1.svg'>        <h3>Java</h3>        <p>Java 是全球广受欢迎的编程语言和开发平台。Oracle Java SE Universal Subscription 将提供全方位的支持...</p></a></div><div class='subjectHeader'>    <a href='/subject/html/index.html'>        <img src='/img/subject-logo1.svg'>        <h3>html</h3>        <p>HTML is the standard markup language for Web pages.
+
+With HTML you c...</p></a></div><div class='subjectHeader'>    <a href='/subject/search-engine/index.html'>        <img src='/img/subject-logo1.svg'>        <h3>搜索引擎</h3>        <p>搜索引擎...</p></a></div><div class='subjectHeader'>    <a href='/subject/css/index.html'>        <img src='/img/subject-logo1.svg'>        <h3>CSS</h3>        <p>CSS is the language we use to style an HTML document.
+
+CSS describes...</p></a></div>
+    </div>
+    <div class="articleArea">
+        <h4>最近发表的文章</h4>
+        <div class="articleList" id="articleList">
+            <div class='articleHeader'>    <h4>2024-10-26 15:31:58</h4>    <span><a href='/articles/gwqt/index.html'>单位来了一位美国访问学者</a></span></div><div class='articleHeader'>    <h4>2024-10-26 15:29:12</h4>    <span><a href='/articles/qiwen1/index.html'>厦门文化执法支队正科级干部钟劭臻婚内出轨11年</a></span></div>
+        </div>
+    </div>
+</div>
+<!--显示搜索结果-->
+<div id="searchResultDiv">
+    <div id="searchResult"></div>
+    <hr>
+    <a class="siteSearch" href="javascript:void(0);" id="showSearchAll">显示全部</a>
+</div>
+<!--模态窗口div,显示google结果-->
+<div class="modal" id="modalResult" onclick="if(event.target==modalResult)modalResult.style.display='none'">
+    <div class="modalContent">
+        <div class="modalBody">
+            <div class="searchTitle">
+                <span class="close" id='close' onclick="modalResult.style.display='none'">&times;</span>
+                <span class="resultAnalysis" id="resultAnalysis"></span><br>
+                <hr class="hrsplit">
+            </div>
+            <div id="searchResultAll"></div>
+            <div class="page">
+                <button class="pageButton" id="pagePrev">上一页</button>
+                <div class="pageIndex"></div>
+                <button class="pageButton" id="pageNext">下一页</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    showNavBar();
+</script>
+<script type="module" src="/js/indexSearch.js"></script>
+</body>
+
+</html>

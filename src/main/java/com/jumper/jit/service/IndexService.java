@@ -43,13 +43,18 @@ public class IndexService {
      * @param content       文章内容
      * @return true 成功 false 失败
      */
-    public boolean addOrUpdateIndex(Integer articleId, String subjectEnName, String articleEnName, String title, String content) {
+    public boolean addOrUpdateIndex(Integer articleId, String subjectEnName, String subjectName, String articleEnName, String title, String content) {
         String url = "/" + savePathForSubject + subjectEnName + "/" + articleEnName + "/index.html";
         if (subjectEnName == null) {//没有主题说明是单体文章
             url = "/" + savePathForArticle + articleEnName + "/index.html";
         }
         content = extractIndexContent(content);
-        IndexObject index = IndexObject.builder().url(url).title(title).content(content).build();
+        IndexObject index = IndexObject.builder().id(articleId).url(url).title(title).content(content).build();
+        if (subjectEnName != null) {
+            index.setSubject(subjectName);
+        } else {
+            index.setSubject("点滴文章");
+        }
         return redis.setObject(INDEX_PREFIX + articleId, index);
     }
 
@@ -58,11 +63,11 @@ public class IndexService {
     }
 
     public boolean addOrUpdateIndex(Article article) {
-        return addOrUpdateIndex(article.getId(), article.getSubject().getEnName(), article.getEnName(), article.getTitle(), article.getContent());
+        return addOrUpdateIndex(article.getId(), article.getSubject().getEnName(), article.getSubject().getSubjectTitle(), article.getEnName(), article.getTitle(), article.getContent());
     }
 
     public boolean addOrUpdateIndex(Subject subject, Article article) {
-        return addOrUpdateIndex(article.getId(), subject.getEnName(), article.getEnName(), article.getTitle(), article.getContent());
+        return addOrUpdateIndex(article.getId(), subject.getEnName(), subject.getSubjectTitle(), article.getEnName(), article.getTitle(), article.getContent());
     }
 
     public void deployIndexList() throws IOException {
@@ -79,7 +84,7 @@ public class IndexService {
      * @return 可以索引的内容
      */
     private String extractIndexContent(String content) {
-        return content.replaceAll("<.*?>", "").replaceAll("\\s+", " ");
+        return content.replaceAll("<.*?>", "").replaceAll("\\s+", " ").replaceAll("&lt;.*?&gt;", "");
     }
 
 }

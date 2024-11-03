@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class IndexObject {
+    private Integer id;
     private String url;
+    private String subject;
     private String title;
     private String content;
 }

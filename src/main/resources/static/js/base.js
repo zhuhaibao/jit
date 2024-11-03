@@ -179,7 +179,8 @@ function showButton() {
 }
 
 //分页单击事件
-function renderClickPage(clickElem) {
+function renderClickPage(e) {
+    let clickElem = e.target;
     if (clickElem.id === "pagePrev") {
         pageParams.toPage = pageParams.currentPage - 1;
     } else if (clickElem.id === "pageNext") {
@@ -194,18 +195,18 @@ function renderClickPage(clickElem) {
 }
 
 //分页大小调整函数
-function setPageSize(event) {
-    if (event.key === 'Enter') {
-        document.getElementById("pageSize").value = event.target.value;
+function setPageSize(e) {
+    if (e.key === 'Enter') {
+        document.getElementById("pageSize").value = e.target.value;
         renderPageParams();
     }
 }
 
 //导航现实的页码数调整
-function setPageBarNum(event) {
-    if (event.key === 'Enter') {
+function setPageBarNum(e) {
+    if (e.key === 'Enter') {
         let totalPage = Math.ceil(pageParams.total / pageParams.pageSize);
-        let pageBarNum = parseInt(event.target.value);
+        let pageBarNum = parseInt(e.target.value);
         if (pageBarNum < 0 || pageBarNum > totalPage) {
             alert(`页码数应当在1和${totalPage}之间`);
             pageParams.pageBarNum = totalPage;

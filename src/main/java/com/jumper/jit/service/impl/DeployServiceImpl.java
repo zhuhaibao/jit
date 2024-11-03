@@ -189,7 +189,7 @@ public class DeployServiceImpl implements DeployService {
         deploySingleProcess(article, singleList, navigations, siteConfig);
 
         //写入索引
-        indexService.addOrUpdateIndex(id, null, article.getEnName(), article.getTitle(), article.getContent());
+        indexService.addOrUpdateIndex(id, null, null, article.getEnName(), article.getTitle(), article.getContent());
 
     }
 
@@ -304,7 +304,7 @@ public class DeployServiceImpl implements DeployService {
                 throw new RuntimeException();
             }
             //更新索引
-            indexService.addOrUpdateIndex(article.getId(), subject.getEnName(), article.getEnName(), article.getTitle(), article.getContent());
+            indexService.addOrUpdateIndex(article.getId(), subject.getEnName(), subject.getSubjectTitle(), article.getEnName(), article.getTitle(), article.getContent());
         });
         //批量修改状态
         articleService.updateBatchStatus(Article.Status.PUBLISHED.getCode(), LocalDateTime.now(), ids);
@@ -315,13 +315,18 @@ public class DeployServiceImpl implements DeployService {
     @Override
     public void deployIndex() throws IOException {
         List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
+        SiteConfig siteConfig = subjectService.findSiteConfig();
         //读取发布的单体文章信息
         List<SimpleArticleWithoutContentDTO> singleList = articleService.findAllSingleArticleByStatus(Article.Status.PUBLISHED.getCode());
         //模版内容
         String templateContent = Files.readString(DeployTools.getIndexTemplate());
+        //替换描述
+        String result = templateContent.replaceFirst("<meta\\s+name=['\"]description['\"].*?>", "<meta name='description' content='" + siteConfig.getSiteDesc() + "'>");
+        //替换关键词
+        result = result.replaceFirst("<meta\\s+name=['\"]keywords['\"].*?>", "<meta name='keywords' content='" + siteConfig.getSiteKeywords() + "'>");
 
         //替换顶部导航
-        String result = templateContent.replaceFirst("<li id=topNav_placeholders></li>", replaceTopNaveStr(navigations));
+        result = result.replaceFirst("<li id=topNav_placeholders></li>", replaceTopNaveStr(navigations));
         //替换主题区域
         StringBuilder subjectContent = new StringBuilder();
         navigations.forEach(s -> {
@@ -379,7 +384,7 @@ public class DeployServiceImpl implements DeployService {
                 throw new RuntimeException(e);
             }
             //更新索引
-            indexService.addOrUpdateIndex(a.getId(), null, a.getEnName(), a.getTitle(), a.getContent());
+            indexService.addOrUpdateIndex(a.getId(), null, null, a.getEnName(), a.getTitle(), a.getContent());
         });
         //发布索引
         indexService.deployIndexList();

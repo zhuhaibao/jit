@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name='description' content='朱海保的个人网站'>
+    <meta name='keywords' content='java, spring, javascript, html, css, mariadb, jpa'>
+    <title>HTML Introduction - html</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/js/lib/prism/prism.css">
+    <script src="/js/lib/prism/prism.js"></script>
+    <script src="/js/base.js"></script>
+    <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
+    <link rel="stylesheet" href="/css/base.css"/>
+    <link rel="stylesheet" href="/css/articles.css"/>
+    <link rel="stylesheet" href="/css/devices.css"/>
+
+</head>
+
+<body>
+<div class="topDiv">
+    <div class="topBar">
+        <div class="logoDiv">
+            <a href="/index.html">
+                <img src="/img/logo.svg">
+            </a>
+        </div>
+        <div class="searchDiv">
+            <input type="text" name="searchKey" id="searchInput" placeholder="搜索文章...">
+            <img class="searchImg" src="/img/searchicon.svg" id="searchButton">
+        </div>
+        <div class="userInfoDiv">
+            <span></span>
+        </div>
+    </div>
+    <div class="navBar">
+        <div class="arrow" id="leftArrow"></div>
+        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <nav>
+            <ul id="topNav">
+                <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
+                <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
+<li><a href='/subject/java/index.html'>Java</a></li>
+<li><a href='/subject/html/index.html'>html</a></li>
+<li><a href='/subject/search-engine/index.html'>搜索引擎</a></li>
+<li><a href='/subject/css/index.html'>CSS</a></li>
+
+            </ul>
+        </nav>
+        <div class="arrow" id="rightArrow"></div>
+    </div>
+</div>
+<div class="mainDiv">
+    <div class="titleTreeDiv700 titleTreeDiv" id="titleTreeDiv">
+        <p class='subjectTitle' data-sub-dir='html'>html</p>
+        <hr>
+        <nav class="titleTree" id="titleTree"><a href='/subject/html/htmltutorial/index.html'>HTML Tutorial</a>
+<div><a href='/subject/html/introduction/index.html'>HTML Introduction</a>
+<a href='/subject/html/htmleditors/index.html'>HTML Editors</a>
+</div>
+<a href='/subject/html/updattitle/index.html'>js如何修改html的title标题</a>
+</nav>
+    </div>
+    <div class="contentDiv">
+        <section>
+            <header>
+                <span class='articleTitle' id='articleTitle'>HTML Introduction</span>
+                <span class='publishTime'>lastUpdated : 2024-11-03 02:36:00</span>
+            </header>
+            <section title="author" class="author">
+                <img id="authorLogo" src="/img/subject-logo4.svg">
+                <a class="authorName zcool-xiaowei-regular" href="https://twitter.com/jumperoverfgw">朱海保</a>
+                <a href="https://github.com/zhuhaibao"><img class="siteImg" src="/img/github.svg"></a>
+                <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
+                <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
+            </section>
+            <article id='articleContent'><p>HTML is the standard markup language for creating Web pages.
+
+What is HTML?
+HTML stands for Hyper Text Markup Language
+HTML is the standard markup language for creating Web pages
+HTML describes the structure of a Web page
+HTML consists of a series of elements
+HTML elements tell the browser how to display the content
+HTML elements label pieces of content such as "this is a heading", "this is a paragraph", "this is a link", etc.
+A Simple HTML Document
+Example
+
+
+
+<title>Page Title</title>
+
+
+
+</p><h1>My First Heading</h1>
+<p>My first paragraph.</p><p>
+
+
+
+Example Explained
+The  declaration defines that this document is an HTML5 document
+The  element is the root element of an HTML page
+The  element contains meta information about the HTML page
+The <title> element specifies a title for the HTML page (which is shown in the browser's title bar or in the page's tab)
+The &lt;body&gt; element defines the document's body, and is a container for all the visible contents, such as headings, paragraphs, images, hyperlinks, tables, lists, etc.
+The &lt;h1&gt; element defines a large heading
+The &lt;p&gt; element defines a paragraph
+What is an HTML Element?
+An HTML element is defined by a start tag, some content, and an end tag:
+
+&lt;tagname&gt; Content goes here... &lt;/tagname&gt;
+The HTML element is everything from the start tag to the end tag:
+
+&lt;h1&gt;My First Heading&lt;/h1&gt;
+&lt;p&gt;My first paragraph.&lt;/p&gt;
+Start tag	Element content	End tag
+&lt;h1&gt;	My First Heading	&lt;/h1&gt;
+&lt;p&gt;	My first paragraph.	&lt;/p&gt;
+&lt;br&gt;	none	none
+Note: Some HTML elements have no content (like the &lt;br&gt; element). These elements are called empty elements. Empty elements do not have an end tag!
+
+</title></p></article>
+        </section>
+    </div>
+</div>
+<!--显示搜索结果-->
+<div id="searchResultDiv">
+    <div id="searchResult"></div>
+    <hr>
+    <a class="siteSearch" href="javascript:void(0);" id="showSearchAll">显示全部</a>
+</div>
+<!--模态窗口div,显示google结果-->
+<div class="modal" id="modalResult" onclick="if(event.target==modalResult)modalResult.style.display='none'">
+    <div class="modalContent">
+        <div class="modalBody">
+            <div class="searchTitle">
+                <span class="close" id='close' onclick="modalResult.style.display='none'">&times;</span>
+                <span class="resultAnalysis" id="resultAnalysis"></span><br>
+                <hr class="hrsplit">
+            </div>
+            <div id="searchResultAll"></div>
+            <div class="page">
+                <button class="pageButton" id="pagePrev">上一页</button>
+                <div class="pageIndex"></div>
+                <button class="pageButton" id="pageNext">下一页</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    showNavBar();
+</script>
+<script src="/js/articleTree.js"></script>
+<script type="module" src="/js/indexSearch.js"></script>
+</body>
+
+</html>
