@@ -118,6 +118,20 @@ function showNavBar() {
     }
 }
 
+//每个页面顶部要加载的导航
+async function loadNav() {
+    let response = await fetch("/nav.json");
+    let result = await response.json();
+    let ul = document.getElementById("topNav");
+    let innerHtml = ``;
+    innerHtml += `<li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>`;
+    result.forEach(sub => {
+        innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
+    });
+    ul.innerHTML = innerHtml;
+    showNavBar(); //显示导航条
+}
+
 /**
  * tapHold 事件包装器
  * @param elem 按住的元素

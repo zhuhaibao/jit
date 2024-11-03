@@ -5,6 +5,7 @@ import com.jumper.jit.aspect.DeployException;
 import com.jumper.jit.aspect.DeployTools;
 import com.jumper.jit.dto.SimpleArticleWithContentDTO;
 import com.jumper.jit.dto.SimpleArticleWithoutContentDTO;
+import com.jumper.jit.dto.deploy.TopNavList;
 import com.jumper.jit.model.Article;
 import com.jumper.jit.model.SiteConfig;
 import com.jumper.jit.model.Subject;
@@ -356,6 +357,9 @@ public class DeployServiceImpl implements DeployService {
         result = result.replaceFirst("<a id='someArticle_replaceHolder'></a>", articleContent.toString());
 
         Files.writeString(Paths.get(savePath, "index.html"), result);
+    
+        //发布导航json
+        this.deployTopNavList();
     }
 
     @Override
@@ -388,5 +392,16 @@ public class DeployServiceImpl implements DeployService {
         });
         //发布索引
         indexService.deployIndexList();
+    }
+
+    @Override
+    public void deployTopNavList() throws IOException {
+        List<Subject> navigations = subjectService.findByNavigation(true, null);
+        if (navigations.isEmpty()) return;
+        Path dir = Paths.get(savePath, "nav.json");
+        List<TopNavList> topNavLists = navigations.stream().map(s ->
+                TopNavList.builder().pic(s.getPic()).subName(s.getSubjectTitle()).remark(s.getRemark()).dir(s.getEnName()).build()
+        ).toList();
+        Files.writeString(dir, JSON.toJSONString(topNavLists));
     }
 }

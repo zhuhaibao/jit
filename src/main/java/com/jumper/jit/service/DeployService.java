@@ -24,4 +24,7 @@ public interface DeployService {
 
     //发布主页
     void deployIndex() throws IOException;
+
+    //发布主题列表
+    void deployTopNavList() throws IOException;
 }

@@ -71,6 +71,12 @@ export default[{
   "title" : "Spring Security Kerberos",
   "content" : "Spring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security Kerberos"
 }, {
+  "id" : 131,
+  "url" : "/subject/springboot/spring-redis/index.html",
+  "subject" : "SpringBoot",
+  "title" : "Spring Redis",
+  "content" : "Redis&nbsp;是一款开源的，使用 C 开发的高性能内存 Key/Value 数据库，支持 String、Set、Hash、List、Stream 等等数据类型。它被广泛用于缓存、消息队列、实时分析、计数器和排行榜等场景。基本上是当代应用中必不可少的软件！Spring Boot 对 Redis 提供了开箱即用的组件：spring-boot-starter-data-redis。通过这个 starter，我们只需要几行简单的配置就可以快速地在 Spring Boot 中整合、使用 Redis。除了&nbsp;spring-boot-starter-data-redis&nbsp;外，还添加了&nbsp;commons-pool2&nbsp;依赖，是因为我们需要使用到连接池。配置属性只需要在&nbsp;application.yaml | properties&nbsp;中配置如下常用的基本属性即可注意，如果你使用的是 spring boot 2.x，上述配置的命名空间应该是&nbsp;spring.redis&nbsp;而不是&nbsp;spring.data.redis。更多完整的配置属性，请参阅&nbsp;官方文档。使用 Jedis 客户端Spring Data Redis 默认使用&nbsp;Lettuce&nbsp;作为 Redis 客户端。官方还对&nbsp;Jedis&nbsp;提供了支持，你可以根据你的喜好进行选择。要替换为 Jedis，首先需要从&nbsp;spring-boot-starter-data-redis&nbsp;排除&nbsp;lettuce&nbsp;，并且添加&nbsp;jedis&nbsp;依赖"
+}, {
   "id" : 120,
   "url" : "/subject/css/combinerselector/index.html",
   "subject" : "CSS",
@@ -131,11 +137,29 @@ export default[{
   "title" : "Spring Security",
   "content" : "Spring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security Kerberos"
 }, {
+  "id" : 135,
+  "url" : "/subject/kafka/소개/index.html",
+  "subject" : "kafka 연습",
+  "title" : "kafka 소개",
+  "content" : "初识 Kafka什么是 KafkaKafka 是由 Linkedin 公司开发的，它是一个分布式的，支持多分区、多副本，基于 Zookeeper 的分布式消息流平台，它同时也是一款开源的基于发布订阅模式的消息引擎系统。Kafka 的基本术语消息：Kafka 中的数据单元被称为消息，也被称为记录，可以把它看作数据库表中某一行的记录。批次：为了提高效率， 消息会分批次写入 Kafka，批次就代指的是一组消息。主题：消息的种类称为 主题（Topic）,可以说一个主题代表了一类消息。相当于是对消息进行分类。主题就像是数据库中的表。分区：主题可以被分为若干个分区（partition），同一个主题中的分区可以不在一个机器上，有可能会部署在多个机器上，由此来实现 kafka 的伸缩性，单一主题中的分区有序，但是无法保证主题中所有的分区有序生产者：向主题发布消息的客户端应用程序称为生产者（Producer），生产者用于持续不断的向某个主题发送消息。消费者：订阅主题消息的客户端程序称为消费者（Consumer），消费者用于处理生产者产生的消息。消费者群组：生产者与消费者的关系就如同餐厅中的厨师和顾客之间的关系一样，一个厨师对应多个顾客，也就是一个生产者对应多个消费者，消费者群组（Consumer Group）指的就是由一个或多个消费者组成的群体。偏移量：偏移量（Consumer Offset）是一种元数据，它是一个不断递增的整数值，用来记录消费者发生重平衡时的位置，以便用来恢复数据。broker: 一个独立的 Kafka 服务器就被称为 broker，broker 接收来自生产者的消息，为消息设置偏移量，并提交消息到磁盘保存。broker 集群：broker 是集群 的组成部分，broker 集群由一个或多个 broker 组成，每个集群都有一个 broker 同时充当了集群控制器的角色（自动从集群的活跃成员中选举出来）。副本：Kafka 中消息的备份又叫做 副本（Replica），副本的数量是可以配置的，Kafka 定义了两类副本：领导者副本（Leader Replica） 和 追随者副本（Follower Replica），前者对外提供服务，后者只是被动跟随。重平衡：Rebalance。消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。"
+}, {
   "id" : 127,
   "url" : "/subject/search-engine/google/index.html",
   "subject" : "搜索引擎",
   "title" : "谷歌",
   "content" : "谷歌（Google）是美国一家专门从事互联网相关服务和产品的跨国公司。产品覆盖搜索、云计算、软件和在线广告技术。公司大部分利润来自于AdWords。它是由斯坦福大学的博士生拉里·佩奇和谢尔盖·布林创建的，他们共同拥有其股份的16％左右。起初在1998年9月4日，谷歌只是一家私人持有的公司。随后在2004年8月19日，它首次公开募股。从一开始，它就声明它的使命是“组织全世界的信息，使人人皆可访问并从中受益”，其非的口号是“不作恶”。在2006年，公司总部迁移到加州山景城。谷歌自注册成立以来就高速发展，除了核心的搜索引擎，它还开发一系列的产品，收购其他公司。它还提供在线软件，包括一个办公套件、电子邮件和社交网站。桌面产品包括网页浏览、组织和编辑照片和即时消息的应用程序等。谷歌主要产品还包括Android手机操作系统和为Chromebook上网本制定的谷歌Chrome OS浏览器。最近，它开始涉及移动通信硬件领域：与各大电子厂商的合作伙伴生产其高端的Nexus设备，并于2012年5月收购摩托罗拉移动。2012年，谷歌开始在堪萨斯城安装谷歌光纤基础设施，以促进光纤宽带服务。它在世界各地的数据中心拥有超过一百万台服务器，每天服务器要处理超过一亿个搜索请求和用户生成的数据，每天流量大约24千兆兆字节。谷歌纳斯达克股票代码为GOOG。2012年，公司收入为501.8亿美元，营业收入为127.6亿美元，利润为107.4亿美元，总资产为938亿美元，权益总额为717.2亿美元。截止2013年第1季，它拥有53891名员工。谷歌附属公司包括：AdMob、DoubleClick、摩托罗拉移动、On2 Technologies、Picnik、YouTube、Zagat。"
+}, {
+  "id" : 134,
+  "url" : "/subject/rabbitmq/getstart/index.html",
+  "subject" : "rabbitmq",
+  "title" : "Getting Started",
+  "content" : "RabbitMQ TutorialsThese tutorials cover the basics of creating messaging applications using RabbitMQ.You need to have the RabbitMQ server installed to go through the tutorials, please see the&nbsp;installation guide&nbsp;or use the&nbsp;community Docker image.Executable versions of these tutorials&nbsp;are open source, as is&nbsp;this website.There are two groups of tutorials:RabbitMQ queuesRabbitMQ streamsnoteYou can use these tutorials with any versions of RabbitMQ. That said, we recommend to familiarize yourself with the latest version! For the stream tutorials, you need to use RabbitMQ 3.9.0 or later.Queue tutorialsThis section covers the default RabbitMQ protocol, AMQP 0-9-1.1. \"Hello World!\"The simplest thing that does&nbsp;somethingPQueueCPythonJavaRubyPHPC#JavaScriptGoElixirObjective-CSwiftSpring AMQP2. Work QueuesDistributing tasks among workers (the&nbsp;competing consumers pattern)PQueueC₁C₂PythonJavaRubyPHPC#JavaScriptGoElixirObjective-CSwiftSpring AMQP3. Publish/SubscribeSending messages to many consumers at oncePXQ₁Q₂C₁C₂PythonJavaRubyPHPC#JavaScriptGoElixirObjective-CSwiftSpring AMQP4. RoutingReceiving messages selectivelyaabcPXQ₁Q₂C₁C₂PythonJavaRubyPHPC#JavaScriptGoElixirObjective-CSwiftSpring AMQP5. TopicsReceiving messages based on a pattern (topics)*.a.**.*.bc.#PXQ₁Q₂C₁C₂PythonJavaRubyPHPC#JavaScriptGoElixirObjective-CSwiftSpring AMQP6. RPCRequest/reply pattern&nbsp;examplerequestreplyClientServerRPCReplyPythonJavaRubyPHPC#JavaScriptGoElixirSpring AMQP7. Publisher ConfirmsReliable publishing with publisher confirmsJavaCPHP"
+}, {
+  "id" : 133,
+  "url" : "/subject/rabbitmq/introduce/index.html",
+  "subject" : "rabbitmq",
+  "title" : "简介",
+  "content" : "Why RabbitMQ?RabbitMQ is a reliable and mature messaging and streaming broker, which is easy to deploy on cloud environments, on-premises, and on your local machine. It is currently used by millions worldwide.InteroperableRabbitMQ&nbsp;supports several open standard protocols, including AMQP 1.0 and MQTT 5.0. There are multiple client libraries available, which can be used with your programming language of choice, just pick one. No vendor lock-in!FlexibleRabbitMQ provides many options you can combine to define how your messages go from the publisher to one or many consumers.&nbsp;Routing,&nbsp;filtering,&nbsp;streaming,&nbsp;federation, and so on, you name it.ReliableWith the ability to&nbsp;acknowledge message delivery&nbsp;and to&nbsp;replicate messages across a cluster, you can ensure your messages are safe with RabbitMQ.Examples of common use casesHere are a few common use cases we hear about from the community or our customers. This should help you better understand what RabbitMQ is and how it can help.Decoupling servicesRPCStreamingIoTDecoupling interconnected servicesYou have a backend service that needs to send notifications to end users. There are two notification channels: emails and push notifications for the mobile application.The backend publishes the notification to two queues, one for each channel. Programs that manage emails and push notification subscribe to the queue they are interested in and handle notifications as soon as they arrive.➡ BenefitsRabbitMQ absorbs the load spike.You can do some maintenance on the notification managers without interrupting the whole service.BackendEmailPushEmail senderPush notification senderWhat about the license?Since its original release in 2007, RabbitMQ is Free and Open Source Software. In addition, Broadcom offer a range of commercial offerings.Free and Open SourceRabbitMQ is dual-licensed under the Apache License 2.0 and the Mozilla Public License 2. You have the freedom to use and modify RabbitMQ however you want.Of course, contributions are more than welcome! Whether it is through bug reports, patches, helping someone, documentation or any form of advocacy. In fact contributing is the best way to support the project! Take a look at our&nbsp;Contributors page.Commercial offeringsBroadcom offers&nbsp;enterprise-grade 24/7 support&nbsp;where you have access to the engineers making the product.In addition, a range of commercial offerings for RabbitMQ are available. These commercial offerings include all of the features of RabbitMQ, with some additional management and advanced features like&nbsp;warm standby replication&nbsp;and&nbsp;intra-cluster data compression. These features are a must for heavy workloads.For a list of the commercial offerings, take a look at the&nbsp;Ways to run Tanzu RabbitMQ and Free and Open Source RabbitMQ distributions table."
 }, {
   "id" : 124,
   "url" : "/subject/springboot/gatewaay/index.html",
