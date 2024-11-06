@@ -1,4 +1,10 @@
 export default[{
+  "id" : 138,
+  "url" : "/articles/spring-logbak/index.html",
+  "subject" : "点滴文章",
+  "title" : "SpringBoot3 整合 Logback 日志框架",
+  "content" : "safdadsfaadsfas                   ${log.console.pattern} UTF-8    DEBUG     ${file.path}/${file.name.info.prefix}.${file.name.info.suffix}  ${log.file.pattern} UTF-8    ${file.path}/${file.name.info.prefix}.%d{yyyy-MM-dd}.%i.${file.name.info.suffix} 2MB 3 10MB    INFO     ${file.path}/${file.name.error.prefix}.${file.name.error.suffix}  ${log.file.pattern} UTF-8    ${file.path}/${file.name.error.prefix}.%d{yyyy-MM-dd}.%i.${file.name.error.suffix} 2MB 3 10MB    ERROR ACCEPT DENY             "
+}, {
   "id" : 105,
   "url" : "/subject/springboot/springjpa/index.html",
   "subject" : "SpringBoot",
@@ -138,7 +144,7 @@ export default[{
   "content" : "Spring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security KerberosSpring Security Kerberos"
 }, {
   "id" : 135,
-  "url" : "/subject/kafka/소개/index.html",
+  "url" : "/subject/kafka/introduce/index.html",
   "subject" : "kafka 연습",
   "title" : "kafka 소개",
   "content" : "初识 Kafka什么是 KafkaKafka 是由 Linkedin 公司开发的，它是一个分布式的，支持多分区、多副本，基于 Zookeeper 的分布式消息流平台，它同时也是一款开源的基于发布订阅模式的消息引擎系统。Kafka 的基本术语消息：Kafka 中的数据单元被称为消息，也被称为记录，可以把它看作数据库表中某一行的记录。批次：为了提高效率， 消息会分批次写入 Kafka，批次就代指的是一组消息。主题：消息的种类称为 主题（Topic）,可以说一个主题代表了一类消息。相当于是对消息进行分类。主题就像是数据库中的表。分区：主题可以被分为若干个分区（partition），同一个主题中的分区可以不在一个机器上，有可能会部署在多个机器上，由此来实现 kafka 的伸缩性，单一主题中的分区有序，但是无法保证主题中所有的分区有序生产者：向主题发布消息的客户端应用程序称为生产者（Producer），生产者用于持续不断的向某个主题发送消息。消费者：订阅主题消息的客户端程序称为消费者（Consumer），消费者用于处理生产者产生的消息。消费者群组：生产者与消费者的关系就如同餐厅中的厨师和顾客之间的关系一样，一个厨师对应多个顾客，也就是一个生产者对应多个消费者，消费者群组（Consumer Group）指的就是由一个或多个消费者组成的群体。偏移量：偏移量（Consumer Offset）是一种元数据，它是一个不断递增的整数值，用来记录消费者发生重平衡时的位置，以便用来恢复数据。broker: 一个独立的 Kafka 服务器就被称为 broker，broker 接收来自生产者的消息，为消息设置偏移量，并提交消息到磁盘保存。broker 集群：broker 是集群 的组成部分，broker 集群由一个或多个 broker 组成，每个集群都有一个 broker 同时充当了集群控制器的角色（自动从集群的活跃成员中选举出来）。副本：Kafka 中消息的备份又叫做 副本（Replica），副本的数量是可以配置的，Kafka 定义了两类副本：领导者副本（Leader Replica） 和 追随者副本（Follower Replica），前者对外提供服务，后者只是被动跟随。重平衡：Rebalance。消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。"
@@ -158,7 +164,7 @@ export default[{
   "id" : 133,
   "url" : "/subject/rabbitmq/introduce/index.html",
   "subject" : "rabbitmq",
-  "title" : "简介",
+  "title" : "简介-sstart",
   "content" : "Why RabbitMQ?RabbitMQ is a reliable and mature messaging and streaming broker, which is easy to deploy on cloud environments, on-premises, and on your local machine. It is currently used by millions worldwide.InteroperableRabbitMQ&nbsp;supports several open standard protocols, including AMQP 1.0 and MQTT 5.0. There are multiple client libraries available, which can be used with your programming language of choice, just pick one. No vendor lock-in!FlexibleRabbitMQ provides many options you can combine to define how your messages go from the publisher to one or many consumers.&nbsp;Routing,&nbsp;filtering,&nbsp;streaming,&nbsp;federation, and so on, you name it.ReliableWith the ability to&nbsp;acknowledge message delivery&nbsp;and to&nbsp;replicate messages across a cluster, you can ensure your messages are safe with RabbitMQ.Examples of common use casesHere are a few common use cases we hear about from the community or our customers. This should help you better understand what RabbitMQ is and how it can help.Decoupling servicesRPCStreamingIoTDecoupling interconnected servicesYou have a backend service that needs to send notifications to end users. There are two notification channels: emails and push notifications for the mobile application.The backend publishes the notification to two queues, one for each channel. Programs that manage emails and push notification subscribe to the queue they are interested in and handle notifications as soon as they arrive.➡ BenefitsRabbitMQ absorbs the load spike.You can do some maintenance on the notification managers without interrupting the whole service.BackendEmailPushEmail senderPush notification senderWhat about the license?Since its original release in 2007, RabbitMQ is Free and Open Source Software. In addition, Broadcom offer a range of commercial offerings.Free and Open SourceRabbitMQ is dual-licensed under the Apache License 2.0 and the Mozilla Public License 2. You have the freedom to use and modify RabbitMQ however you want.Of course, contributions are more than welcome! Whether it is through bug reports, patches, helping someone, documentation or any form of advocacy. In fact contributing is the best way to support the project! Take a look at our&nbsp;Contributors page.Commercial offeringsBroadcom offers&nbsp;enterprise-grade 24/7 support&nbsp;where you have access to the engineers making the product.In addition, a range of commercial offerings for RabbitMQ are available. These commercial offerings include all of the features of RabbitMQ, with some additional management and advanced features like&nbsp;warm standby replication&nbsp;and&nbsp;intra-cluster data compression. These features are a must for heavy workloads.For a list of the commercial offerings, take a look at the&nbsp;Ways to run Tanzu RabbitMQ and Free and Open Source RabbitMQ distributions table."
 }, {
   "id" : 124,

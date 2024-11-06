@@ -39,6 +39,11 @@ function selected() {
                 currentElement.parentElement.classList.add("open");
             }
         }
+    } else {
+        let firstA = document.getElementById("titleTree").querySelector("a");
+        if (firstA) {
+            firstA.classList.add("selected");
+        }
     }
 }
 

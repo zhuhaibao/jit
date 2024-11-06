@@ -30,7 +30,6 @@ spring:
           max-idle: 8
           min-idle: 0
           enabled: true
-
 server:
   port: 8080
 upload:
@@ -46,4 +45,11 @@ deploy:
   article: articles/
   indexFile: js/
 
-
+logging:
+  file:
+    name: /Users/apple/tmp/jit.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10KB
+  level:
+    root: warn

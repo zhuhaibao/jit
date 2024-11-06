@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 @Service
 @Transactional
@@ -146,6 +147,7 @@ public class DeployServiceImpl implements DeployService {
         result = result.replaceFirst("<span class='articleTitle' id='articleTitle'></span>",
                 "<span class='articleTitle' id='articleTitle'>" + title + "</span>");
         result = result.replaceFirst("<span\\s+class=['\"]publishTime['\"]>.*?</span>", "<span class='publishTime'>lastUpdated : " + dateTimeFormatter.format(publishTime == null ? LocalDateTime.now() : publishTime) + "</span>");
+        articleContent = Matcher.quoteReplacement(articleContent);
         result = result.replaceFirst("<article id='articleContent'></article>",
                 "<article id='articleContent'>" + articleContent + "</article>");
 
@@ -228,6 +230,7 @@ public class DeployServiceImpl implements DeployService {
         result = result.replaceFirst("<span class='articleTitle' id='articleTitle'></span>",
                 "<span class='articleTitle' id='articleTitle'>" + title + "</span>");
         //替换内容
+        content = Matcher.quoteReplacement(content);
         result = result.replaceFirst("<article id='articleContent'></article>",
                 "<article id='articleContent'>" + content + "</article>");
 
@@ -335,8 +338,9 @@ public class DeployServiceImpl implements DeployService {
             if (remark != null && remark.length() > 70) {
                 remark = remark.substring(0, 70);
             }
-            subjectContent.append("<div class='subjectHeader'>").append("    <a href='/subject/").append(s.getEnName()).append("/index.html'>")
-                    .append("        <img src='/img/subject-logo1.svg'>")
+            subjectContent.append("<div class='subjectHeader'>")
+                    .append("    <a href='/subject/").append(s.getEnName()).append("/index.html'>")
+                    .append("        <img src='").append(s.getPic()).append("'>")
                     .append("        <h3>").append(s.getSubjectTitle()).append("</h3>")
                     .append("        <p>").append(remark).append("...</p>")
                     .append("</a>")
@@ -357,7 +361,7 @@ public class DeployServiceImpl implements DeployService {
         result = result.replaceFirst("<a id='someArticle_replaceHolder'></a>", articleContent.toString());
 
         Files.writeString(Paths.get(savePath, "index.html"), result);
-    
+
         //发布导航json
         this.deployTopNavList();
     }

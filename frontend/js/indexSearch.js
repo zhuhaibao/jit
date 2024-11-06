@@ -31,7 +31,9 @@ for (let i = 0; i < data.length; i++) {
 
 //给页面绑定函数
 document.addEventListener("click", function (e) {
-    if (e.target.closest("#searchResultDiv")) return;
+    if (!e.target.closest("#searchResultDiv") || !document.getElementById("searchInput")) {
+        return;
+    }
     document.getElementById("searchResultDiv").style.display = 'none';
 });
 document.getElementById("searchInput").addEventListener("focus", searchByKey);
@@ -62,11 +64,18 @@ function searchByKey(e) {
 
 //关键字搜索,请求服务
 function queryFromServer(searchKey) {
-    if (!searchKey) return;
+
+    if (!searchKey) {
+        searchResultDiv.style.display = 'none';
+        return;
+    }
     //从服务器获取数据,默认最多显示10条
     let result = flexSearch.search(searchKey, 10);
     //往searchResult中填充数据
-    if (result.length === 0) return;
+    if (result.length === 0) {
+        searchResultDiv.style.display = 'none';
+        return;
+    }
     let ids = result[0].result;
     let resultHTML = ``;
     let regex = new RegExp(`${searchKey}`, "gi");
@@ -84,7 +93,10 @@ function queryFromServer(searchKey) {
 //flex搜索
 function searchAll() {
     let searchKey = document.getElementById("searchInput").value;
-    if (!searchKey) return;
+    if (!searchKey) {
+        document.getElementById("modalResult").style.display = 'none';
+        return;
+    }
     //从服务器获取数据
     let startTime = Date.now();
     let result = flexSearch.search(searchKey);
