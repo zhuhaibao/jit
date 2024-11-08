@@ -16,7 +16,6 @@ import java.util.List;
 
 @Service
 public class IndexService {
-    public static final String INDEX_PREFIX = "Index";
     private RedisUtil redis;
 
     @Value("${deploy.save-path}")
@@ -27,6 +26,8 @@ public class IndexService {
     private String savePathForArticle;
     @Value("${deploy.indexFile}")
     private String indexFile;
+    @Value("${deploy.index-key-prefix}")
+    private String indexKeyPrefix;
 
     @Autowired
     public void setRedis(RedisUtil redis) {
@@ -55,14 +56,17 @@ public class IndexService {
         } else {
             index.setSubject("点滴文章");
         }
-        return redis.setObject(INDEX_PREFIX + articleId, index);
+        return redis.setObject(indexKeyPrefix + articleId, index);
     }
 
     public boolean delIndex(Integer articleId) {
-        return redis.delByKey(INDEX_PREFIX + articleId);
+        return redis.delByKey(indexKeyPrefix + articleId);
     }
 
     public boolean addOrUpdateIndex(Article article) {
+        if (article.getSubject() == null) {
+            return addOrUpdateIndex(article.getId(), null, null, article.getEnName(), article.getTitle(), article.getContent());
+        }
         return addOrUpdateIndex(article.getId(), article.getSubject().getEnName(), article.getSubject().getSubjectTitle(), article.getEnName(), article.getTitle(), article.getContent());
     }
 
@@ -71,7 +75,7 @@ public class IndexService {
     }
 
     public void deployIndexList() throws IOException {
-        List<String> jsonList = redis.getJsonListByKeyStartWith(INDEX_PREFIX);
+        List<String> jsonList = redis.getJsonListByKeyStartWith(indexKeyPrefix);
         if (jsonList != null && !jsonList.isEmpty()) {
             Files.writeString(Path.of(savePath, indexFile, "index-data.js"), "export default" + jsonList);
         }

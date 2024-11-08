@@ -10,7 +10,7 @@
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
     <script th:src="@{/js/base.js}"></script>
     <link rel="stylesheet" th:href="@{/css/article.css}">
-    <title>单体文章</title>
+    <title>文章</title>
 </head>
 
 <body>
@@ -38,6 +38,7 @@
                     <label for="enName">英文名:</label>
                 </div>
                 <div class="colValue">
+                    <input type="hidden" id="oldEnName" th:value="${article.enName}">
                     <input type="text" name="enName" id="enName" th:value="*{enName}" minlength="1" maxlength="100">
                 </div>
             </div>
@@ -159,6 +160,10 @@
     });
 
     async function addArticle() {
+        let checked = await checkExistEnName();
+        console.log(checked);
+        if (!checked) return;
+
         let formData = new FormData(document.forms[0]);
         formData.set("content", editorObj.value);
         let response = await fetch("/article/add", {method: 'POST', body: formData});
@@ -176,20 +181,17 @@
     }
 
     async function addAndDeployArticle() {
+        let checked = await checkExistEnName();
+        console.log(checked);
+        if (!checked) return;
+
         let formData = new FormData(document.forms[0]);
         formData.set("content", editorObj.value);
         let response = await fetch("/deploy/addAndUpdateSingleStatus", {method: 'POST', body: formData});
         let result = await response.json();
         if (result.statusText === 'ok') {
-            // let msg = `保存成功,`;
-            // fetch(`/deploy/deployCurrentSingle/${formData.get("id")}`, {method: 'POST'})
-            //     .then(resp => resp.json())
-            //     .then(result => {
-            //         msg += `发布:${result.msg}`;
-            //         alert(msg);
-            //         location.assign("/article/find")
-            //     })
             alert("保存成功");
+            location.assign("/article/find")
         } else {
             //渲染错误
             if (result.data) renderFormFieldErrors(document.forms[0], result.data);
@@ -198,6 +200,14 @@
             }
         }
     }
+
+    async function checkExistEnName() {
+        let oldValue = document.getElementById("oldEnName").value;
+        if (oldValue && oldValue === document.getElementById("enName").value) return true;
+        return await checkEnName(1, document.getElementById("enName"), "/article/checkEnName");
+    }
+
+    document.getElementById("enName").addEventListener("blur", checkExistEnName);
 
 </script>
 </body>

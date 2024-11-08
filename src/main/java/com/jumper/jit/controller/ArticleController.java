@@ -1,5 +1,6 @@
 package com.jumper.jit.controller;
 
+import com.jumper.jit.aspect.ResultData;
 import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import com.jumper.jit.service.ArticleService;
@@ -134,5 +135,9 @@ public class ArticleController {
         return service.saveFile(fileDTO);
     }
 
-
+    @PostMapping("checkEnName")
+    @ResponseBody
+    public ResultData<Article> checkEnName(@RequestParam("enName") String enName) {
+        return service.checkEnName(enName);
+    }
 }

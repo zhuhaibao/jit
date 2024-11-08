@@ -196,21 +196,26 @@
 
         let updated = null;
         //失去焦点时要提示保存
-        currentTd.firstElementChild.onblur = function (e) {
+        currentTd.firstElementChild.onblur = async function (e) {
             if (!updated) {
-                update(e);
+                await update(e);
             }
         };
         //直接按回车也会保存
-        currentTd.firstElementChild.onkeyup = function (e) {
+        currentTd.firstElementChild.onkeyup = async function (e) {
             if (e.key === "Enter") {
                 updated = true;
-                update(e);
+                await update(e);
             }
         };
 
-        function update(e) {
+        async function update(e) {
             if (e.target.value !== oldValue) {
+                if (type === 3) {
+                    let checked = await checkEnName(0, e.target, "/subject/checkEnName");
+                    console.log(checked)
+                    if (!checked) return;
+                }
                 let save = confirm("保存更新数据?");
                 if (save) {
                     let url = "/subject/updateSubjectTitle";
@@ -280,8 +285,8 @@
 
     //编辑---新增主题--------------------
     function addSubject() {
+        if (!checkEnName(0, document.getElementById('enName'), "/subject/checkEnName")) return;
         let subjectForm = document.forms.subjectForm;
-        console.log(subjectForm);
         fetch("/subject", {
             method: "POST",
             body: new FormData(subjectForm),
@@ -335,6 +340,10 @@
             }
         });
     }
+
+    document.getElementById("enName").addEventListener("blur", function (e) {
+        checkEnName(0, e.target, "/subject/checkEnName");
+    });
 </script>
 <script th:src="@{/js/page.js}"></script>
 </body>

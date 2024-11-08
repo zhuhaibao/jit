@@ -1,5 +1,6 @@
 package com.jumper.jit.service;
 
+import com.jumper.jit.aspect.ResultData;
 import com.jumper.jit.dto.SimpleSubjectDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.SiteConfig;
@@ -71,5 +72,7 @@ public interface SubjectService {
     SiteConfig updateSiteConfig(SiteConfig siteConfig) throws IOException;
 
     SiteConfig findSiteConfig();
+
+    ResultData<Subject> checkEnName(String enName);
 
 }

@@ -38,21 +38,9 @@ public class DeployController {
     }
 
     @ResponseBody
-    @PostMapping("deployCurrentSubjectArticle/{id}")
-    public void deployCurrentSubjectArticle(@PathVariable Integer id) throws IOException {
-        service.deployCurrentSubjectArticle(id);
-    }
-
-    @ResponseBody
-    @PostMapping("deployCurrentSingle/{id}")
-    public void deployCurrentSingle(@PathVariable Integer id) throws IOException {
-        service.deployCurrentSingle(id);
-    }
-
-    @ResponseBody
     @PostMapping("{articleId}")
-    public Article deploy(@PathVariable Integer articleId) throws IOException {
-        return service.deployById(articleId);
+    public void deploy(@PathVariable Integer articleId) throws IOException {
+        service.deployById(articleId);
     }
 
     @ResponseBody

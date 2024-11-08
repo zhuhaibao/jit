@@ -111,6 +111,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     List<Article> findByPid(Integer pid);
 
+    Article findByEnNameEqualsIgnoreCase(String eName);
+
     Boolean existsByPid(Integer pid);
 
     SimpleArticleWithContentDTO getArticleById(Integer id);

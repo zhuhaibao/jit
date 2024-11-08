@@ -44,9 +44,11 @@
             <div class="modifiedUnPublish"><span class="statusFlag">●</span><span>修改未发布</span></div>
         </div>
         <div>
+            <input type="hidden" id="oldEnName" th:value="${article.enName}">
             <label name="enName">英文名:</label><input type="text" id="enName" name="enName"
                                                        th:value="${article.enName}"
                                                        required>
+
         </div>
         <div id='editArea'>
             <textarea id="editor"><th:block th:if="${article!=null}" th:text="${article.content}"></th:block></textarea>
@@ -295,6 +297,9 @@
 
     //保存文章内容
     async function updateContent() {
+        let checked = await checkExistEnName();
+        console.log(checked);
+        if (!checked) return;
         let liNode = document.body.querySelector(".selected").parentElement;
         let id = liNode.dataset.articleInfo;
         let status = parseInt(liNode.firstElementChild.dataset.deployStatus);
@@ -307,6 +312,7 @@
                 document.body.querySelector(".selected").dataset.deployStatus = 3;
             }
             editorOldValue = editorObj.value;
+            document.getElementById("oldEnName").value = document.getElementById("enName").value;
         } else {
             alert(`保存失败:${result.msg}`);
         }
@@ -314,6 +320,10 @@
 
     //保存并发布
     async function saveAndDeploy() {
+        let checked = await checkExistEnName();
+        console.log(checked);
+        if (!checked) return;
+
         if (!validateField()) return;
         let liNode = document.body.querySelector(".selected").parentElement;
         //验证父节点状态是否适合发布
@@ -331,13 +341,9 @@
             .then(async resp => resp.json())
             .then(async result => {
                 if (result.statusText === 'ok') {
-                    // let msg = `保存成功,`;
-                    // //更新树状菜单列表
-                    // let rt = await deployCurrentSubjectArticle(id);
-                    // msg += `发布状态:` + rt.msg;
-                    // alert(msg);
                     document.body.querySelector(".selected").dataset.deployStatus = 2;
                     editorOldValue = editorObj.value;
+                    document.getElementById("oldEnName").value = document.getElementById("enName").value;
                     alert("保存成功");
                 } else {
                     alert("保存失败");
@@ -345,13 +351,6 @@
 
             });
     }
-
-    //
-    // //发布更新树状菜单
-    // async function deployCurrentSubjectArticle(id) {
-    //     let resp = await fetch(`/deploy/deployCurrentSubjectArticle/${id}`, {method: 'POST'});
-    //     return await resp.json();
-    // }
 
     //validate 发布状态
     function validateStatus(li) {
@@ -593,6 +592,13 @@
         return await response.json();
     }
 
+    async function checkExistEnName() {
+        let oldValue = document.getElementById("oldEnName").value;
+        if (oldValue && oldValue === document.getElementById("enName").value) return true;
+        return await checkEnName(1, document.getElementById("enName"), "/article/checkEnName");
+    }
+
+    document.getElementById("enName").addEventListener("blur", checkExistEnName);
 </script>
 </body>
 

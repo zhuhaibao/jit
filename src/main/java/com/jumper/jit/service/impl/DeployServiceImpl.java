@@ -1,7 +1,6 @@
 package com.jumper.jit.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.jumper.jit.aspect.DeployException;
 import com.jumper.jit.aspect.DeployTools;
 import com.jumper.jit.dto.SimpleArticleWithContentDTO;
 import com.jumper.jit.dto.SimpleArticleWithoutContentDTO;
@@ -43,6 +42,8 @@ public class DeployServiceImpl implements DeployService {
     private String savePathForSubject;
     @Value("${deploy.article}")
     private String savePathForArticle;
+    @Value("${upload.base-url}")
+    private String uploadBaseUrl;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -91,7 +92,7 @@ public class DeployServiceImpl implements DeployService {
      */
     private void deploySubjectIndexProcess(Article article, List<SimpleArticleWithoutContentDTO> subjectArticleTrees, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
         //读取模版
-        String templateContent = Files.readString(DeployTools.getSubjectArticleTemplate());
+        String templateContent = DeployTools.getSubjectArticleTemplate();
         //替换
         String result = replaceSubjectArticleTemplate(article.getSubject(), article.getPublishedAt(), article.getTitle(), article.getContent(), templateContent, subjectArticleTrees, navigations, siteConfig);
         //存放
@@ -107,7 +108,7 @@ public class DeployServiceImpl implements DeployService {
      */
     private void deploySubjectArticleProcess(Article article, List<SimpleArticleWithoutContentDTO> subjectArticleTrees, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
         //读取模版
-        String templateContent = Files.readString(DeployTools.getSubjectArticleTemplate());
+        String templateContent = DeployTools.getSubjectArticleTemplate();
         //替换
         String result = replaceSubjectArticleTemplate(article.getSubject(), article.getPublishedAt(), article.getTitle(), article.getContent(), templateContent, subjectArticleTrees, navigations, siteConfig);
         //存放
@@ -219,7 +220,7 @@ public class DeployServiceImpl implements DeployService {
     private String replaceSingleTemplate(String title, String content, List<SimpleArticleWithoutContentDTO> leftList, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
 
 
-        String contentTemplate = Files.readString(DeployTools.getSingleArticleTemplate());
+        String contentTemplate = DeployTools.getSingleArticleTemplate();
         //替换描述
         String result = contentTemplate.replaceFirst("<meta\\s+name=['\"]description['\"].*?>", "<meta name='description' content='" + siteConfig.getSiteDesc() + "'>");
         //替换关键词
@@ -255,24 +256,9 @@ public class DeployServiceImpl implements DeployService {
     }
 
     @Override
-    public Article deployById(Integer id) throws IOException {
-        Article saved = articleService.findById(id);
-        SiteConfig siteConfig = subjectService.findSiteConfig();
-        List<SimpleArticleWithoutContentDTO> singleList = articleService.findAllSingleArticleByStatus(Article.Status.PUBLISHED.getCode());
-        List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
-        if (saved.getSid() == null) {//单体
-            deploySingleProcess(articleService.getSimpleWithContentById(id), singleList, navigations, siteConfig);
-        } else {//主题文章
-            if (saved.getArticle() != null && saved.getArticle().getStatus().compareTo(Article.Status.PUBLISHED.getCode()) < 0) {
-                throw new DeployException();
-            }
-            deploySubjectArticleProcess(saved, singleList, navigations, siteConfig);
-        }
+    public void deployById(Integer id) throws IOException {
         //更新发布状态
-        articleService.updateStatus(saved.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
-        //写入索引
-        indexService.addOrUpdateIndex(saved);
-        return saved;
+        articleService.updateStatus(id, Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
     }
 
     @Override
@@ -286,7 +272,7 @@ public class DeployServiceImpl implements DeployService {
         //顶部导航信息
         List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
         if (navigations.isEmpty()) return;
-        String templateContent = Files.readString(DeployTools.getSubjectArticleTemplate());        //读取模版
+        String templateContent = DeployTools.getSubjectArticleTemplate();        //读取模版
         //主题主页
         Article index = articleService.findById(leftNavs.getFirst().getId());
         SiteConfig siteConfig = subjectService.findSiteConfig();
@@ -323,7 +309,7 @@ public class DeployServiceImpl implements DeployService {
         //读取发布的单体文章信息
         List<SimpleArticleWithoutContentDTO> singleList = articleService.findAllSingleArticleByStatus(Article.Status.PUBLISHED.getCode());
         //模版内容
-        String templateContent = Files.readString(DeployTools.getIndexTemplate());
+        String templateContent = DeployTools.getIndexTemplate();
         //替换描述
         String result = templateContent.replaceFirst("<meta\\s+name=['\"]description['\"].*?>", "<meta name='description' content='" + siteConfig.getSiteDesc() + "'>");
         //替换关键词
@@ -338,9 +324,10 @@ public class DeployServiceImpl implements DeployService {
             if (remark != null && remark.length() > 70) {
                 remark = remark.substring(0, 70);
             }
+
             subjectContent.append("<div class='subjectHeader'>")
                     .append("    <a href='/subject/").append(s.getEnName()).append("/index.html'>")
-                    .append("        <img src='").append(s.getPic()).append("'>")
+                    .append("        <img src='").append(replaceBaseUrl(s.getPic())).append("'>")
                     .append("        <h3>").append(s.getSubjectTitle()).append("</h3>")
                     .append("        <p>").append(remark).append("...</p>")
                     .append("</a>")
@@ -404,8 +391,16 @@ public class DeployServiceImpl implements DeployService {
         if (navigations.isEmpty()) return;
         Path dir = Paths.get(savePath, "nav.json");
         List<TopNavList> topNavLists = navigations.stream().map(s ->
-                TopNavList.builder().pic(s.getPic()).subName(s.getSubjectTitle()).remark(s.getRemark()).dir(s.getEnName()).build()
+                TopNavList.builder().pic(replaceBaseUrl(s.getPic())).subName(s.getSubjectTitle()).remark(s.getRemark()).dir(s.getEnName()).build()
         ).toList();
         Files.writeString(dir, JSON.toJSONString(topNavLists));
+    }
+
+    //替换imag绝对地址
+    private String replaceBaseUrl(String picUrl) {
+        if (picUrl != null) {
+            return "/" + picUrl.replace(uploadBaseUrl, "");
+        }
+        return null;
     }
 }

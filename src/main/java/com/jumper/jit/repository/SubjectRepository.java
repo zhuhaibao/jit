@@ -21,6 +21,8 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer>, JpaS
     //查询所有主题
     List<SimpleSubjectDTO> queryAllByIdNotNullOrderByCreatedAtDescUpdatedAtDesc();
 
+    Subject findByEnNameEqualsIgnoreCase(String eName);
+
     /***************************下面是导航操作*******************************/
 
     @Modifying

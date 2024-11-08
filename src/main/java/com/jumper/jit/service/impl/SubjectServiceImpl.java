@@ -1,6 +1,7 @@
 package com.jumper.jit.service.impl;
 
 import com.jumper.jit.aspect.DbException;
+import com.jumper.jit.aspect.ResultData;
 import com.jumper.jit.dto.SimpleSubjectDTO;
 import com.jumper.jit.dto.SubjectDTO;
 import com.jumper.jit.model.SiteConfig;
@@ -197,5 +198,14 @@ public class SubjectServiceImpl implements SubjectService {
         List<SiteConfig> l = siteConfigRepository.findAll();
         if (l.isEmpty()) return new SiteConfig();
         return l.getFirst();
+    }
+
+    @Override
+    public ResultData<Subject> checkEnName(String enName) {
+        Subject subject = dao.findByEnNameEqualsIgnoreCase(enName);
+        if (subject == null) {
+            return ResultData.success();
+        }
+        return ResultData.failWithData(ResultData.Status.RC301, subject);
     }
 }

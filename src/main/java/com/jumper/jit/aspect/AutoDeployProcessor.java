@@ -46,7 +46,8 @@ public class AutoDeployProcessor {
 
 
     @Pointcut("execution(* com.jumper.jit.service.impl.ArticleServiceImpl.saveAndUpdateSubjectArticleStatus(..))||" +
-            "execution(* com.jumper.jit.service.impl.ArticleServiceImpl.saveAndUpdateSingleStatus(..))")
+            "execution(* com.jumper.jit.service.impl.ArticleServiceImpl.saveAndUpdateSingleStatus(..))||" +
+            "execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployById(..))")
     private void saveAndUpdateArticleStatus() {
     }
 
@@ -71,8 +72,7 @@ public class AutoDeployProcessor {
     private void insertNodeAsChild() {
     }
 
-    @Pointcut("execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployById(..))||" +
-            "execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployCurrentSubjectArticle(..))||" +
+    @Pointcut("execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployCurrentSubjectArticle(..))||" +
             "execution(* com.jumper.jit.service.impl.DeployServiceImpl.deployCurrentSingle(..))")
     private void deployAndCauseUpdateIndexData() {
     }
@@ -88,13 +88,19 @@ public class AutoDeployProcessor {
     @After("saveAndUpdateArticleStatus()")
     public void deployAfterSaveAndUpdateArticleStatus(JoinPoint point) throws Exception {
         MethodSignature signature = (MethodSignature) point.getSignature();
-        Article param = (Article) point.getArgs()[0];
-        Article dbArticle = articleService.findById(param.getId());
+        Integer id = null;
+        if (signature.getMethod().getName().contains("deployById")) {
+            id = (Integer) point.getArgs()[0];
+        } else {
+            Article param = (Article) point.getArgs()[0];
+            id = param.getId();
+        }
+        Article dbArticle = articleService.findById(id);
         log.info("{} ->auto deploy current Article[id={},title={}]... ", signature.getName(), dbArticle.getId(), dbArticle.getTitle());
         if (dbArticle.getSid() != null) {
-            redisUtil.sendMessage(RedisTopics.SubjectArticle, String.valueOf(param.getId()));
+            redisUtil.sendMessage(RedisTopics.SubjectArticle, String.valueOf(id));
         } else {
-            redisUtil.sendMessage(RedisTopics.SingleArticle, String.valueOf(param.getId()));
+            redisUtil.sendMessage(RedisTopics.SingleArticle, String.valueOf(id));
         }
     }
 

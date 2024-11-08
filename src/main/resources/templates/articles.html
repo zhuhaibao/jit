@@ -27,7 +27,7 @@
                     <img id='searchButton' class='searchButton' th:src="@{/img/searchicon.png}">
                     <label for="status">发布状态:</label>
                     <select id="status" name="status" th:value="*{status}" onchange="submitSearch();return false;">
-                        <option value=""></option>
+                        <option value="">全部</option>
                         <option value="0" th:selected="*{status eq 0}">无内容</option>
                         <option value="1" th:selected="*{status eq 1}">未发布</option>
                         <option value="2" th:selected="*{status eq 2}">已发布</option>
@@ -126,8 +126,13 @@
         }
 
         async function update(e) {
-            let newValue = e.currentTarget.value;
-            if (e.currentTarget.value !== oldValue) {
+            let newValue = e.target.value;
+            if (e.target.value !== oldValue) {
+                if (currentTd.hasAttribute("data-type-enName")) {
+                    let checked = await checkEnName(1, e.target, "/article/checkEnName");
+                    console.log(checked)
+                    if (!checked) return;
+                }
                 let save = confirm("save updated?")
                 if (save) {
                     //此处调用后端服务保存
@@ -326,19 +331,7 @@
             .then(resp => resp.json())
             .then(result => {
                 if (result.statusText === 'ok') {
-                    let msg = `发布成功,`;
-                    //获取sid并更新导航列表
-                    let url;
-                    if (result.data.subject) {
-                        url = `/deploy/deploySubjectTree/${result.data.subject.id}`;
-                    } else {
-                        url = `/deploy/deployArticleTree`;
-                    }
-                    fetch(url, {method: 'POST'})
-                        .then(resp => resp.json())
-                        .then(result => {
-                            alert(msg + `更新文章左侧列表:${result.msg}`);
-                        })
+                    alert("发布成功");
                     //更新页面状态
                     target.parentElement.innerHTML = '已发布';
                 } else {

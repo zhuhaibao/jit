@@ -1,5 +1,6 @@
 package com.jumper.jit.service;
 
+import com.jumper.jit.aspect.ResultData;
 import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import org.springframework.data.domain.Page;
@@ -167,4 +168,6 @@ public interface ArticleService {
 
     //保存专题文章,只修改发布状态
     void saveAndUpdateSubjectArticleStatus(Article article) throws IOException;
+
+    ResultData<Article> checkEnName(String enName);
 }

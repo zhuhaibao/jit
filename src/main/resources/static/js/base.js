@@ -85,7 +85,7 @@ function loadJoditEditor(selector) {
     });
 }
 
-//分页脚本
+/*分页脚本-------start*/
 function renderPageParams() {
     //初始化分页参数
     pageParams.currentPage = document.getElementById("currentPage").value; //当前页,默认页面加载时为1
@@ -157,7 +157,7 @@ function renderPageBar() {
     pageIndex.innerHTML = "";
     for (let i = pageParams.startPage; i <= pageParams.endPage; i++) {
         if (i !== pageParams.toPage) {
-            pageIndex.innerHTML += "<a onclick='renderClickPage(this)'>" + i + "</a>";
+            pageIndex.innerHTML += "<a>" + i + "</a>";
         } else {
             pageIndex.innerHTML += "<a class='pageSelected'>" + i + "</a>";
             pageParams.currentPage = i; //确定当前页
@@ -238,6 +238,8 @@ function setPageBarNumber() {
     pageBarNum.value = pageParams.pageBarNum;
 }
 
+/*分页脚本-------end*/
+
 //渲染错误form表单验证错误信息
 function renderFormFieldErrors(form, errors) {
     for (let key in errors) {
@@ -292,6 +294,34 @@ function previewImg(target) {
         img.style.verticalAlign = "middle";
         img.style.marginLeft = '10px';
         target.insertAdjacentElement("afterend", img);
+    }
+}
+
+async function checkEnName(type, target, url) {
+    let value = target.value ? target.value.trim() : null;
+    if (!value) {
+        if (target.nextElementSibling) {
+            target.nextElementSibling.innerHTML = `不能为空`;
+        } else {
+            target.insertAdjacentHTML("afterend", "<span class='feildErr'>不能为空</span>");
+        }
+        return false;
+    }
+    let formData = new FormData();
+    formData.set("enName", value);
+    let response = await fetch(url, {method: 'POST', body: formData});
+    let result = await response.json();
+    if (result.statusText === 'ok') {
+        if (target.nextElementSibling) target.nextElementSibling.remove();
+        return true;
+    } else {
+        let msg = type === 0 ? result.data.subjectTitle : result.data.title;
+        if (target.nextElementSibling) {
+            target.nextElementSibling.innerHTML = `存在同名条目:${msg}`;
+        } else {
+            target.insertAdjacentHTML("afterend", `<span class='feildErr'>存在同名条目:${msg}</span>`);
+        }
+        return false;
     }
 }
 

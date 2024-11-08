@@ -2,6 +2,7 @@ package com.jumper.jit.service.impl;
 
 import com.jumper.jit.aspect.AutoDeploy;
 import com.jumper.jit.aspect.DbException;
+import com.jumper.jit.aspect.ResultData;
 import com.jumper.jit.dto.*;
 import com.jumper.jit.model.Article;
 import com.jumper.jit.model.Subject;
@@ -474,5 +475,14 @@ public class ArticleServiceImpl implements ArticleService {
         }
         //更新发布状态
         this.updateStatus(saved.getId(), Article.Status.PUBLISHED.getCode(), LocalDateTime.now());
+    }
+
+    @Override
+    public ResultData<Article> checkEnName(String enName) {
+        Article article = repository.findByEnNameEqualsIgnoreCase(enName);
+        if (article == null) {
+            return ResultData.success();
+        }
+        return ResultData.failWithData(ResultData.Status.RC301, article);
     }
 }

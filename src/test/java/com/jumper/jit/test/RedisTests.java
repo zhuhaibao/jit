@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jumper.jit.service.IndexService.INDEX_PREFIX;
 
 @SpringBootTest
 public class RedisTests {
@@ -22,8 +21,7 @@ public class RedisTests {
 
     @Test
     void delKey() {
-        boolean flag = redisUtil.delByKey(INDEX_PREFIX + 130);
-        System.out.println("flag=" + flag);
+
     }
 
     @Test

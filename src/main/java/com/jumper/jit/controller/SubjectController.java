@@ -1,5 +1,6 @@
 package com.jumper.jit.controller;
 
+import com.jumper.jit.aspect.ResultData;
 import com.jumper.jit.dto.PageDTO;
 import com.jumper.jit.dto.SimpleArticleWithoutContentDTO;
 import com.jumper.jit.dto.SubjectDTO;
@@ -105,5 +106,10 @@ public class SubjectController {
         return articleService.findArticleTree(id);
     }
 
+    @PostMapping("checkEnName")
+    @ResponseBody
+    public ResultData<Subject> checkEnName(@RequestParam("enName") String enName) {
+        return service.checkEnName(enName);
+    }
 
 }

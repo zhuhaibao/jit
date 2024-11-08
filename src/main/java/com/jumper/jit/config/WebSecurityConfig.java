@@ -16,12 +16,11 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request ->
-                request.requestMatchers("/**","/css/**", "/img/**", "/js/**").permitAll()
-                        .anyRequest().authenticated())
+                        request.requestMatchers("/css/**", "/img/**", "/js/**").permitAll()
+                                .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login").permitAll())
                 .logout(LogoutConfigurer::permitAll)
-                .csrf(csrf->csrf.ignoringRequestMatchers("/css/**", "/img/**", "/js/**").disable())
-
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/css/**", "/img/**", "/js/**").disable())
         ;
 
         return http.build();

@@ -14,18 +14,21 @@
 
 <div th:fragment="page" class="pageModule">
     <div class="page">
-        <button class="pageButton" id="pagePrev" onclick="renderClickPage(this)">上一页</button>
+        <button class="pageButton" id="pagePrev">上一页</button>
         <div class="pageIndex"></div>
-        <button class="pageButton" id="pageNext" onclick="renderClickPage(this)">下一页</button>
+        <button class="pageButton" id="pageNext">下一页</button>
     </div>
     <div class="pageParam">
         <label for="total">数据量:</label><input type="text" th:value="${data.total}" name="total" id="total"
                                                  oninput="totalPage.value=Math.ceil(this.value/pageSize.value)">
-        <label for="pageSize">页大小:</label><input type="text" th:value="${data.pageSize}" name="pageSize" id="pageSize"
+        <label for="pageSize">页大小:</label><input type="text" th:value="${data.pageSize}" name="pageSize"
+                                                    id="pageSize"
                                                     onkeyup="setPageSize(event)"
                                                     oninput="totalPage.value=Math.ceil(total.value/this.value);">
-        <label for="totalPage">总页数:</label><input type="text" th:value="${data.totalPage}" name="totalPage" id="totalPage" disabled>
-        <label for="currentPage">当前页:</label><input type="text" th:value="${data.pageNo + 1}" name="currentPage" id="currentPage"
+        <label for="totalPage">总页数:</label><input type="text" th:value="${data.totalPage}" name="totalPage"
+                                                     id="totalPage" disabled>
+        <label for="currentPage">当前页:</label><input type="text" th:value="${data.pageNo + 1}" name="currentPage"
+                                                       id="currentPage"
                                                        onkeyup="toPage(event)">
         <label for="pageBarNum">显示多少页:</label><input type="text" id="pageBarNum" onkeyup="setPageBarNum(event)">
     </div>

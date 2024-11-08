@@ -35,3 +35,6 @@ build/
 /src/main/resources/static/img/upload/
 frontend/img/upload/
 frontend/common/
+src/main/resources/application*.yml
+*.zip
+.gitignore

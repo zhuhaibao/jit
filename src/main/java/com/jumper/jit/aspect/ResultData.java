@@ -29,6 +29,14 @@ public class ResultData<T> {
         return r;
     }
 
+    public static <T> ResultData<T> success() {
+        ResultData<T> r = new ResultData<>();
+        r.setStatus(Status.RC100.code);
+        r.setStatusText(Status.RC100.codeText);
+        r.setMsg(Status.RC100.msg);
+        return r;
+    }
+
     public static <T> ResultData<T> failWithData(Status status, T data) {
         ResultData<T> r = new ResultData<>();
         r.setStatus(status.code);
@@ -54,8 +62,12 @@ public class ResultData<T> {
         RC103(103, "err", "数据操作失败"),
         RC104(104, "err", "不支持的请求"),
 
+
         //发布有关
         RC201(201, "err", "父节点尚未发布"),
+
+        //数据控制
+        RC301(301, "err", "存在同名的英文名"),
 
         RC999(999, "err", "操作失败"),
         RC500(500, "err", "服务异常");
