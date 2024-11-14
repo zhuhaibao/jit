@@ -33,19 +33,18 @@
         </div>
     </div>
     <div class="navBar">
-        <div class="arrow" id="leftArrow"></div>
-        <i id="treeBar" class="fa fa-bars treeBar" onclick="treeBarFun();"></i>
+        <div class="arrow" id="leftArrow" hidden></div>
         <nav>
             <ul id="topNav">
                 <!--第一个文章标签,固定显示-->
                 <li id="articleLabel"><a href="/articles/index.html">点滴文章</a></li>
                 <li><a href='/subject/springboot/index.html'>SpringBoot</a></li>
-<li><a href='/subject/java/index.html'>Java</a></li>
-<li><a href='/subject/html/index.html'>html</a></li>
-<li><a href='/subject/css/index.html'>CSS</a></li>
-<li><a href='/subject/search-engine/index.html'>搜索引擎</a></li>
-<li><a href='/subject/kafka/index.html'>kafka 연습</a></li>
-<li><a href='/subject/rabbitmq/index.html'>rabbitmq</a></li>
+                <li><a href='/subject/java/index.html'>Java</a></li>
+                <li><a href='/subject/html/index.html'>html</a></li>
+                <li><a href='/subject/css/index.html'>CSS</a></li>
+                <li><a href='/subject/search-engine/index.html'>搜索引擎</a></li>
+                <li><a href='/subject/kafka/index.html'>kafka 연습</a></li>
+                <li><a href='/subject/rabbitmq/index.html'>rabbitmq</a></li>
 
             </ul>
         </nav>
@@ -54,14 +53,48 @@
 </div>
 <div class="mainDiv">
     <div class="subjectArea" id="subjectArea">
-        <div class='subjectHeader'>    <a href='/subject/springboot/index.html'>        <img src='/img/upload/subject/subject-logo4.svg'>        <h3>SpringBoot</h3>        <p>xxxSpring Boot makes it easy to create stand-alone, production-grade S...</p></a></div><div class='subjectHeader'>    <a href='/subject/java/index.html'>        <img src='/img/upload/subject/subject-logo3.svg'>        <h3>Java</h3>        <p>Java 是全球广受欢迎的编程语言和开发平台。Oracle Java SE Universal Subscription 将提供全方位的支持...</p></a></div><div class='subjectHeader'>    <a href='/subject/html/index.html'>        <img src='/img/upload/subject/subject-logo1.svg'>        <h3>html</h3>        <p>HTML is the standard markup language for Web pages.
+        <div class='subjectHeader'><a href='/subject/springboot/index.html'> <img
+                src='/img/upload/subject/c13c88eb-2788-4552-8294-7d6d48a4805c3.svg'>
+            <h3>SpringBoot</h3>
+            <p>xxxSpring Boot makes it easy to create stand-alone, production-grade S...</p></a></div>
+        <div class='subjectHeader'><a href='/subject/java/index.html'> <img src='/img/upload/subject/subject-logo3.svg'>
+            <h3>Java</h3>
+            <p>Java 是全球广受欢迎的编程语言和开发平台。Oracle Java SE Universal Subscription 将提供全方位的支持...</p>
+        </a></div>
+        <div class='subjectHeader'><a href='/subject/html/index.html'> <img src='/img/upload/subject/subject-logo1.svg'>
+            <h3>html</h3>
+            <p>HTML is the standard markup language for Web pages.
 
-With HTML you c...</p></a></div><div class='subjectHeader'>    <a href='/subject/css/index.html'>        <img src='/img/upload/subject/subject-logo5.svg'>        <h3>CSS</h3>        <p>CSS is the language we use to  style an HTML document.CSS describes ho...</p></a></div><div class='subjectHeader'>    <a href='/subject/search-engine/index.html'>        <img src='/img/upload/subject/subject-logo4.svg'>        <h3>搜索引擎</h3>        <p>搜索引擎...</p></a></div><div class='subjectHeader'>    <a href='/subject/kafka/index.html'>        <img src='/img/upload/subject/subject-logo3.svg'>        <h3>kafka 연습</h3>        <p>kafka 기본적으로 공부한다 ...</p></a></div><div class='subjectHeader'>    <a href='/subject/rabbitmq/index.html'>        <img src='/img/upload/subject/subject-logo2.svg'>        <h3>rabbitmq</h3>        <p>Why RabbitMQ?RabbitMQ is a reliable and mature messagingand streaming ...</p></a></div>
+                With HTML you c...</p></a></div>
+        <div class='subjectHeader'><a href='/subject/css/index.html'> <img src='/img/upload/subject/subject-logo5.svg'>
+            <h3>CSS</h3>
+            <p>CSS is the language we use to style an HTML document.CSS describes ho...</p></a></div>
+        <div class='subjectHeader'><a href='/subject/search-engine/index.html'> <img
+                src='/img/upload/subject/subject-logo4.svg'>
+            <h3>搜索引擎</h3>
+            <p>搜索引擎...</p></a></div>
+        <div class='subjectHeader'><a href='/subject/kafka/index.html'> <img
+                src='/img/upload/subject/subject-logo3.svg'>
+            <h3>kafka 연습</h3>
+            <p>kafka 기본적으로 공부한다 ...</p></a></div>
+        <div class='subjectHeader'><a href='/subject/rabbitmq/index.html'> <img
+                src='/img/upload/subject/subject-logo2.svg'>
+            <h3>rabbitmq</h3>
+            <p>Why RabbitMQ?RabbitMQ is a reliable and mature messagingand streaming ...</p></a></div>
     </div>
     <div class="articleArea">
         <h4>最近发表的文章</h4>
         <div class="articleList" id="articleList">
-            <div class='articleHeader'>    <h4>2024-11-09 02:28:56</h4>    <span><a href='/articles/tests1/index.html'>标题测试1</a></span></div><div class='articleHeader'>    <h4>2024-11-06 12:25:13</h4>    <span><a href='/articles/spring-logbak10/index.html'>SpringBoot3 整合 Logback 日志框架100000</a></span></div><div class='articleHeader'>    <h4>2024-11-06 12:22:32</h4>    <span><a href='/articles/spring-logbak2/index.html'>SpringBoot3 整合 Logback 日志框架2</a></span></div><div class='articleHeader'>    <h4>2024-10-26 15:31:58</h4>    <span><a href='/articles/qiwen2/index.html'>单位来了一位美国访问学者</a></span></div><div class='articleHeader'>    <h4>2024-10-26 15:29:12</h4>    <span><a href='/articles/qiwen1/index.html'>厦门文化执法支队正科级干部钟劭臻婚内出轨11年</a></span></div>
+            <div class='articleHeader'><h4>2024-11-09 02:28:56</h4>    <span><a
+                    href='/articles/tests1/index.html'>标题测试1</a></span></div>
+            <div class='articleHeader'><h4>2024-11-06 12:25:13</h4>    <span><a
+                    href='/articles/spring-logbak10/index.html'>SpringBoot3 整合 Logback 日志框架100000</a></span></div>
+            <div class='articleHeader'><h4>2024-11-06 12:22:32</h4>    <span><a
+                    href='/articles/spring-logbak2/index.html'>SpringBoot3 整合 Logback 日志框架2</a></span></div>
+            <div class='articleHeader'><h4>2024-10-26 15:31:58</h4>    <span><a href='/articles/qiwen2/index.html'>单位来了一位美国访问学者</a></span>
+            </div>
+            <div class='articleHeader'><h4>2024-10-26 15:29:12</h4>    <span><a href='/articles/qiwen1/index.html'>厦门文化执法支队正科级干部钟劭臻婚内出轨11年</a></span>
+            </div>
         </div>
     </div>
 </div>

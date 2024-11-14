@@ -73,4 +73,27 @@
     .modalContent {
         width: 95%;
     }
+
+    /*首页主题显示*/
+    .subjectHeader * {
+        box-sizing: border-box;
+    }
+
+    /*首页主题排列*/
+    .subjectHeader {
+        box-sizing: border-box;
+        width: calc(50% - 4px);
+        height: 250px;
+        margin: 5px 2px;
+        line-height: 1.5em;
+    }
+
+    .subjectHeader img {
+        height: 80px;
+        width: 100%;
+    }
+
+    .subjectHeader p {
+        padding: 0 1px 2px 1px;
+    }
 }

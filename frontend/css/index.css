@@ -49,3 +49,8 @@
     color: #5449C0;
     font-weight: bold;
 }
+
+/*导航按钮显示*/
+#articleLabel {
+    left: 0;
+}

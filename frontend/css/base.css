@@ -120,7 +120,7 @@ body {
     position: absolute;
     height: 35px;
     width: 80px;
-    left: 35px;
+    left: 0;
     background-color: #282A35;
     border-left: 1px dotted #afafaf;
     border-right: 1px dotted #afafaf;
@@ -140,7 +140,7 @@ body {
     height: 35px;
     padding: 0;
     margin: 0;
-    padding-left: 115px;
+    padding-left: 82px; /*82px是articleLabel的宽度*/
     /*左边给固定定位的'文章'按钮留出的宽度*/
     padding-right: 30px;
     /*右边最后一个li离窗口30像素*/

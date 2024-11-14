@@ -86,9 +86,9 @@ function showNavBar() {
     if (selectedLi) {
         let coords = selectedLi.getBoundingClientRect();
         //如果右边距大于窗口宽度,则需要一次性向右滚动;同时显示左按钮
-        let needScrollWidth = coords.left + selectedLi.offsetWidth - document.documentElement.offsetWidth;
+        let needScrollWidth = coords.right - document.documentElement.offsetWidth;
         if (needScrollWidth > 0) {
-            nav.scrollBy(needScrollWidth + 30, 0);//多出30像素超过箭头
+            nav.scrollBy(needScrollWidth + 70, 0);//多出2个箭头的像素宽度
         }
         showArrow(nav);
     }
@@ -131,7 +131,22 @@ async function loadNav() {
         innerHtml += `<li><a href="/subject/${sub.dir}/index.html">${sub.subName}</a></li>`;
     });
     ul.innerHTML = innerHtml;
+
+    selectedNavLi();//选中导航
     showNavBar(); //显示导航条
+}
+
+function selectedNavLi() {
+    //根据url自动选中导航
+    let url = new URL(location.href);
+    if (url.pathname.startsWith('/subject')) {
+        let x = url.pathname.replace('/subject/', '');
+        let liUrl = '/subject/' + x.substring(0, x.indexOf('/')) + '/index.html';
+        let navA = document.getElementById('topNav').querySelector(`a[href="${liUrl}"]`);
+        if (navA && navA.parentElement) navA.parentElement.classList.add('selected');
+    } else if (url.pathname.startsWith('/articles')) {
+        document.getElementById('articleLabel').classList.add('selected');
+    }
 }
 
 /**
@@ -163,12 +178,19 @@ function tapHold(elem, f, start, step) {
 
 //是否显示左右按钮
 function showArrow(nav) {
+    let treeBarWidth = 0;
+    if (document.getElementById('treeBar')) treeBarWidth = document.getElementById('treeBar').offsetWidth;
     //如果导航左边距<0,显示左按钮
-    let coords = nav.getBoundingClientRect();
-    if (nav.firstElementChild.nextElementSibling.getBoundingClientRect().left - 115 < 0) {//需要去掉ul边界的padding-left
+    if (nav.firstElementChild.nextElementSibling.getBoundingClientRect().left + 2 - document.getElementById('articleLabel').getBoundingClientRect().right < 0) {//需要去掉ul边界的padding-left
         leftArrow.hidden = false;
+        //如果要显示左按钮,就要调整nav的左边距
+        leftArrow.style.left = treeBarWidth + 'px';
+        document.getElementById('articleLabel').style.left = document.getElementById('leftArrow').offsetWidth + treeBarWidth + 'px';
+        nav.style.paddingLeft = document.getElementById('articleLabel').getBoundingClientRect().right + 'px';
     } else {
         leftArrow.hidden = true;
+        document.getElementById('articleLabel').style.left = treeBarWidth + 'px';
+        nav.style.paddingLeft = document.getElementById('articleLabel').getBoundingClientRect().right + 'px';
     }
     if (nav.lastElementChild.getBoundingClientRect().right > document.documentElement.offsetWidth) {
         rightArrow.hidden = false;
@@ -192,6 +214,7 @@ document.addEventListener('click', e => {
         div.classList.toggle('titleTreeDiv700');
     }
 });
+
 
 
 

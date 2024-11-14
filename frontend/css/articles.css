@@ -150,4 +150,12 @@ article {
     margin-left: 10px;
 }
 
+/*导航按钮显示*/
+.navBar ul {
+    padding-left: 115px;
+}
+
+#articleLabel {
+    left: 35px;
+}
     
