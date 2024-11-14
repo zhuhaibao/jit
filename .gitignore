@@ -38,3 +38,4 @@ frontend/common/
 src/main/resources/application*.yml
 *.zip
 .gitignore
+/frontend/**
