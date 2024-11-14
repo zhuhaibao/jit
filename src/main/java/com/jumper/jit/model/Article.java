@@ -30,12 +30,14 @@ public class Article {
     private String content;
     @Length(min = 1, message = "英文名长度在1和100之间", groups = {AddSingleArticle.class, SaveContent.class})
     private String enName;
+    private String articleKeyword;
 
     private Integer status = Status.NO_CONTENT.code;//文章状态 0 无内容,1 已保存,2 已发布,3修改未发布
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime publishedAt;
+
 
     @NotNull(groups = {AddSub.class})
     @Column(insertable = false, updatable = false)

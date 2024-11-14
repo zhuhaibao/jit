@@ -244,7 +244,11 @@ function setPageBarNumber() {
 function renderFormFieldErrors(form, errors) {
     for (let key in errors) {
         if (form.elements[key]) {
-            form.elements[key].insertAdjacentHTML('afterend', `<span class='feildErr'>${errors[key]}</span>`);
+            if (form.elements[key].nextElementSibling && form.elements[key].nextElementSibling.classList.contains('feildErr')) {
+                form.elements[key].nextElementSibling.innerHTML = errors[key];
+            } else {
+                form.elements[key].insertAdjacentHTML('afterend', `<span class='feildErr'>${errors[key]}</span>`);
+            }
         }
     }
 }
@@ -300,7 +304,7 @@ function previewImg(target) {
 async function checkEnName(type, target, url) {
     let value = target.value ? target.value.trim() : null;
     if (!value) {
-        if (target.nextElementSibling) {
+        if (target.nextElementSibling && target.nextElementSibling.classList.contains('feildErr')) {
             target.nextElementSibling.innerHTML = `不能为空`;
         } else {
             target.insertAdjacentHTML("afterend", "<span class='feildErr'>不能为空</span>");
@@ -316,7 +320,7 @@ async function checkEnName(type, target, url) {
         return true;
     } else {
         let msg = type === 0 ? result.data.subjectTitle : result.data.title;
-        if (target.nextElementSibling) {
+        if (target.nextElementSibling && target.nextElementSibling.classList.contains('feildErr')) {
             target.nextElementSibling.innerHTML = `存在同名条目:${msg}`;
         } else {
             target.insertAdjacentHTML("afterend", `<span class='feildErr'>存在同名条目:${msg}</span>`);

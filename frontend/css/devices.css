@@ -19,13 +19,14 @@
     /*整个内容区*/
     .mainDiv {
         width: 100%;
-        margin: 100px auto 0px auto;
+        margin: 140px auto 0px auto;
     }
 
     /*标题树*/
     .titleTreeDiv {
         display: block;
-        top: 100px;
+        top: 135px;
+        left: 2px;
         background-color: #ffffff;
     }
 
@@ -48,5 +49,28 @@
     .treeBar:hover {
         cursor: pointer;
         background-color: #000000;
+    }
+
+    /*顶部样式变更*/
+    .topBar {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .searchDiv {
+        width: 100%;
+        margin: 0 0 5px 0;
+    }
+
+    .searchDiv input {
+        box-sizing: border-box;
+        width: 100%;
+
+    }
+
+    /*弹出的搜索结果样式*/
+    .modalContent {
+        width: 95%;
     }
 }

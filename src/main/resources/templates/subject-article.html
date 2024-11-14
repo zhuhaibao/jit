@@ -45,9 +45,15 @@
         </div>
         <div>
             <input type="hidden" id="oldEnName" th:value="${article.enName}">
-            <label name="enName">英文名:</label><input type="text" id="enName" name="enName"
-                                                       th:value="${article.enName}"
-                                                       required>
+            <label for="enName">英文名<span style="font-weight: bold; color: red;">*</span>:</label><input type="text"
+                                                                                                           id="enName"
+                                                                                                           name="enName"
+                                                                                                           th:value="${article.enName}"
+                                                                                                           required>
+            &nbsp;&nbsp;&nbsp;
+            <label for="articleKeyword">关键词:</label><input type="text" id="articleKeyword" name="articleKeyword"
+                                                              th:value="${article.articleKeyword}"
+        >
 
         </div>
         <div id='editArea'>
@@ -335,7 +341,9 @@
         let formData = new FormData();
         formData.set("id", id);
         let enName = document.getElementById("enName").value;
+        let articleKeyword = document.getElementById("articleKeyword").value;
         formData.set("enName", enName);
+        formData.set("articleKeyword", articleKeyword);
         formData.set("content", editorObj.value);
         fetch("/deploy/saveAndUpdateStatus", {method: 'POST', body: formData})
             .then(async resp => resp.json())
@@ -404,7 +412,9 @@
         let formData = new FormData();
         formData.set("id", id);
         let enName = document.getElementById("enName").value;
+        let articleKeyword = document.getElementById("articleKeyword").value;
         formData.set("enName", enName);
+        formData.set("articleKeyword", articleKeyword);
         formData.set("content", editorObj.value);
         let response = await fetch("/article/saveContent", {method: "POST", body: formData});
         return await response.json();
@@ -428,9 +438,14 @@
             let response = await fetch(`/article/getArticle/${newId}`, {method: 'POST'})
             let result = await response.json();
             if (result.statusText === 'ok') {
-                document.getElementById("enName").value = result.data.enName ? result.data.enName : '';
-                editorObj.value = result.data.content ? result.data.content : '';
-                editorOldValue = editorObj.value;
+                //刷新页面
+                let url = new URL(location.href);
+                url.searchParams.set('id', newId);
+                location.assign(url);
+                // document.getElementById("enName").value = result.data.enName ? result.data.enName : '';
+                // document.getElementById("articleKeyword").value = result.data.articleKeyword ? result.data.articleKeyword : '';
+                // editorObj.value = result.data.content ? result.data.content : '';
+                // editorOldValue = editorObj.value;
             } else {
                 alert(`加载文章内容失败:${result.msg}`);
             }

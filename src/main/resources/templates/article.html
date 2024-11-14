@@ -44,6 +44,15 @@
             </div>
             <div class="formRow">
                 <div class="colLabel">
+                    <label for="articleKeyword">关键词:</label>
+                </div>
+                <div class="colValue">
+                    <input type="text" name="articleKeyword" id="articleKeyword" th:value="*{articleKeyword}"
+                           minlength="1" maxlength="255">
+                </div>
+            </div>
+            <div class="formRow">
+                <div class="colLabel">
                     <label>选择所属上级文章:</label>
                 </div>
                 <div class="colValue">

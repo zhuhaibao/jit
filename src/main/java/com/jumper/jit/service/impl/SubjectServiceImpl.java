@@ -67,9 +67,10 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     private String savePicFile(MultipartFile file) throws IOException {
-        String fileUrl = savePath + subjectPic + file.getOriginalFilename();
+        String fileRandomName = UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().indexOf(".") - 1);
+        String fileUrl = savePath + subjectPic + fileRandomName;
         FileCopyUtils.copy(file.getBytes(), new File(fileUrl));
-        return baseUrl + relativePath + file.getOriginalFilename();
+        return baseUrl + relativePath + fileRandomName;
     }
 
     @Override
@@ -79,6 +80,7 @@ public class SubjectServiceImpl implements SubjectService {
         if (subject.getRemark() != null) returnO.setRemark(subject.getRemark());
         if (subject.getSubjectTitle() != null) returnO.setSubjectTitle(subject.getSubjectTitle());
         if (subject.getEnName() != null) returnO.setEnName(subject.getEnName());
+        if (subject.getSubKeyword() != null) returnO.setSubKeyword(subject.getSubKeyword());
         if (subject.getPicFile() != null && !subject.getPicFile().isEmpty()) {
             returnO.setPic(savePicFile(subject.getPicFile()));
         }

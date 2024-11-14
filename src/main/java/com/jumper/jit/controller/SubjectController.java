@@ -66,6 +66,12 @@ public class SubjectController {
         return service.updateSubject(subject);
     }
 
+    @PostMapping("updateSubKeyword")
+    @ResponseBody
+    public Subject updateSubKeyword(@Validated(SubjectDTO.UpdateSubKeyword.class) SubjectDTO subject) throws IOException {
+        return service.updateSubject(subject);
+    }
+
     @PostMapping("updateEnName")
     @ResponseBody
     public Subject updateEnName(@Validated(SubjectDTO.UpdateEnName.class) SubjectDTO subject) throws IOException {

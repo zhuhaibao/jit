@@ -162,6 +162,7 @@ public class ArticleServiceImpl implements ArticleService {
         Article dbArticle = repository.findById(article.getId()).orElseThrow(() -> new DbException("id=" + id));
         dbArticle.setTitle(article.getTitle());
         dbArticle.setEnName(article.getEnName());
+        dbArticle.setArticleKeyword(article.getArticleKeyword());
         dbArticle.setContent(article.getContent());
         //如果已经发布
         if (dbArticle.getStatus().equals(Article.Status.PUBLISHED.getCode())) {
@@ -229,6 +230,11 @@ public class ArticleServiceImpl implements ArticleService {
         repository.updateArticleEnName(id, enName);
     }
 
+    @Override
+    public void updateArticleKeyword(Integer id, String articleKeyword) {
+        repository.updateArticleKeyword(id, articleKeyword);
+    }
+
 
     @AutoDeploy(desc = "检查文章是否已经发布,如果是发布过的文章,内容修改后自动发布")
     @Override
@@ -236,6 +242,7 @@ public class ArticleServiceImpl implements ArticleService {
         Article dbResult = repository.findById(article.getId()).orElseThrow(() -> new DbException("article id=" + article.getId()));
         dbResult.setContent(article.getContent());
         dbResult.setEnName(article.getEnName());
+        dbResult.setArticleKeyword(article.getArticleKeyword());
         if (dbResult.getStatus().equals(Article.Status.NO_CONTENT.getCode())) {
             dbResult.setStatus(Article.Status.SAVE_CONTENT.getCode());
         }
@@ -421,9 +428,11 @@ public class ArticleServiceImpl implements ArticleService {
         MultipartFile[] files = fileDTO.getFiles();
         String[] names = new String[files.length];
         for (int i = 0; i < files.length; i += 1) {
-            File file = new File(savePath + articlePath + files[i].getOriginalFilename());
+            String originalFilename = files[i].getOriginalFilename();
+            String fileRandomName = UUID.randomUUID() + Objects.requireNonNull(originalFilename).substring(originalFilename.indexOf(".") - 1);
+            File file = new File(savePath + articlePath + fileRandomName);
             FileCopyUtils.copy(files[i].getBytes(), file);
-            names[i] = files[i].getOriginalFilename();
+            names[i] = fileRandomName;
         }
         fileDTO.setBaseurl(baseUrl);
         fileDTO.setPath(relativePath);

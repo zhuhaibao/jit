@@ -31,6 +31,7 @@ public class ArticleDTO implements Comparable<ArticleDTO> {
     private LocalDateTime updatedAt;
 
     private String enName;
+    private String articleKeyword;
 
     private Integer pid;//上级文章
 

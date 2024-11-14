@@ -9,6 +9,8 @@ public interface SimpleArticleWithContentDTO {
 
     String getEnName();
 
+    String getArticleKeyword();
+
     String getContent();
 
     LocalDateTime getCreatedAt();

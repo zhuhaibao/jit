@@ -53,6 +53,7 @@ function loadData(href) {
     let url = pathName.substring(0, pathName.length - 4) + "json";
     fetch(url).then(resp => resp.json()).then(result => {
         document.title = result.pageTitle;
+        document.getElementsByTagName('meta')['keywords'].setAttribute('content', result.keyword);
         document.getElementById("articleTitle").innerHTML = result.title;
         document.getElementById("articleContent").innerHTML = result.content;
     })

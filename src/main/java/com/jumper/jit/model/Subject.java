@@ -26,6 +26,7 @@ public class Subject implements Comparable<Subject> {
     private int articleSum;
     @Length(min = 2, max = 250, message = "简介名长度在2~250之间")
     private String remark;
+    private String subKeyword;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean navigation = false;

@@ -96,6 +96,11 @@ public interface ArticleService {
      * 修改文章英文标题
      */
     void updateEnName(Integer id, String enName);
+    
+    /**
+     * 修改关键词
+     */
+    void updateArticleKeyword(Integer id, String articleKeyword);
 
     /**
      * 同一个专题内:移动节点到目标节点后

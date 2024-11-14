@@ -94,11 +94,21 @@ public class DeployServiceImpl implements DeployService {
         //读取模版
         String templateContent = DeployTools.getSubjectArticleTemplate();
         //替换
-        String result = replaceSubjectArticleTemplate(article.getSubject(), article.getPublishedAt(), article.getTitle(), article.getContent(), templateContent, subjectArticleTrees, navigations, siteConfig);
+        String result = replaceSubjectArticleTemplate(article.getSubject(), article.getPublishedAt(), article.getTitle(), article.getContent(), templateContent, subjectArticleTrees, navigations, siteConfig, article.getArticleKeyword());
         //存放
         Path path = Paths.get(savePath + savePathForSubject, article.getSubject().getEnName());
         if (!Files.exists(path)) Files.createDirectories(path);
         Files.writeString(Paths.get(path.toString(), "index.html"), result);
+    }
+
+    private String getKeyword(String articleKeyword, String subKeyword, String siteKeyword) {
+        if (articleKeyword != null && !articleKeyword.isEmpty()) {
+            return articleKeyword;
+        } else if (subKeyword != null && !subKeyword.isEmpty()) {
+            return subKeyword;
+        } else {
+            return siteKeyword;
+        }
     }
 
     /**
@@ -110,16 +120,17 @@ public class DeployServiceImpl implements DeployService {
         //读取模版
         String templateContent = DeployTools.getSubjectArticleTemplate();
         //替换
-        String result = replaceSubjectArticleTemplate(article.getSubject(), article.getPublishedAt(), article.getTitle(), article.getContent(), templateContent, subjectArticleTrees, navigations, siteConfig);
+        String result = replaceSubjectArticleTemplate(article.getSubject(), article.getPublishedAt(), article.getTitle(), article.getContent(), templateContent, subjectArticleTrees, navigations, siteConfig, article.getArticleKeyword());
         //存放
         Path path = Paths.get(savePath + savePathForSubject, article.getSubject().getEnName(), article.getEnName());
         if (!Files.exists(path)) Files.createDirectories(path);
         Files.writeString(Paths.get(path.toString(), "index.html"), result);
         //生成对应的json文件
-        deploySubjectArticleJson(path, article.getTitle(), article.getSubject().getSubjectTitle(), article.getContent());
+        String keyword = getKeyword(article.getArticleKeyword(), article.getSubject().getSubKeyword(), siteConfig.getSiteKeywords());
+        deploySubjectArticleJson(path, article.getTitle(), article.getSubject().getSubjectTitle(), article.getContent(), keyword);
     }
 
-    private void deploySubjectArticleJson(Path path, String title, String subjectTitle, String content) throws IOException {
+    private void deploySubjectArticleJson(Path path, String title, String subjectTitle, String content, String keyword) throws IOException {
         Map<String, Object> map = new HashMap<>();
         if (subjectTitle != null) {
             map.put("pageTitle", title + " - " + subjectTitle);
@@ -128,15 +139,17 @@ public class DeployServiceImpl implements DeployService {
         }
         map.put("title", title);
         map.put("content", content);
+        map.put("keyword", keyword);
         if (!Files.exists(path)) Files.createDirectories(path);
         Files.writeString(Paths.get(path.toString(), "index.json"), JSON.toJSONString(map));
     }
 
-    private String replaceSubjectArticleTemplate(Subject subject, LocalDateTime publishTime, String title, String articleContent, String templateContent, List<SimpleArticleWithoutContentDTO> subjectArticleTrees, List<Subject> navigations, SiteConfig siteConfig) {
+    private String replaceSubjectArticleTemplate(Subject subject, LocalDateTime publishTime, String title, String articleContent, String templateContent, List<SimpleArticleWithoutContentDTO> subjectArticleTrees, List<Subject> navigations, SiteConfig siteConfig, String keyword) {
         //替换描述
         String result = templateContent.replaceFirst("<meta\\s+name=['\"]description['\"].*?>", "<meta name='description' content='" + siteConfig.getSiteDesc() + "'>");
         //替换关键词
-        result = result.replaceFirst("<meta\\s+name=['\"]keywords['\"].*?>", "<meta name='keywords' content='" + siteConfig.getSiteKeywords() + "'>");
+        String key = getKeyword(keyword, subject.getSubKeyword(), siteConfig.getSiteKeywords());
+        result = result.replaceFirst("<meta\\s+name=['\"]keywords['\"].*?>", "<meta name='keywords' content='" + key + "'>");
         //替换页面标题
         result = result.replaceFirst("<title>.*?</title>", "<title>" + title + " - " + subject.getSubjectTitle() + "</title>");
         //替换主题
@@ -199,7 +212,7 @@ public class DeployServiceImpl implements DeployService {
 
     private void deploySingleIndexProcess(Article article, List<SimpleArticleWithoutContentDTO> singleList, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
         //读取模版
-        String result = replaceSingleTemplate(article.getTitle(), article.getContent(), singleList, navigations, siteConfig);
+        String result = replaceSingleTemplate(article.getTitle(), article.getContent(), singleList, navigations, siteConfig, article.getArticleKeyword());
         //存放
         Path dir = Paths.get(savePath + savePathForArticle);
         if (!Files.exists(dir)) Files.createDirectories(dir);
@@ -208,23 +221,28 @@ public class DeployServiceImpl implements DeployService {
 
     private void deploySingleProcess(SimpleArticleWithContentDTO article, List<SimpleArticleWithoutContentDTO> singleList, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
         //读取模版
-        String result = replaceSingleTemplate(article.getTitle(), article.getContent(), singleList, navigations, siteConfig);
+        String result = replaceSingleTemplate(article.getTitle(), article.getContent(), singleList, navigations, siteConfig, article.getArticleKeyword());
         //存放
         Path dir = Paths.get(savePath + savePathForArticle + article.getEnName());
         if (!Files.exists(dir)) Files.createDirectories(dir);
         Files.writeString(Paths.get(dir.toString(), "index.html"), result);
         //生成对应的json文件
-        deploySubjectArticleJson(dir, article.getTitle(), null, article.getContent());
+        String keyword = getKeyword(article.getArticleKeyword(), null, siteConfig.getSiteKeywords());
+        deploySubjectArticleJson(dir, article.getTitle(), null, article.getContent(), keyword);
     }
 
-    private String replaceSingleTemplate(String title, String content, List<SimpleArticleWithoutContentDTO> leftList, List<Subject> navigations, SiteConfig siteConfig) throws IOException {
+    private String replaceSingleTemplate(String title, String content, List<SimpleArticleWithoutContentDTO> leftList, List<Subject> navigations, SiteConfig siteConfig, String keyword) throws IOException {
 
 
         String contentTemplate = DeployTools.getSingleArticleTemplate();
         //替换描述
         String result = contentTemplate.replaceFirst("<meta\\s+name=['\"]description['\"].*?>", "<meta name='description' content='" + siteConfig.getSiteDesc() + "'>");
         //替换关键词
-        result = result.replaceFirst("<meta\\s+name=['\"]keywords['\"].*?>", "<meta name='keywords' content='" + siteConfig.getSiteKeywords() + "'>");
+        String key = keyword;
+        if (key == null || key.isEmpty()) {
+            key = siteConfig.getSiteKeywords();
+        }
+        result = result.replaceFirst("<meta\\s+name=['\"]keywords['\"].*?>", "<meta name='keywords' content='" + key + "'>");
         //替换页面标题
         result = result.replaceFirst("<title>.*?</title>", "<title>" + title + "</title>");
         //替换内容标题
@@ -282,14 +300,15 @@ public class DeployServiceImpl implements DeployService {
         articleWithContentDTOS.forEach(article -> {
             //替换
             String result = replaceSubjectArticleTemplate(subject, article.getPublishedAt(), article.getTitle(), article.getContent(),
-                    templateContent, leftNavs, navigations, siteConfig);
+                    templateContent, leftNavs, navigations, siteConfig, article.getArticleKeyword());
             //存放html
             Path path = Paths.get(savePath + savePathForSubject, subject.getEnName(), article.getEnName());
             try {
                 if (!Files.exists(path)) Files.createDirectories(path);
                 Files.writeString(Paths.get(path.toString(), "index.html"), result);
                 //json
-                deploySubjectArticleJson(path, article.getTitle(), subject.getSubjectTitle(), article.getContent());
+                String keyword = getKeyword(article.getArticleKeyword(), subject.getSubKeyword(), siteConfig.getSiteKeywords());
+                deploySubjectArticleJson(path, article.getTitle(), subject.getSubjectTitle(), article.getContent(), keyword);
             } catch (IOException e) {
                 throw new RuntimeException();
             }
@@ -366,7 +385,7 @@ public class DeployServiceImpl implements DeployService {
 
         //第一条发布为index.html
         SimpleArticleWithContentDTO first = singleContentList.getFirst();
-        String result = replaceSingleTemplate(first.getTitle(), first.getContent(), singleNavList, navigations, siteConfig);//读取模版
+        String result = replaceSingleTemplate(first.getTitle(), first.getContent(), singleNavList, navigations, siteConfig, first.getArticleKeyword());//读取模版
         Path dir = Paths.get(savePath + savePathForArticle);
         if (!Files.exists(dir)) Files.createDirectories(dir);
         Files.writeString(Paths.get(dir.toString(), "index.html"), result);

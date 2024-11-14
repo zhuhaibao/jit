@@ -89,6 +89,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     void updateArticleEnName(Integer id, String enName);
 
     @Modifying
+    @Query("update Article set articleKeyword = :articleKeyword where id=:id")
+    void updateArticleKeyword(Integer id, String articleKeyword);
+
+    @Modifying
     @Query("update Article set sid=:sid,orderNum=:orderNum,pid=null where id=:id")
     void updateArticleAsChildToSubject(Integer id, Integer sid, Integer orderNum);
 

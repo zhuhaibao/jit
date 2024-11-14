@@ -42,6 +42,7 @@
                 <th>图片</th>
                 <th>操作</th>
                 <th>备注</th>
+                <th>关键词</th>
                 <th>是否导航</th>
             </tr>
             <tr th:each="sub , stat:${data.content}" th:data-tr-gen="${sub.id}">
@@ -76,6 +77,9 @@
                 </td>
                 <td ondblclick="editSubject(event,2)" th:attr="data-td-id=${sub.id}" class="updateTd">
                     [[${sub.remark}]]
+                </td>
+                <td ondblclick="editSubject(event,4)" th:attr="data-td-id=${sub.id}" class="updateTd">
+                    [[${sub.subKeyword}]]
                 </td>
                 <td th:attr="data-td-id=${sub.id}">
                     <th:block th:if="${sub.navigation==true}">
@@ -135,6 +139,14 @@
                         <textarea id="remark" name="remark" style="height: 200px;"></textarea>
                     </div>
                 </div>
+                <div class="formRow">
+                    <div class="colLabel">
+                        <label for="subKeyword">关键词: </label>
+                    </div>
+                    <div class="colValue">
+                        <input type="text" id="subKeyword" name="subKeyword">
+                    </div>
+                </div>
             </form>
         </div>
         <div class="modalFooter">
@@ -175,6 +187,7 @@
                                 </td>
                                 <td><a href="/subject/${trData.id}"><img alt="edit subject" title='edit subject'  src="/img/edit.svg"></a>/<a href="javascript:void(0);"><img alt="del subject" title='del subject'   src="/img/delete.svg" onclick="delSub(event);"></a></td>
                                 <td class="updateTd" ondblclick="editSubject(event,2)" data-td-id="${trData.id}">${trData.remark}</td>
+                                <td class="updateTd" ondblclick="editSubject(event,4)" data-td-id="${trData.id}">${trData.subKeyword}</td>
                                 <td>${navTdHtml}</td>
                                 </tr>
 
@@ -228,10 +241,14 @@
                         //save 备注
                         url = "/subject/updateRemark"
                         formData.set("remark", e.target.value);
-                    } else {
+                    } else if (type === 3) {
                         //save 英文名
                         url = "/subject/updateEnName"
                         formData.set("enName", e.target.value);
+                    } else {
+                        //save关键词
+                        url = "/subject/updateSubKeyword"
+                        formData.set("subKeyword", e.target.value);
                     }
                     updateSubject(url, formData);
                     currentTd.innerHTML = e.target.value;
@@ -299,6 +316,7 @@
                 //清空隐藏的表单
                 subjectForm.subjectTitle.value = "";
                 subjectForm.remark.value = "";
+                subjectForm.subKeyword.value = '';
                 //需要渲染一下
                 document.getElementById("")
                 document.getElementById("total").value = parseInt(document.getElementById("total").value) + 1;

@@ -11,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 public class SubjectDTO {
 
-    @NotNull(groups = {UpdateTitle.class,UpdateRemark.class,UpdatePic.class,UpdateEnName.class})
+    @NotNull(groups = {UpdateTitle.class, UpdateRemark.class, UpdatePic.class, UpdateEnName.class, UpdateSubKeyword.class})
     private Integer id;
 
-    @Length(min = 1,max = 50,message = "字符数介于5与50之间",groups = UpdateTitle.class)
+    @Length(min = 1, max = 50, message = "字符数介于5与50之间", groups = UpdateTitle.class)
     private String subjectTitle;
     private Integer articleSum;
 
@@ -26,17 +26,21 @@ public class SubjectDTO {
     private Order orderByCreate;//按照创建日期排序
     private Order orderByUpdate;//按照更新日期排序
 
-    private Boolean navigation=false;
+    private Boolean navigation = false;
     private Integer orderNum;
 
-    @Length(min=1,max=100,message = "英文名长度在1~100之间",groups = UpdateEnName.class)
+    @Length(min = 1, max = 100, message = "英文名长度在1~100之间", groups = UpdateEnName.class)
     private String enName;//英文名,主要作为目录使用
 
     private String pic;//图标
+    
+    @Length(min = 1, max = 100, message = "关键词长度在1~100之间", groups = UpdateSubKeyword.class)
+    private String subKeyword;
 
-    public enum Order{
-        DESC,ASC
+    public enum Order {
+        DESC, ASC
     }
+
     @Transient
     private String keyword;
 
@@ -45,10 +49,19 @@ public class SubjectDTO {
     private MultipartFile picFile;
 
 
+    public interface UpdateTitle {
+    }
 
-    public interface UpdateTitle{}
-    public interface UpdateRemark{}
-    public interface UpdatePic{}
-    public interface UpdateEnName{}
+    public interface UpdateRemark {
+    }
+
+    public interface UpdateSubKeyword {
+    }
+
+    public interface UpdatePic {
+    }
+
+    public interface UpdateEnName {
+    }
 
 }

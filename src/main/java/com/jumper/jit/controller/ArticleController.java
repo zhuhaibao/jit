@@ -91,11 +91,17 @@ public class ArticleController {
 
     @ResponseBody
     @PostMapping("updateTitle")
-    public void updateTitle(@RequestParam("id") Integer id, @RequestParam(value = "title", required = false) String title, @RequestParam(value = "enName", required = false) String enName) {
+    public void updateTitle(@RequestParam("id") Integer id,
+                            @RequestParam(value = "title", required = false) String title,
+                            @RequestParam(value = "enName", required = false) String enName,
+                            @RequestParam(value = "articleKeyword", required = false) String articleKeyword
+    ) {
         if (title != null && !title.isEmpty()) {
             service.updateTitle(id, title);
         } else if (enName != null && !enName.isEmpty()) {
             service.updateEnName(id, enName);
+        } else if (articleKeyword != null && !articleKeyword.isEmpty()) {
+            service.updateArticleKeyword(id, articleKeyword);
         }
     }
 
