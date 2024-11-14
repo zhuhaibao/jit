@@ -27,7 +27,7 @@ for (let i = 0; i < data.length; i++) {
 
 
 /************************************搜索有关的函数调用-start************************************************/
-// let searchByKeyDecorator = debounce(queryFromServer, 500);//设定500ms的间隔
+
 
 //给页面绑定函数
 document.addEventListener("click", function (e) {
@@ -90,24 +90,30 @@ function queryFromServer(searchKey) {
     searchResultDiv.style.display = 'block';
 }
 
+//全局变量
+let ids;//存储结果
+let searchKey;//搜索关键词
+let totalTime;//搜索耗时
+bindFunctionForPage();//先绑定分页函数
+
 //flex搜索
 function searchAll() {
-    let searchKey = document.getElementById("searchInput").value;
+    searchKey = document.getElementById("searchInput").value;
     if (!searchKey) {
         document.getElementById("modalResult").style.display = 'none';
         return;
     }
+    //先清空数据
+    clearAllData();
     //从服务器获取数据
     let startTime = Date.now();
     let result = flexSearch.search(searchKey);
-    let totalTime = (Date.now() - startTime) / 1000;
-    let ids = result[0].result;
+    totalTime = (Date.now() - startTime) / 1000;
+    ids = result[0].result;
     //显示
     document.getElementById("modalResult").style.display = 'block';
     //初始化
     initData(ids, totalTime, searchKey);
-    //分页事件
-    bindFunctionForPage(ids, searchKey);
 }
 
 function initData(ids, totalTime, searchKey) {
@@ -124,28 +130,32 @@ function initData(ids, totalTime, searchKey) {
         pageBarNum: 10,
     };
     page.initPageParams(params);
-    loadData(1, ids, searchKey);
+    loadData();
 }
 
-function bindFunctionForPage(ids, searchKey) {
+/**
+ * 绑定分页函数
+ */
+function bindFunctionForPage() {
     document.getElementById("pagePrev").addEventListener("click", function (e) {
         page.renderClickPage(e);
-        loadData(page.pageParams.currentPage, ids, searchKey);
+        loadData();
     });
     document.getElementById("pageNext").addEventListener("click", function (e) {
         page.renderClickPage(e);
-        loadData(page.pageParams.currentPage, ids, searchKey);
+        loadData();
     });
     document.body.querySelector(".pageIndex").addEventListener("click", function (e) {
         if (!e.target.closest("a")) return;
         if (e.target.className !== "pageSelected") {
             renderClickPage(e);
-            loadData(page.pageParams.currentPage, ids, searchKey);
+            loadData();
         }
     });
 }
 
-function loadData(pageNo, ids, searchKey) {
+function loadData() {
+    let pageNo = page.pageParams.currentPage;//加载当前页
     let regex = new RegExp(`${searchKey}`, "gi");
     let resultHTML = ``;
     let dataIndex = (pageNo - 1) * page.pageParams.pageSize;
@@ -161,6 +171,11 @@ function loadData(pageNo, ids, searchKey) {
                 </div>`;
     }
     document.getElementById("searchResultAll").innerHTML = resultHTML;
+}
+
+function clearAllData() {
+    document.getElementById('searchResultAll').innerHTML = '';
+    document.querySelector('.page .pageIndex').innerHTML = '';
 }
 
 /************************************搜索有关的函数调用-end************************************************/
