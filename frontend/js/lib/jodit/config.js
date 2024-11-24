@@ -1,9 +1,3 @@
-/*!
- * Jodit Editor PRO (https://xdsoft.net/jodit/)
- * See LICENSE.MD in the project root for license information.
- * Copyright (c) 2013-2020 Valeriy Chupurnov. All rights reserved. https://xdsoft.net/jodit/pro/
- */
-
 Jodit.defaultOptions.license = '0DDBK-2DH42-BSN6N-L1O8X';
 Jodit.defaultOptions.language = 'zh_cn';
 

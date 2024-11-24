@@ -47,6 +47,8 @@ function selected() {
     }
 }
 
+let hasHighlighted = false;
+
 //加载json
 function loadData(href) {
     let pathName = new URL(href).pathname;
@@ -56,7 +58,11 @@ function loadData(href) {
         document.getElementsByTagName('meta')['keywords'].setAttribute('content', result.keyword);
         document.getElementById("articleTitle").innerHTML = result.title;
         document.getElementById("articleContent").innerHTML = result.content;
+        Prism.highlightAll(false);//高亮代码
+        hasHighlighted = true;
     })
+
+    console.log("Prism.highlightAll(false) ...");
 }
 
 //回退或者前进事件

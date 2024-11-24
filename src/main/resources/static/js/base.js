@@ -70,6 +70,38 @@ function randomInteger(n) { //产生随机整数
 /*加载jodit editor编辑器插件- free version*/
 function loadJoditEditor(selector) {
     return Jodit.make(selector, {
+        pasteCode: {
+            defaultLanguage: 'js',
+            languages: Jodit.atom([
+                {value: 'js', text: 'JavaScript'},
+                {value: 'html', text: 'HTML/XML'},
+                {value: 'markup', text: 'Markup'},
+                {value: 'svg', text: 'Svg'},
+                {value: 'css', text: 'CSS'},
+                {value: 'C-like', text: 'C-like'},
+                {value: 'c', text: 'C'},
+                {value: 'cpp', text: 'C++'},
+                {value: 'csharp', text: 'C#'},
+                {value: 'Git', text: 'Git'},
+                {value: 'bash', text: 'Bash'},
+                {value: 'java', text: 'Java'},
+                {value: 'Gradle', text: 'Gradle'},
+                {value: 'yaml', text: 'YAML'},
+                {value: 'python', text: 'Python'},
+                {value: 'ruby', text: 'Ruby'},
+                {value: 'typescript', text: 'TypeScript'},
+                {value: 'php', text: 'Php'},
+                {value: 'JSON5', text: 'JSON5'},
+                {value: 'sql', text: 'SQL'},
+                {value: 'regex', text: 'Regex'},
+                {value: 'batch', text: 'Batch'},
+                {value: 'docker', text: 'Docker'}
+            ]),
+            insertTemplate: (_, lang, value) => `<pre class="line-numbers"><code class="language-${lang}" data-prismjs-copy="Copy">${Jodit.modules.Helpers.htmlspecialchars(value)}</code></pre>`,
+            dialog: {
+                width: 1000
+            }
+        },
         uploader: {
             url: '/article/uploadFile',
             format: 'json',
@@ -80,6 +112,11 @@ function loadJoditEditor(selector) {
                     });
                 }
                 return resp.msg;
+            }
+        },
+        controls: {
+            lineHeight: {
+                list: Jodit.atom([1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3, 3.5])
             }
         }
     });
@@ -316,7 +353,9 @@ async function checkEnName(type, target, url) {
     let response = await fetch(url, {method: 'POST', body: formData});
     let result = await response.json();
     if (result.statusText === 'ok') {
-        if (target.nextElementSibling) target.nextElementSibling.remove();
+        if (target.nextElementSibling && target.nextElementSibling.classList.contains('feildErr')) {
+            target.nextElementSibling.innerHTML = '';
+        }
         return true;
     } else {
         let msg = type === 0 ? result.data.subjectTitle : result.data.title;

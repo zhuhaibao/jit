@@ -20,7 +20,10 @@ public class WebSecurityConfig {
                                 .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login").permitAll())
                 .logout(LogoutConfigurer::permitAll)
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/css/**", "/img/**", "/js/**").disable())
+                .csrf(
+                        csrf -> csrf.ignoringRequestMatchers("/css/**", "/img/**", "/js/**")
+                                .disable()
+                )
         ;
 
         return http.build();

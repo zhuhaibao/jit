@@ -9,7 +9,6 @@
     <title>单体文章</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/js/lib/prism/prism.css">
-    <script src="/js/lib/prism/prism.js"></script>
     <script src="/js/base.js"></script>
     <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/base.css"/>
@@ -93,8 +92,14 @@
 <script type="text/javascript">
     loadNav();
 </script>
+<script src="/js/lib/prism/prism.js"></script>
 <script src="/js/articleTree.js"></script>
 <script type="module" src="/js/indexSearch.js"></script>
+<script>
+    if (!hasHighlighted) {
+        Prism.highlightAll(false);//高亮代码
+    }
+</script>
 </body>
 
 </html>

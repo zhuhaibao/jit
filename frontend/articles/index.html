@@ -9,7 +9,6 @@
     <title>标题测试1</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/js/lib/prism/prism.css">
-    <script src="/js/lib/prism/prism.js"></script>
     <script src="/js/base.js"></script>
     <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/base.css"/>
@@ -79,7 +78,47 @@
                 <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
                 <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
             </section>
-            <article id='articleContent'><p>标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1</p><p><img src="http://localhost:8081/img/upload/bd53e257-7f77-460b-85cd-c58e3c2b635fv.jpg"></p></article>
+            <article id='articleContent'><p>标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1标题测试1</p>
+<p><img src="http://localhost:8081/img/upload/bd53e257-7f77-460b-85cd-c58e3c2b635fv.jpg"></p><p><br></p><pre class="line-numbers"><code class="language-java" data-prismjs-copy="Copy">package com.jumper.jit.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(request -&gt;
+                        request.requestMatchers("/css/**", "/img/**", "/js/**").permitAll()
+                                .anyRequest().authenticated())
+                .formLogin(form -&gt; form.loginPage("/login").permitAll())
+                .logout(LogoutConfigurer::permitAll)
+                .csrf(
+                        csrf -&gt; csrf.ignoringRequestMatchers("/css/**", "/img/**", "/js/**")
+                                .disable()
+                )
+        ;
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}</code></pre>
+<p><br>
+    
+</p>
+</article>
         </section>
     </div>
 </div>
@@ -110,8 +149,14 @@
 <script type="text/javascript">
     loadNav();
 </script>
+<script src="/js/lib/prism/prism.js"></script>
 <script src="/js/articleTree.js"></script>
 <script type="module" src="/js/indexSearch.js"></script>
+<script>
+    if (!hasHighlighted) {
+        Prism.highlightAll(false);//高亮代码
+    }
+</script>
 </body>
 
 </html>

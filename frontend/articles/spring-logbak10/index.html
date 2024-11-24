@@ -9,7 +9,6 @@
     <title>SpringBoot3 整合 Logback 日志框架100000</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/js/lib/prism/prism.css">
-    <script src="/js/lib/prism/prism.js"></script>
     <script src="/js/base.js"></script>
     <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/base.css"/>
@@ -79,92 +78,69 @@
                 <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
                 <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
             </section>
-            <article id='articleContent'><p><img src="http://localhost:8081/img/upload/744cd82c4a6c7e48b92416648bbea941.jpg">safdadsfaadsfas</p><pre class="language-html">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
- 
-&lt;configuration scan="true" scanPeriod="60 seconds" debug="false"&gt;
- 
-    &lt;!-- 定义日志输出到控制台的格式 --&gt;
-    &lt;property name="log.console.pattern" value="%magenta(%d{yyyy-MM-dd HH:mm:ss:SSS}) [%thread] %highlight([%-5level]) %cyan(%logger{90}) - %msg%n" /&gt;
-    &lt;!-- 定义日志输出到文件中的格式 --&gt;
-    &lt;property name="log.file.pattern" value="%d{yyyy-MM-dd HH:mm:ss:SSS} [%thread] [%-5level] %logger{90} - %msg%n" /&gt;
-    &lt;!-- 日志文件存储目录（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.path" source="logback.path" defaultValue="${user.home}/ShopSystem/log" /&gt;
-    &lt;!-- 输出 info 级别及以上的日志文件名-前缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.info.prefix" source="logback.file-name.info.prefix" defaultValue="system" /&gt;
-    &lt;!-- 输出 info 级别及以上的日志文件名-后缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.info.suffix" source="logback.file-name.info.suffix" defaultValue="log" /&gt;
-    &lt;!-- 输出 error 级别的日志文件名-前缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.error.prefix" source="logback.file-name.error.prefix" defaultValue="system.error" /&gt;
-    &lt;!-- 输出 error 级别的日志文件名-后缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.error.suffix" source="logback.file-name.error.suffix" defaultValue="log" /&gt;
- 
-    &lt;!-- 输出日志到控制台 --&gt;
-    &lt;appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender"&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${log.console.pattern}&lt;/pattern&gt;
-            &lt;charset&gt;UTF-8&lt;/charset&gt;
-        &lt;/encoder&gt;
-        &lt;!-- 输出 DEBUG 级别及以上的日志 --&gt;
-        &lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
-            &lt;level&gt;DEBUG&lt;/level&gt;
-        &lt;/filter&gt;
-    &lt;/appender&gt;
- 
-    &lt;!-- 滚动输出 INFO 级别及以上的日志到文件 --&gt;
-    &lt;appender name="ROLLING_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
-        &lt;file&gt;${file.path}/${file.name.info.prefix}.${file.name.info.suffix}&lt;/file&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${log.file.pattern}&lt;/pattern&gt;
-            &lt;charset&gt;UTF-8&lt;/charset&gt;
-        &lt;/encoder&gt;
-        &lt;!-- 设置滚动策略，基于大小和时间的滚动策略 --&gt;
-        &lt;rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"&gt;
-            &lt;fileNamePattern&gt;${file.path}/${file.name.info.prefix}.%d{yyyy-MM-dd}.%i.${file.name.info.suffix}&lt;/fileNamePattern&gt;
-            &lt;maxFileSize&gt;2MB&lt;/maxFileSize&gt;
-            &lt;maxHistory&gt;3&lt;/maxHistory&gt;
-            &lt;totalSizeCap&gt;10MB&lt;/totalSizeCap&gt;
-        &lt;/rollingPolicy&gt;
-        &lt;!-- 输出 INFO 级别及以上的日志 --&gt;
-        &lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
-            &lt;level&gt;INFO&lt;/level&gt;
-        &lt;/filter&gt;
-    &lt;/appender&gt;
- 
-    &lt;!-- 滚动输出 ERROR 级别的日志到文件 --&gt;
-    &lt;appender name="ROLLING_FILE_ERROR_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
-        &lt;file&gt;${file.path}/${file.name.error.prefix}.${file.name.error.suffix}&lt;/file&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${log.file.pattern}&lt;/pattern&gt;
-            &lt;charset&gt;UTF-8&lt;/charset&gt;
-        &lt;/encoder&gt;
-        &lt;!-- 设置滚动策略，基于大小和时间的滚动策略 --&gt;
-        &lt;rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"&gt;
-            &lt;fileNamePattern&gt;${file.path}/${file.name.error.prefix}.%d{yyyy-MM-dd}.%i.${file.name.error.suffix}&lt;/fileNamePattern&gt;
-            &lt;maxFileSize&gt;2MB&lt;/maxFileSize&gt;
-            &lt;maxHistory&gt;3&lt;/maxHistory&gt;
-            &lt;totalSizeCap&gt;10MB&lt;/totalSizeCap&gt;
-        &lt;/rollingPolicy&gt;
-        &lt;!-- 只保留 ERROR 级别的日志 --&gt;
-        &lt;filter class="ch.qos.logback.classic.filter.LevelFilter"&gt;
-            &lt;level&gt;ERROR&lt;/level&gt;
-            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
-            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
-        &lt;/filter&gt;
-    &lt;/appender&gt;
- 
-    &lt;!-- 控制 org.springframework 包下的所有类的 INFO 级别及以上的日志打印 --&gt;
-    &lt;logger name="org.springframework" level="INFO" /&gt;
-    &lt;!-- 控制 _org.springframework 包下的所有类的 INFO 级别及以上的日志打印 --&gt;
-    &lt;logger name="_org.springframework" level="INFO" /&gt;
- 
-    &lt;!-- 将各 appender 挂载到 root 节点下  --&gt;
-    &lt;root level="DEBUG"&gt;
-        &lt;appender-ref ref="CONSOLE_APPENDER" /&gt;
-        &lt;appender-ref ref="ROLLING_FILE_APPENDER" /&gt;
-        &lt;appender-ref ref="ROLLING_FILE_ERROR_APPENDER" /&gt;
-    &lt;/root&gt;
- 
-&lt;/configuration&gt;</pre></article>
+            <article id='articleContent'><p><img src="http://localhost:8081/img/upload/744cd82c4a6c7e48b92416648bbea941.jpg">safdadsfaadsfas</p><p><br></p><div class="code-toolbar"><pre class="line-numbers"><code class="language-yaml">spring:
+  main:
+    allow-circular-references: true
+  application:
+    name: jit
+  datasource:
+    url: jdbc:mariadb://localhost:4306/jit
+    username: root
+    password: 123456
+    driver-class-name:
+      org.mariadb.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  data:
+    jdbc:
+      dialect: maria
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      password: redis123
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          enabled: true
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 3600
+server:
+  port: 8080
+  tomcat:
+    basedir: /Users/apple/tmp/jit3
+upload:
+  save-path: /Users/apple/workplace/studyproject/springstudy/spring6/jit/frontend/
+  base-url: http://localhost:8081/
+  relative-path: img/upload/
+  relative-subject-path: img/upload/subject/
+  subject-pic: img/upload/subject/
+  article-pic: img/upload/
+deploy:
+  save-path: /Users/apple/workplace/studyproject/springstudy/spring6/jit/frontend/
+  subject: subject/
+  article: articles/
+  indexFile: js/
+  index-key-prefix: LocalIndex
+
+logging:
+  file:
+    name: ${server.tomcat.basedir}/log/jit.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+  level:
+    root: info</code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div>
+</article>
         </section>
     </div>
 </div>
@@ -195,8 +171,14 @@
 <script type="text/javascript">
     loadNav();
 </script>
+<script src="/js/lib/prism/prism.js"></script>
 <script src="/js/articleTree.js"></script>
 <script type="module" src="/js/indexSearch.js"></script>
+<script>
+    if (!hasHighlighted) {
+        Prism.highlightAll(false);//高亮代码
+    }
+</script>
 </body>
 
 </html>

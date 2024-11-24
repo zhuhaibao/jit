@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
+    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
     <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
@@ -83,6 +84,10 @@
 <script type="text/javascript">
     /*加载editor*/
     let editorObj = loadJoditEditor("#editor");
+
+    //手动高亮设置
+    window.Prism = window.Prism || {};
+    window.Prism.manual = true;
 
     /*搜索父标题,并添加*/
     //输入框变化,改变下拉框信息
@@ -218,6 +223,10 @@
 
     document.getElementById("enName").addEventListener("blur", checkExistEnName);
 
+</script>
+<script th:src="@{/js/lib/prism/prism.js}"></script>
+<script>
+    Prism.highlightAll(false);//所有进行完毕,高亮代码
 </script>
 </body>
 

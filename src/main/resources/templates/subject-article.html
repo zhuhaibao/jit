@@ -5,14 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
-    <script th:src="@{/js/lib/prism/prism.js}"></script>
     <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
-    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
+    <link rel="stylesheet" th:href="@{/css/subject-article.css}">
+
+    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
     <script th:src="@{/js/base.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/subject-article.css}">
-    <title>主题-文章列表</title>
+    <title th:text="${subject.subjectTitle}">主题-文章列表</title>
 </head>
 
 <body>
@@ -57,7 +57,8 @@
 
         </div>
         <div id='editArea'>
-            <textarea id="editor"><th:block th:if="${article!=null}" th:text="${article.content}"></th:block></textarea>
+            <textarea id="editor" th:text='${article.content ?:""}'></textarea>
+            <!--            <th:block th:if="${article!=null}" th:text="${article.content}"></th:block>-->
         </div>
         <div style="text-align: center; margin-top: 10px;">
             <a class="doButton" style="display: inline-block;" onclick="updateContent()">保存</a>
@@ -88,13 +89,16 @@
     </div>
 </div>
 <div class="fakeLi" id="fakeLi"></div>
+
 <script type="text/javascript">
     /*加载editor*/
     let editorObj = loadJoditEditor("#editor");
-    /*当前文章是否保存*/
-    let saved = false;
     /*初次editor的值*/
     let editorOldValue = document.getElementById("editor").value.trim();
+    //手动高亮设置
+    window.Prism = window.Prism || {};
+    window.Prism.manual = true;
+
 
     //编辑文章标题
     function updateArticleTitle() {
@@ -304,7 +308,6 @@
     //保存文章内容
     async function updateContent() {
         let checked = await checkExistEnName();
-        console.log(checked);
         if (!checked) return;
         let liNode = document.body.querySelector(".selected").parentElement;
         let id = liNode.dataset.articleInfo;
@@ -416,6 +419,7 @@
         formData.set("enName", enName);
         formData.set("articleKeyword", articleKeyword);
         formData.set("content", editorObj.value);
+        // console.log(editorObj.value);
         let response = await fetch("/article/saveContent", {method: "POST", body: formData});
         return await response.json();
     }
@@ -442,10 +446,6 @@
                 let url = new URL(location.href);
                 url.searchParams.set('id', newId);
                 location.assign(url);
-                // document.getElementById("enName").value = result.data.enName ? result.data.enName : '';
-                // document.getElementById("articleKeyword").value = result.data.articleKeyword ? result.data.articleKeyword : '';
-                // editorObj.value = result.data.content ? result.data.content : '';
-                // editorOldValue = editorObj.value;
             } else {
                 alert(`加载文章内容失败:${result.msg}`);
             }
@@ -614,6 +614,11 @@
     }
 
     document.getElementById("enName").addEventListener("blur", checkExistEnName);
+</script>
+
+<script th:src="@{/js/lib/prism/prism.js}"></script>
+<script>
+    Prism.highlightAll(false);//所有进行完毕,高亮代码
 </script>
 </body>
 

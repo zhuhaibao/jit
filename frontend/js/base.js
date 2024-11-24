@@ -134,6 +134,9 @@ async function loadNav() {
 
     selectedNavLi();//选中导航
     showNavBar(); //显示导航条
+    //手动高亮设置
+    window.Prism = window.Prism || {};
+    window.Prism.manual = true;
 }
 
 function selectedNavLi() {

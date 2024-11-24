@@ -9,7 +9,6 @@
     <title>SpringBoot3 整合 Logback 日志框架2</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/js/lib/prism/prism.css">
-    <script src="/js/lib/prism/prism.js"></script>
     <script src="/js/base.js"></script>
     <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/base.css"/>
@@ -79,92 +78,125 @@
                 <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
                 <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
             </section>
-            <article id='articleContent'><p><br></p><pre class="language-html">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
- 
-&lt;configuration scan="true" scanPeriod="60 seconds" debug="false"&gt;
- 
-    &lt;!-- 定义日志输出到控制台的格式 --&gt;
-    &lt;property name="log.console.pattern" value="%magenta(%d{yyyy-MM-dd HH:mm:ss:SSS}) [%thread] %highlight([%-5level]) %cyan(%logger{90}) - %msg%n" /&gt;
-    &lt;!-- 定义日志输出到文件中的格式 --&gt;
-    &lt;property name="log.file.pattern" value="%d{yyyy-MM-dd HH:mm:ss:SSS} [%thread] [%-5level] %logger{90} - %msg%n" /&gt;
-    &lt;!-- 日志文件存储目录（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.path" source="logback.path" defaultValue="${user.home}/ShopSystem/log" /&gt;
-    &lt;!-- 输出 info 级别及以上的日志文件名-前缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.info.prefix" source="logback.file-name.info.prefix" defaultValue="system" /&gt;
-    &lt;!-- 输出 info 级别及以上的日志文件名-后缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.info.suffix" source="logback.file-name.info.suffix" defaultValue="log" /&gt;
-    &lt;!-- 输出 error 级别的日志文件名-前缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.error.prefix" source="logback.file-name.error.prefix" defaultValue="system.error" /&gt;
-    &lt;!-- 输出 error 级别的日志文件名-后缀（从 application 配置文件取得） --&gt;
-    &lt;springProperty scope="context" name="file.name.error.suffix" source="logback.file-name.error.suffix" defaultValue="log" /&gt;
- 
-    &lt;!-- 输出日志到控制台 --&gt;
-    &lt;appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender"&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${log.console.pattern}&lt;/pattern&gt;
-            &lt;charset&gt;UTF-8&lt;/charset&gt;
-        &lt;/encoder&gt;
-        &lt;!-- 输出 DEBUG 级别及以上的日志 --&gt;
-        &lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
-            &lt;level&gt;DEBUG&lt;/level&gt;
-        &lt;/filter&gt;
-    &lt;/appender&gt;
- 
-    &lt;!-- 滚动输出 INFO 级别及以上的日志到文件 --&gt;
-    &lt;appender name="ROLLING_FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
-        &lt;file&gt;${file.path}/${file.name.info.prefix}.${file.name.info.suffix}&lt;/file&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${log.file.pattern}&lt;/pattern&gt;
-            &lt;charset&gt;UTF-8&lt;/charset&gt;
-        &lt;/encoder&gt;
-        &lt;!-- 设置滚动策略，基于大小和时间的滚动策略 --&gt;
-        &lt;rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"&gt;
-            &lt;fileNamePattern&gt;${file.path}/${file.name.info.prefix}.%d{yyyy-MM-dd}.%i.${file.name.info.suffix}&lt;/fileNamePattern&gt;
-            &lt;maxFileSize&gt;2MB&lt;/maxFileSize&gt;
-            &lt;maxHistory&gt;3&lt;/maxHistory&gt;
-            &lt;totalSizeCap&gt;10MB&lt;/totalSizeCap&gt;
-        &lt;/rollingPolicy&gt;
-        &lt;!-- 输出 INFO 级别及以上的日志 --&gt;
-        &lt;filter class="ch.qos.logback.classic.filter.ThresholdFilter"&gt;
-            &lt;level&gt;INFO&lt;/level&gt;
-        &lt;/filter&gt;
-    &lt;/appender&gt;
- 
-    &lt;!-- 滚动输出 ERROR 级别的日志到文件 --&gt;
-    &lt;appender name="ROLLING_FILE_ERROR_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
-        &lt;file&gt;${file.path}/${file.name.error.prefix}.${file.name.error.suffix}&lt;/file&gt;
-        &lt;encoder&gt;
-            &lt;pattern&gt;${log.file.pattern}&lt;/pattern&gt;
-            &lt;charset&gt;UTF-8&lt;/charset&gt;
-        &lt;/encoder&gt;
-        &lt;!-- 设置滚动策略，基于大小和时间的滚动策略 --&gt;
-        &lt;rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy"&gt;
-            &lt;fileNamePattern&gt;${file.path}/${file.name.error.prefix}.%d{yyyy-MM-dd}.%i.${file.name.error.suffix}&lt;/fileNamePattern&gt;
-            &lt;maxFileSize&gt;2MB&lt;/maxFileSize&gt;
-            &lt;maxHistory&gt;3&lt;/maxHistory&gt;
-            &lt;totalSizeCap&gt;10MB&lt;/totalSizeCap&gt;
-        &lt;/rollingPolicy&gt;
-        &lt;!-- 只保留 ERROR 级别的日志 --&gt;
-        &lt;filter class="ch.qos.logback.classic.filter.LevelFilter"&gt;
-            &lt;level&gt;ERROR&lt;/level&gt;
-            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;
-            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;
-        &lt;/filter&gt;
-    &lt;/appender&gt;
- 
-    &lt;!-- 控制 org.springframework 包下的所有类的 INFO 级别及以上的日志打印 --&gt;
-    &lt;logger name="org.springframework" level="INFO" /&gt;
-    &lt;!-- 控制 _org.springframework 包下的所有类的 INFO 级别及以上的日志打印 --&gt;
-    &lt;logger name="_org.springframework" level="INFO" /&gt;
- 
-    &lt;!-- 将各 appender 挂载到 root 节点下  --&gt;
-    &lt;root level="DEBUG"&gt;
-        &lt;appender-ref ref="CONSOLE_APPENDER" /&gt;
-        &lt;appender-ref ref="ROLLING_FILE_APPENDER" /&gt;
-        &lt;appender-ref ref="ROLLING_FILE_ERROR_APPENDER" /&gt;
-    &lt;/root&gt;
- 
-&lt;/configuration&gt;</pre></article>
+            <article id='articleContent'><p><br></p>
+
+<div>
+    <div>
+        <div class="code-toolbar"><pre class="line-numbers"><code class="language-html">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;com.jumper&lt;/groupId&gt;
+        &lt;artifactId&gt;spring6&lt;/artifactId&gt;
+        &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+        &lt;relativePath&gt;../pom.xml&lt;/relativePath&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+    &lt;groupId&gt;com.jumper.jit&lt;/groupId&gt;
+    &lt;artifactId&gt;jit&lt;/artifactId&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+    &lt;name&gt;jit&lt;/name&gt;
+    &lt;description&gt;jit&lt;/description&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.thymeleaf.extras&lt;/groupId&gt;
+            &lt;artifactId&gt;thymeleaf-extras-springsecurity6&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.mariadb.jdbc&lt;/groupId&gt;
+            &lt;artifactId&gt;mariadb-java-client&lt;/artifactId&gt;
+            &lt;version&gt;3.4.1&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.aspectj&lt;/groupId&gt;
+            &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+            &lt;artifactId&gt;fastjson&lt;/artifactId&gt;
+            &lt;version&gt;2.0.24&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;!--redis--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+            &lt;artifactId&gt;commons-pool2&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;!--for test--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-security-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;!-- maven surefire --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;skip&gt;true&lt;/skip&gt;
+                    &lt;argLine&gt;-XX:+EnableDynamicAgentLoading&lt;/argLine&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;</code></pre><div class="toolbar"><div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div></div></div>
+    </div>
+</div></article>
         </section>
     </div>
 </div>
@@ -195,8 +227,14 @@
 <script type="text/javascript">
     loadNav();
 </script>
+<script src="/js/lib/prism/prism.js"></script>
 <script src="/js/articleTree.js"></script>
 <script type="module" src="/js/indexSearch.js"></script>
+<script>
+    if (!hasHighlighted) {
+        Prism.highlightAll(false);//高亮代码
+    }
+</script>
 </body>
 
 </html>

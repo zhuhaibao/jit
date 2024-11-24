@@ -67,7 +67,7 @@ public class DeployServiceImpl implements DeployService {
     @Override
     public void deployCurrentSubjectArticle(Integer id) throws IOException {
         Article dbArticle = articleService.findById(id);
-        List<SimpleArticleWithoutContentDTO> dbList = articleService.findArticleTree(dbArticle.getSid(), Article.Status.PUBLISHED.getCode());
+        List<SimpleArticleWithoutContentDTO> dbList = articleService.findAllPublishableArticleTree(dbArticle.getSid());
         if (dbList.isEmpty()) return;
         List<Subject> navigations = subjectService.findByNavigation(true, null);//查询所有导航
         SiteConfig siteConfig = subjectService.findSiteConfig();

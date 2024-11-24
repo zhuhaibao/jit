@@ -4,7 +4,7 @@
  * Copyright (c) 2013-2020 Valeriy Chupurnov. All rights reserved. https://xdsoft.net/jodit/pro/
  */
 
-Jodit.defaultOptions.license = '0DDBK-2DH42-BSN6N-L1O8X';
+Jodit.defaultOptions.license = '5BA1C-3KLI3-BDPK6-J4EPY';
 Jodit.defaultOptions.language = 'zh_cn';
 
 Jodit.defaultOptions.width = 'auto';
@@ -46,6 +46,7 @@ Jodit.defaultOptions.buttons = [
     'pasteCode', '|', //代码编辑
     'font',
     'fontsize',
+    'lineHeight',
     'symbols',
     'emoji', //表情包
     'brush',
