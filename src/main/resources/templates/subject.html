@@ -225,7 +225,7 @@
         async function update(e) {
             if (e.target.value !== oldValue) {
                 if (type === 3) {
-                    let checked = await checkEnName(0, e.target, "/subject/checkEnName");
+                    let checked = await checkEnName(0, e.target, "/subject/checkEnName", {"enName": e.target.value});
                     console.log(checked)
                     if (!checked) return;
                 }

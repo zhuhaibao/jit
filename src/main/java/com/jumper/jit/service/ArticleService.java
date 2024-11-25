@@ -96,7 +96,7 @@ public interface ArticleService {
      * 修改文章英文标题
      */
     void updateEnName(Integer id, String enName);
-    
+
     /**
      * 修改关键词
      */
@@ -174,5 +174,5 @@ public interface ArticleService {
     //保存专题文章,只修改发布状态
     void saveAndUpdateSubjectArticleStatus(Article article) throws IOException;
 
-    ResultData<Article> checkEnName(String enName);
+    ResultData<Article> checkEnName(String enName, Integer sid);
 }

@@ -4,11 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
     <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
     <link rel="stylesheet" th:href="@{/css/subject-article.css}">
 
+    <script th:src="@{/js/lib/prism/prism.js}"></script>
     <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
     <script th:src="@{/js/base.js}"></script>
@@ -95,9 +97,6 @@
     let editorObj = loadJoditEditor("#editor");
     /*初次editor的值*/
     let editorOldValue = document.getElementById("editor").value.trim();
-    //手动高亮设置
-    window.Prism = window.Prism || {};
-    window.Prism.manual = true;
 
 
     //编辑文章标题
@@ -610,16 +609,16 @@
     async function checkExistEnName() {
         let oldValue = document.getElementById("oldEnName").value;
         if (oldValue && oldValue === document.getElementById("enName").value) return true;
-        return await checkEnName(1, document.getElementById("enName"), "/article/checkEnName");
+        let enName = document.getElementById("enName").value;
+        let sid = document.getElementById("subjectDiv").dataset.subjectId;
+        let params = {"enName": enName, "sid": sid};
+        return await checkEnName(1, document.getElementById("enName"), "/article/checkEnName", params);
     }
 
     document.getElementById("enName").addEventListener("blur", checkExistEnName);
 </script>
 
-<script th:src="@{/js/lib/prism/prism.js}"></script>
-<script>
-    Prism.highlightAll(false);//所有进行完毕,高亮代码
-</script>
+
 </body>
 
 </html>

@@ -9,7 +9,6 @@
     <title>标题测试2 - Java</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/js/lib/prism/prism.css">
-    <script src="/js/lib/prism/prism.js"></script>
     <script src="/js/base.js"></script>
     <script src="/js/lib/flexsearch/flexsearch.bundle.min.js"></script>
     <link rel="stylesheet" href="/css/base.css"/>
@@ -18,7 +17,7 @@
 
 </head>
 
-<body>
+<body data-prismjs-copy-timeout="500">
 <div class="topDiv">
     <div class="topBar">
         <div class="logoDiv">
@@ -69,7 +68,7 @@
         <section>
             <header>
                 <span class='articleTitle' id='articleTitle'>标题测试2</span>
-                <span class='publishTime'>lastUpdated : 2024-11-15 02:49:17</span>
+                <span class='publishTime'>lastUpdated : 2024-11-24 21:33:41</span>
             </header>
             <section title="author" class="author">
                 <img id="authorLogo" src="/img/subject-logo4.svg">
@@ -109,8 +108,14 @@
 <script type="text/javascript">
     loadNav();
 </script>
+<script src="/js/lib/prism/prism.js"></script>
 <script src="/js/articleTree.js"></script>
 <script type="module" src="/js/indexSearch.js"></script>
+<script>
+    if (!hasHighlighted) {
+        Prism.highlightAll(false);//高亮代码
+    }
+</script>
 </body>
 
 </html>

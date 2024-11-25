@@ -71,6 +71,7 @@ function randomInteger(n) { //产生随机整数
 function loadJoditEditor(selector) {
     return Jodit.make(selector, {
         pasteCode: {
+            globalHighlightLib: true,
             defaultLanguage: 'js',
             languages: Jodit.atom([
                 {value: 'js', text: 'JavaScript'},
@@ -338,7 +339,7 @@ function previewImg(target) {
     }
 }
 
-async function checkEnName(type, target, url) {
+async function checkEnName(type, target, url, params) {
     let value = target.value ? target.value.trim() : null;
     if (!value) {
         if (target.nextElementSibling && target.nextElementSibling.classList.contains('feildErr')) {
@@ -349,7 +350,8 @@ async function checkEnName(type, target, url) {
         return false;
     }
     let formData = new FormData();
-    formData.set("enName", value);
+    formData.set("enName", params.enName);
+    formData.set("sid", params.sid);
     let response = await fetch(url, {method: 'POST', body: formData});
     let result = await response.json();
     if (result.statusText === 'ok') {

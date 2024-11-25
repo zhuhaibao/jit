@@ -487,8 +487,13 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public ResultData<Article> checkEnName(String enName) {
-        Article article = repository.findByEnNameEqualsIgnoreCase(enName);
+    public ResultData<Article> checkEnName(String enName, Integer sid) {
+        Article article = null;
+        if (sid != null) {
+            article = repository.findByEnNameEqualsIgnoreCaseAndSidIs(enName, sid);
+        } else {
+            article = repository.findByEnNameEqualsIgnoreCaseAndSidIsNull(enName);
+        }
         if (article == null) {
             return ResultData.success();
         }

@@ -56,7 +56,7 @@
                 <td class="updateTd" ondblclick="updateTitle(event,1)" th:attr="data-td-id=${sub.id}"
                     th:text="${sub.title}"></td>
                 <td data-type-enName class="updateTd" ondblclick="updateTitle(event,2)" th:attr="data-td-id=${sub.id}"
-                    th:text="${sub.enName}"></td>
+                    th:text="${sub.enName}" th:data-subject-id="${sub.sid}"></td>
                 <td th:text="${#temporals.format(sub.createdAt,'yyyy-MM-dd HH:mm:ss')}"></td>
                 <td class="tdCenter updateTd" ondblclick="clickSubject(event)"
                     th:text="${sub.subject!=null}? ${sub.subject.subjectTitle}:'无主题'"></td>
@@ -132,7 +132,11 @@
             let newValue = e.target.value;
             if (e.target.value !== oldValue) {
                 if (currentTd.hasAttribute("data-type-enName")) {
-                    let checked = await checkEnName(1, e.target, "/article/checkEnName");
+                    let params = {};
+                    params.sid = currentTd.dataset.subjectId ? currentTd.dataset.subjectId : "";
+                    params.enName = e.target.value;
+                    console.log(params);
+                    let checked = await checkEnName(1, e.target, "/article/checkEnName", params);
                     if (!checked) return;
                 }
                 let save = confirm("save updated?")

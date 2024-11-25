@@ -143,7 +143,7 @@ public class ArticleController {
 
     @PostMapping("checkEnName")
     @ResponseBody
-    public ResultData<Article> checkEnName(@RequestParam("enName") String enName) {
-        return service.checkEnName(enName);
+    public ResultData<Article> checkEnName(@RequestParam("enName") String enName, @RequestParam(value = "sid", required = false) Integer sid) {
+        return service.checkEnName(enName, sid);
     }
 }
