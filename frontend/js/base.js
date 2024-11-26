@@ -106,13 +106,6 @@ function showNavBar() {
         showArrow(nav);
     }
 
-    // //模拟taphold事件--作废,太麻烦
-    // rightArrow.onmousedown = function (e) {
-    //     tapHold(rightArrow, toRight, start, step)();
-    // }
-    // leftArrow.onmousedown = function (e) {
-    //     tapHold(leftArrow, toLeft, start, step)();
-    // }
     document.getElementById("rightArrow").addEventListener("click", toRight);
     document.getElementById("leftArrow").addEventListener("click", toLeft);
     nav.onscroll = function (e) {

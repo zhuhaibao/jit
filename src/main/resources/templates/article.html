@@ -5,14 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
-    <!--    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">-->
-
-    <!--    <script th:src="@{/js/lib/prism/prism.js}"></script>-->
-    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
+    <link rel="stylesheet" th:href="@{/css/article.css}">
+    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
+
+    <script th:src="@{/js/lib/prism/prism.js}"></script>
+    <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
     <script th:src="@{/js/lib/jodit/jodit.js}"></script>
     <script th:src="@{/js/base.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/article.css}">
+
+
     <title>文章</title>
 </head>
 
@@ -73,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <div id='editArea' class="formRow">
+            <div id='editArea' class="formRow" data-prismjs-copy-timeout="500">
                 <textarea id="editor" name="content" th:text="*{content}" placeholder="开始创作吧"></textarea>
             </div>
             <div style="text-align: center; margin-top: 10px;">
@@ -227,6 +229,6 @@
 
 </script>
 
-</body>
 
+</body>
 </html>

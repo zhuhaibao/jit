@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
     <link rel="stylesheet" th:href="@{/js/lib/jodit/plugins/paste-code/paste-code.css}">
     <link rel="stylesheet" th:href="@{/js/lib/jodit/jodit.css}">
     <link rel="stylesheet" th:href="@{/css/subject-article.css}">
+    <link rel="stylesheet" th:href="@{/js/lib/prism/prism.css}">
 
     <script th:src="@{/js/lib/prism/prism.js}"></script>
     <script th:src="@{/js/lib/jodit/plugins/paste-code/paste-code.js}"></script>
@@ -58,7 +58,7 @@
         >
 
         </div>
-        <div id='editArea'>
+        <div id='editArea' data-prismjs-copy-timeout="500">
             <textarea id="editor" th:text='${article.content ?:""}'></textarea>
             <!--            <th:block th:if="${article!=null}" th:text="${article.content}"></th:block>-->
         </div>
@@ -617,7 +617,6 @@
 
     document.getElementById("enName").addEventListener("blur", checkExistEnName);
 </script>
-
 
 </body>
 

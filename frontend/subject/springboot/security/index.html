@@ -79,7 +79,7 @@
         <section>
             <header>
                 <span class='articleTitle' id='articleTitle'>Spring Security</span>
-                <span class='publishTime'>lastUpdated : 2024-11-26 00:15:14</span>
+                <span class='publishTime'>lastUpdated : 2024-11-27 03:32:00</span>
             </header>
             <section title="author" class="author">
                 <img id="authorLogo" src="/img/subject-logo4.svg">
@@ -88,8 +88,7 @@
                 <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
                 <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
             </section>
-            <article id='articleContent'><p><br></p>
-<pre class="line-numbers"><code class="language-java" data-prismjs-copy="Copy">package com.example.demo.config;搜索
+            <article id='articleContent'><p><br></p><pre class="line-numbers"><code class="language-java" data-prismjs-copy="copy">package com.example.demo.config;
 
                     @Bean
                     public AuthenticationManager authenticationManager() {
@@ -104,18 +103,13 @@
                     @Bean
                     public UserDetailsService userDetailsService() {
                         UserDetails userDetails = User.builder()
-                                .passwordEncoder(x -&amp;gt; passwordEncoder().encode("123"))
+                                .passwordEncoder(x -&gt; passwordEncoder().encode("123"))
                                 .username("user")
                                 .roles("USER")
                                 .build();
 
                         return new InMemoryUserDetailsManager(userDetails);
-                    }</code></pre>
-<div class="code-toolbar">
-    <div class="toolbar">
-        <div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy"><span>Copy</span></button></div>
-    </div>
-</div></article>
+                    }</code></pre></article>
         </section>
     </div>
 </div>

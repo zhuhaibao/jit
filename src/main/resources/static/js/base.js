@@ -98,7 +98,7 @@ function loadJoditEditor(selector) {
                 {value: 'batch', text: 'Batch'},
                 {value: 'docker', text: 'Docker'}
             ]),
-            insertTemplate: (_, lang, value) => `<pre class="line-numbers"><code class="language-${lang}" data-prismjs-copy="Copy">${Jodit.modules.Helpers.htmlspecialchars(value)}</code></pre>`,
+            insertTemplate: (_, lang, value) => `<pre class="line-numbers"><code class="language-${lang}" data-prismjs-copy="copy">${Jodit.modules.Helpers.htmlspecialchars(value)}</code></pre>`,
             dialog: {
                 width: 1000
             }

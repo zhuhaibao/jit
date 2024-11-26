@@ -79,7 +79,7 @@
         <section>
             <header>
                 <span class='articleTitle' id='articleTitle'>aspectj如何操作</span>
-                <span class='publishTime'>lastUpdated : 2024-11-26 00:15:29</span>
+                <span class='publishTime'>lastUpdated : 2024-11-27 03:31:39</span>
             </header>
             <section title="author" class="author">
                 <img id="authorLogo" src="/img/subject-logo4.svg">
@@ -88,139 +88,31 @@
                 <a href="https://twitter.com/jumperoverfgw"><img class="siteImg" src="/img/X.svg"></a>
                 <span class='zcool-xiaowei-regular'>自由职业 专业开发 10年it魔域经验</span>
             </section>
-            <article id='articleContent'><p><br></p><pre class="line-numbers"><code class="language-java" data-prismjs-copy="Copy">public class AutoDeployProcessor {
-
-    private DeployService deployService;
-    private ArticleService articleService;
-    private SubjectService subjectService;
-
-    @Autowired
-    public void setDeployService(DeployService deployService) {
-        this.deployService = deployService;
+            <article id='articleContent'><p><br></p><pre class="line-numbers"><code class="language-js" data-prismjs-copy="copy">/*弹出对话框通用函数*/
+function showPublicConfirm(e, callback, message) {
+    //1 通用确认对话框位置确定
+    //在当前单击位置的右边显示
+    let left = e.clientX + 10;
+    let top = e.clientY + 10;
+    //判断不要越界(因为确定按钮和关闭按钮都在右侧,所以判断右边不要越界);
+    let windowWidth = getScrollDocumentWidth();
+    if (left + this.offsetWidth &gt; windowWidth) {
+        left = windowWidth - this.offsetWidth;
     }
+    publicConfirmTipContent.style.left = left + 'px';
+    publicConfirmTipContent.style.top = top + 'px';
+    publicConfirmTipContent.style.position = 'absolute';
+    //2 通用对话框的内容确定
+    publicConfirmTooltip.innerHTML = message;
+    //3 显示对话框
+    publicConfirmTip.style.display = "block";
 
-    @Autowired
-    public void setArticleService(ArticleService articleService) {
-        this.articleService = articleService;
+    publicConfirmTipButtonConfirm.onclick = function () {
+        callback(e);
+        publicConfirmTip.style.display = 'none';
     }
-
-    @Autowired
-    public void setSubjectService(SubjectService subjectService) {
-        this.subjectService = subjectService;
-    }
-
-    @Pointcut("execution(* com.jumper.jit.service.impl.DeployServiceImpl.saveAndUpdateSubjectArticleStatus(..))||" +
-            "execution(* com.jumper.jit.service.impl.DeployServiceImpl.saveAndUpdateSingleStatus(..))")
-    private void saveAndUpdateArticleStatus() {
-    }
-
-    @Pointcut("execution(* com.jumper.jit.service.impl.SubjectServiceImpl.moveTo(..))||" +
-            "execution(* com.jumper.jit.service.impl.SubjectServiceImpl.deleteNavigation(..))||" +
-            "execution(* com.jumper.jit.service.impl.SubjectServiceImpl.addNavigation(..))")
-    private void updateNavigation() {
-    }
-
-    @Pointcut("execution(* com.jumper.jit.service.impl.SubjectServiceImpl.updateSubject(..))")
-    private void updateSubject() {
-    }
-
-    @Pointcut("execution(* com.jumper.jit.service.impl.ArticleServiceImpl.delete(..))||" +
-            "execution(* com.jumper.jit.service.impl.ArticleServiceImpl.updateTitle(..))||" +
-            "execution(* com.jumper.jit.service.impl.ArticleServiceImpl.updateEnName(..))||" +
-            "execution(* com.jumper.jit.service.impl.ArticleServiceImpl.moveTo(..))")
-    private void updateArticle() {
-    }
-
-    @Pointcut("execution(* com.jumper.jit.service.impl.ArticleServiceImpl.insertNodeAsChild(..))")
-    private void insertNodeAsChild() {
-    }
-
-
-    @After("saveAndUpdateArticleStatus()")
-    public void deployAfterSaveAndUpdateArticleStatus(JoinPoint point) throws Exception {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        Article param = (Article) point.getArgs()[0];
-        Article dbArticle = articleService.findById(param.getId());
-        log.info("{} -&gt;auto deploy current Article[id={},title={}]... ", signature.getName(), param.getId(), param.getTitle());
-        if (dbArticle.getSid() != null) {
-            deployService.deployCurrentSubjectArticle(param.getId());
-        } else {
-            deployService.deployCurrentSingle(param.getId());
-        }
-    }
-
-
-    @After("updateNavigation()")
-    public void autoDeployTopNav(JoinPoint point) throws Exception {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        //发布主页index
-        log.info("{} -&gt; auto deploy index.html... ", signature.getName());
-        deployService.deployIndex();
-    }
-
-
-    @After("updateSubject()")
-    public void autoDeploySubject(JoinPoint point) throws Exception {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        //发布主页index
-        log.info("{} -&gt; auto deploy index.html...  ", signature.getName());
-        deployService.deployIndex();
-        //如果修改了enName,也就是主题存放目录,那么整个主题要重发一遍
-        SubjectDTO subject = (SubjectDTO) point.getArgs()[0];
-        Subject dbSubject = subjectService.findById(subject.getId());
-        if (subject.getEnName() != null) {
-            log.info("{}: enName changed[{}] -&gt; auto deploy AllSubject[{}]... ", signature.getName(), subject.getEnName(), dbSubject.getSubjectTitle());
-            deployService.deployAllSubjectArticle(subject.getId());
-        }
-    }
-
-
-    @After("updateArticle()")
-    public void autoDeploySubjectCauseOfArticleModified(JoinPoint point) throws Exception {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        //获取第一个参数id,检查文章状态
-        Integer id = (Integer) point.getArgs()[0];
-        Article article = articleService.findById(id);
-        if (article.getStatus().equals(Article.Status.PUBLISHED.getCode())) {
-            if (article.getSid() != null) {
-                log.info("{}: -&gt;Article[{}] auto deploy AllSubject[{}]... ", id, signature.getName(), article.getSubject().getSubjectTitle());
-                deployService.deployAllSubjectArticle(article.getSubject().getId());
-            } else {
-                log.info("{}: -&gt;Article[{}]  auto deploy deployAllSingleArticle... ", id, signature.getName());
-                deployService.deployAllSingleArticle();
-            }
-        }
-    }
-
-
-    @Around("insertNodeAsChild()")
-    public Object autoDeployAfterInsertNode(ProceedingJoinPoint point) throws Throwable {
-        Integer articleId = (Integer) point.getArgs()[0];
-        Integer targetId = (Integer) point.getArgs()[1];
-        boolean isSubject = (boolean) point.getArgs()[2];
-        Article article = articleService.findById(articleId);//执行前获取参数
-        Object object = point.proceed(point.getArgs());//执行
-        //非发布状态直接返回
-        if (article.getStatus().compareTo(Article.Status.PUBLISHED.getCode()) &lt; 0) return object;
-        //有所属主题则重新发布该主题,否则重新发布单体文章列表
-        if (article.getSid() != null) {
-            deployService.deployAllSubjectArticle(article.getSid());
-        } else {
-            deployService.deployAllSingleArticle();
-        }
-        //获取移动目标的主题
-        Integer targetSid;
-        if (isSubject) {
-            targetSid = targetId;
-        } else {
-            Article target = articleService.findById(targetId);
-            targetSid = target.getSid();
-        }
-        //如果主题不同,则重发布目标主题
-        if (!targetSid.equals(article.getSid())) {
-            deployService.deployAllSubjectArticle(targetSid);
-        }
-        return object;
+    publicConfirmTipButtonCancel.onclick = function () {
+        publicConfirmTip.style.display = 'none';
     }
 }</code></pre></article>
         </section>
